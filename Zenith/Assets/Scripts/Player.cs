@@ -4,6 +4,7 @@ public class Player : Character
 {
     void Start()
     {
+        HP = 100;
         speed = 5;
     }
 

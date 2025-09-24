@@ -1,11 +1,9 @@
 using UnityEngine.UI;
 using UnityEngine;
 
-public class ATB_ProgressBar : MonoBehaviour
+public class ATB_ProgressBar : ATB_System
 {
     [SerializeField] private Image innerBar;
-    public int maxValue = 100;
-    public int currentValue = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,5 +21,13 @@ public class ATB_ProgressBar : MonoBehaviour
         if (innerBar == null) return;
         float fillAmount = (float)value / maxValue;
         innerBar.fillAmount = fillAmount;
+    }
+
+    public void Add(int amount)
+    {
+        if (currentValue < maxValue)
+        {
+            currentValue += amount;
+        }
     }
 }

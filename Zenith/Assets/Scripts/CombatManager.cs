@@ -12,6 +12,7 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private GameObject PlayerUI;
     [SerializeField] private GameObject Companion1UI;
     [SerializeField] private GameObject Companion2UI;
+    [SerializeField] private Player player;
 
     private ATB_ProgressBar playerATB;
     private ATB_ProgressBar companion1ATB;

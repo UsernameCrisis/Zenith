@@ -11,9 +11,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask terrainLayer;
     [SerializeField] private SpriteRenderer sr;
     [SerializeField] private Rigidbody rb;
+    private float defaultMoveSpeed;
 
     void Awake()
     {
+        defaultMoveSpeed = moveSpeed;
         rb = gameObject.GetComponent<Rigidbody>();
         moveAction = InputSystem.actions.FindAction("Move");
     }
@@ -43,6 +45,17 @@ public class PlayerMovement : MonoBehaviour
                 movePos.y = hit.point.y + groundDist;
                 transform.position = movePos;
             }
+        }
+    }
+    public void canMove(bool canMove)
+    {
+        if (canMove)
+        {
+            moveSpeed = defaultMoveSpeed;
+        }
+        else
+        {
+            moveSpeed = 0;
         }
     }
 }

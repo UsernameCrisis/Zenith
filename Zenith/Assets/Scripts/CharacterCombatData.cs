@@ -8,8 +8,8 @@ public class CharacterCombatData : MonoBehaviour
     private Character character;
     void Start()
     {
-        character = parent.GetComponent<Character>();
-        UpdateHP();
+        // character = parent.GetComponent<Character>();
+        // UpdateHP();
     }
 
     void Update()
@@ -19,5 +19,9 @@ public class CharacterCombatData : MonoBehaviour
     private void UpdateHP()
     {
         HPText.text = character.GetHP().ToString();
+    }
+    public void setHP(int hp)
+    {
+        HPText.text = hp.ToString();
     }
 }

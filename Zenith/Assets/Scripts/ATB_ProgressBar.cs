@@ -1,9 +1,11 @@
 using UnityEngine.UI;
 using UnityEngine;
 
+//harusnya ini ATB yg keliatan (player, companion)
 public class ATB_ProgressBar : ATB_System
 {
     [SerializeField] private Image innerBar;
+    [SerializeField] private CombatManager combatManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -16,18 +18,32 @@ public class ATB_ProgressBar : ATB_System
         setValue(currentValue);
     }
 
-    void setValue(int value)
+    void setValue(float value)
     {
         if (innerBar == null) return;
         float fillAmount = (float)value / maxValue;
         innerBar.fillAmount = fillAmount;
     }
 
-    public void Add(int amount)
+    public void Add(float amount)
     {
         if (currentValue < maxValue)
         {
             currentValue += amount;
         }
+    }
+
+    public bool canAct()
+    {
+        return currentValue >= maxValue;
+    }
+    public void reset()
+    {
+        currentValue = 0;
+    }
+    public void resetPlayer()
+    {
+        currentValue = 0;
+        combatManager.disableAct();
     }
 }

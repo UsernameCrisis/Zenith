@@ -9,6 +9,13 @@ using System.Collections.Generic;
 public class CursorController : MonoBehaviour
 {
     [SerializeField] private Image cursor;
+    [SerializeField] private Player player;
+    [SerializeField] private Companion companion1;
+    [SerializeField] private Companion companion2;
+    [SerializeField] private Enemy enemy1;
+    [SerializeField] private Enemy enemy2;
+    [SerializeField] private Enemy enemy3;
+    [SerializeField] private GameObject playerATB;
     private STATE state = STATE.ACT;
     private int _actCounter = 0;
     private int _actSubmenuCounter = 0;
@@ -92,6 +99,26 @@ public class CursorController : MonoBehaviour
             stateStack.Pop();
             SetEnum(stateStack.Pop());
         }
+
+
+        if (Keyboard.current[Key.Enter].wasPressedThisFrame || Keyboard.current[Key.Space].wasPressedThisFrame)
+        {
+            stateStack.Clear();
+            SetEnum(STATE.ACT);
+            if (_targetCounter == 0) //left
+            {
+                enemy1.takeDamage(10);
+            }
+            else if (_targetCounter == 1) //middle
+            {
+                enemy2.takeDamage(10);
+            }
+            else if (_targetCounter == 2) //right
+            {
+                enemy3.takeDamage(10);
+            }
+            playerATB.GetComponent<ATB_ProgressBar>().resetPlayer();
+        }
     }
 
     private void HandleActSubmenuState()
@@ -136,5 +163,10 @@ public class CursorController : MonoBehaviour
                     break;
             }
         }
+    }
+
+    public void visible(bool b)
+    {
+        cursor.enabled = b;
     }
 }

@@ -30,12 +30,16 @@ public class CombatManager : MonoBehaviour
 
     void Start()
     {
+        EnemyMoveNameUI.SetActive(false);
         disableAct();
         playerATB = PlayerUI.GetComponentInChildren<ATB_ProgressBar>();
         player.canMove(false);
         List<Character> companions = player.GetCompanions();
 
         playerHP = player.GetHP();
+        
+        //temp 
+        companions = new List<Character>();
 
         if (companions.Count > 0)
         {

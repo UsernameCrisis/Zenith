@@ -117,6 +117,7 @@ public class CursorController : MonoBehaviour
             {
                 enemy3.takeDamage(10);
             }
+            _targetCounter = 0;
             playerATB.GetComponent<ATB_ProgressBar>().resetPlayer();
         }
     }

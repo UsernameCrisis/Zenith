@@ -37,6 +37,9 @@ public class CombatManager : MonoBehaviour
         List<Character> companions = player.GetCompanions();
 
         playerHP = player.GetHP();
+        
+        //temp 
+        companions = new List<Character>();
 
         if (companions.Count > 0)
         {

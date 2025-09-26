@@ -19,7 +19,7 @@ public class CursorController : MonoBehaviour
     private STATE state = STATE.ACT;
     private int _actCounter = 0;
     private int _actSubmenuCounter = 0;
-    private int _targetCounter = 1;
+    private int _targetCounter = 0;
     private Stack<STATE> stateStack = new Stack<STATE>();
     private enum STATE
     {
@@ -56,7 +56,7 @@ public class CursorController : MonoBehaviour
         {
             case STATE.ACT:
                 stateStack.Push(STATE.ACT);
-                cursor.transform.position = new Vector3(30, 200, 0);
+                cursor.transform.position = new Vector3(50, 400, 0);
                 break;
             case STATE.ACT_SUBMENU:
                 stateStack.Push(STATE.ACT_SUBMENU);
@@ -64,7 +64,7 @@ public class CursorController : MonoBehaviour
                 break;
             case STATE.TARGET:
                 stateStack.Push(STATE.TARGET);
-                cursor.transform.position = new Vector3(840, 200, 0);
+                cursor.transform.position = new Vector3(1400, 420, 0);
                 break;
         }
     }
@@ -75,22 +75,22 @@ public class CursorController : MonoBehaviour
         {
             if (_targetCounter > 0)
             {
-                if (_targetCounter == 1) //middle
-                    cursor.transform.position = new Vector3(760, 210, 0);
-                else if (_targetCounter == 2) //left
-                    cursor.transform.position = new Vector3(840, 200, 0);
                 _targetCounter--;
+                if (_targetCounter == 0) //left
+                    cursor.transform.position = new Vector3(1400, 420, 0);
+                else if (_targetCounter == 1) //middle
+                    cursor.transform.position = new Vector3(1550, 400, 0);
             }
         }
         if (Keyboard.current[Key.RightArrow].wasPressedThisFrame || Keyboard.current[Key.D].wasPressedThisFrame)
         {
             if (_targetCounter < 2)
             {
-                if (_targetCounter == 0) //middle
-                    cursor.transform.position = new Vector3(840, 200, 0);
-                else if (_targetCounter == 1) //right
-                    cursor.transform.position = new Vector3(940, 190, 0);
                 _targetCounter++;
+                if (_targetCounter == 1) //middle
+                    cursor.transform.position = new Vector3(1550, 400, 0);
+                else if (_targetCounter == 2) //right
+                    cursor.transform.position = new Vector3(1800, 340, 0);
             }
         }
 
@@ -133,7 +133,7 @@ public class CursorController : MonoBehaviour
             if (_actCounter > 0)
             {
                 _actCounter--;
-                cursor.transform.position += new Vector3(0, 60, 0);
+                cursor.transform.position += new Vector3(0, 105, 0);
             }
         }
         if (Keyboard.current[Key.DownArrow].wasPressedThisFrame || Keyboard.current[Key.S].wasPressedThisFrame)
@@ -141,7 +141,7 @@ public class CursorController : MonoBehaviour
             if (_actCounter < 3)
             {
                 _actCounter++;
-                cursor.transform.position += new Vector3(0, -60, 0);
+                cursor.transform.position += new Vector3(0, -105, 0);
             }
         }
 

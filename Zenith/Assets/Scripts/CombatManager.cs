@@ -30,6 +30,7 @@ public class CombatManager : MonoBehaviour
 
     void Start()
     {
+        EnemyMoveNameUI.SetActive(false);
         disableAct();
         playerATB = PlayerUI.GetComponentInChildren<ATB_ProgressBar>();
         player.canMove(false);

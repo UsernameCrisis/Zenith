@@ -1,5 +1,6 @@
 using UnityEngine.UI;
 using UnityEngine;
+using System;
 
 //harusnya ini ATB yg keliatan (player, companion)
 public class ATB_ProgressBar : ATB_System
@@ -45,5 +46,10 @@ public class ATB_ProgressBar : ATB_System
     {
         currentValue = 0;
         combatManager.disableAct();
+    }
+
+    public float getProgress()
+    {
+        return currentValue;
     }
 }

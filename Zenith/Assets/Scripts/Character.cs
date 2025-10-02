@@ -11,17 +11,17 @@ public abstract class Character : MonoBehaviour
 
     void Awake()
     {
-        damageTakenNumber.SetActive(false);
         damageTakenNumber.GetComponent<TMP_Text>().SetText("");
+        damageTakenNumber.SetActive(false);
     }
     internal int GetHP()
     {
         return HP;
     }
-    internal void takeDamage(int damage)
+    public void takeDamage(int damage)
     {
         HP -= damage;
-        
+
         damageTakenNumber.GetComponent<TMP_Text>().SetText(damage.ToString());
         damageTakenNumber.SetActive(true);
 
@@ -37,4 +37,14 @@ public abstract class Character : MonoBehaviour
     }
 
     protected abstract void die();
+
+    public float getSpeed()
+    {
+        return speed;
+    }
+    
+    public GameObject getDamageTakenNumber()
+    {
+        return damageTakenNumber;
+    }
 }

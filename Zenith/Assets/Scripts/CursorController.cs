@@ -12,10 +12,8 @@ public class CursorController : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private Companion companion1;
     [SerializeField] private Companion companion2;
-    [SerializeField] private Enemy enemy1;
-    [SerializeField] private Enemy enemy2;
-    [SerializeField] private Enemy enemy3;
     [SerializeField] private GameObject playerATB;
+    [SerializeField] private CombatManager combatManager;
     private STATE state = STATE.ACT;
     private int _actCounter = 0;
     private int _actSubmenuCounter = 0;
@@ -105,17 +103,18 @@ public class CursorController : MonoBehaviour
         {
             stateStack.Clear();
             SetEnum(STATE.ACT);
+            
             if (_targetCounter == 0) //left
             {
-                enemy1.takeDamage(10);
+                combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy1());
             }
             else if (_targetCounter == 1) //middle
             {
-                enemy2.takeDamage(10);
+                combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy2());
             }
             else if (_targetCounter == 2) //right
             {
-                enemy3.takeDamage(10);
+                combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy3());
             }
             _targetCounter = 0;
             playerATB.GetComponent<ATB_ProgressBar>().resetPlayer();

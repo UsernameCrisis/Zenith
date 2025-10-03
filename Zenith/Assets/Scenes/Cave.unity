@@ -2891,6 +2891,7 @@ GameObject:
   - component: {fileID: 300411008}
   - component: {fileID: 300411009}
   - component: {fileID: 300411010}
+  - component: {fileID: 300411011}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -3040,6 +3041,21 @@ MonoBehaviour:
   minDistToDest: 0.5
   minWait: 1
   maxWait: 3
+--- !u!114 &300411011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300411002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ada5831e19c824046945d10dcccaf438, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyGroup
+  enemy1: {fileID: 0}
+  enemy2: {fileID: 0}
+  enemy3: {fileID: 0}
 --- !u!1 &302397781
 GameObject:
   m_ObjectHideFlags: 0

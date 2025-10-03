@@ -34,6 +34,23 @@ public class CombatManager : MonoBehaviour
     //move, from, target
     private Queue<(Move, Character, Character)> moveQueue = new Queue<(Move, Character, Character)>();
 
+    CombatManager(List<Enemy> enemies) {
+        if (enemies[0] != null)
+        {
+            enemy1Object = enemies[0];
+
+            if (enemies[1] != null)
+            {
+                enemy2Object = enemies[1];
+
+                if (enemies[2] != null)
+                {
+                    enemy3Object = enemies[2];
+                }
+            }
+        }
+    }
+
     void Start()
     {
         MoveNameUI.SetActive(false);
@@ -121,7 +138,7 @@ public class CombatManager : MonoBehaviour
 
         enemy1Object.ATBAdd(enemy1Object.getSpeed() / 8);
         enemy2Object.ATBAdd(enemy2Object.getSpeed() / 8);
-        // enemy3Object.ATBAdd(enemy3Object.getSpeed() / 8);
+        enemy3Object.ATBAdd(enemy3Object.getSpeed() / 8);
 
         if (enemy1Object.getATB() >= 100)
         {

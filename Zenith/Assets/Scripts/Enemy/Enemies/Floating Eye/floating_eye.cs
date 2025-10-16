@@ -16,18 +16,22 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Combat")]
     [SerializeField] int maxAmmo = 5;
-    [SerializeField] float cooldown_attack = 1f;
+    [SerializeField] float cooldown_attack = 1.10f;
     [SerializeField] float attackRange = 6f;
     [SerializeField] Transform player;
 
     [Header("References")]
     [SerializeField] private Animator animator;
+    [SerializeField] GameObject projectilePrefab;
+    [SerializeField] Transform firePoint;
 
     private EnemyState currentState;
     private Vector3 destination;
     private int ammo;
     private bool see_player;
     private float attackCooldownTimer;
+    private Vector3 lockedTargetPosition;
+
 
     private void Start()
     {
@@ -37,8 +41,6 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        UpdateAnimator();
-
         switch (currentState)
         {
             case EnemyState.Idle: Idle(); break;
@@ -51,15 +53,39 @@ public class EnemyAI : MonoBehaviour
     private void ChangeState(EnemyState newState)
     {
         currentState = newState;
-        animator.SetInteger("state", (int)newState);
+
+        if (newState == EnemyState.Attack)
+        {
+            lockedTargetPosition = player.position;
+        }
+
+        int stateInt = 1;
+        switch (newState)
+        {
+            case EnemyState.Idle: stateInt = 1; break;
+            case EnemyState.Searching: stateInt = 2; break;
+            case EnemyState.Attack: stateInt = 3; break;
+            case EnemyState.Reload: stateInt = 4; break;
+        }
+
+        animator.SetInteger("state", stateInt);
+
     }
 
-    private void UpdateAnimator()
+    public void FireProjectile()
     {
-        animator.SetBool("see_player", see_player);
-        animator.SetInteger("ammo", ammo);
-        animator.SetFloat("cooldown_attack", attackCooldownTimer);
+        if (currentState != EnemyState.Attack || ammo <= 0) return;
+
+        ammo--;
+        attackCooldownTimer = cooldown_attack;
+
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        Vector3 direction = (lockedTargetPosition - firePoint.position).normalized;
+        Projectile projectile = proj.GetComponent<Projectile>();
+        projectile.Initialize(direction);
+        projectile.IgnoreShooter(GetComponent<Collider>());
     }
+
 
     private void Idle()
     {
@@ -98,30 +124,19 @@ public class EnemyAI : MonoBehaviour
 
     private void Attack()
     {
-        if (!see_player)
-        {
-            ChangeState(EnemyState.Searching);
-            return;
-        }
+        attackCooldownTimer -= Time.deltaTime;
 
-        transform.LookAt(player);
-
-        if (attackCooldownTimer > 0)
+        if (attackCooldownTimer <= 0f && ammo > 0)
         {
-            attackCooldownTimer -= Time.deltaTime;
-            return;
-        }
-
-        if (ammo > 0)
-        {
-            ammo--;
+            FireProjectile();
             attackCooldownTimer = cooldown_attack;
         }
-        else
+        else if (ammo <= 0)
         {
             ChangeState(EnemyState.Reload);
         }
     }
+
 
     private void Reload()
     {
@@ -130,18 +145,21 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator ReloadRoutine()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.45f);
         ammo = maxAmmo;
         ChangeState(EnemyState.Searching);
     }
 
     private void MoveToDestination()
     {
+        UpdateFacingDirection(destination);
         transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
+
     }
 
     private void MoveToPlayer()
     {
+        UpdateFacingDirection(player.position);
         transform.position = Vector3.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
     }
 
@@ -153,7 +171,7 @@ public class EnemyAI : MonoBehaviour
 
     private void SeePlayerCheck()
     {
-        if (Vector3.Distance(transform.position, player.position) < 10f)
+        if (Vector3.Distance(transform.position, player.position) < 8f)
         {
             see_player = true;
             ChangeState(EnemyState.Searching);
@@ -161,4 +179,14 @@ public class EnemyAI : MonoBehaviour
         else
             see_player = false;
     }
+
+    private void UpdateFacingDirection(Vector3 targetPosition)
+    {
+        Vector3 direction = targetPosition - transform.position;
+        if (direction.x < 0)
+            transform.localScale = new Vector3(-1f, transform.localScale.y, transform.localScale.z);
+        else if (direction.x > 0)
+            transform.localScale = new Vector3(1f, transform.localScale.y, transform.localScale.z);
+    }
+
 }

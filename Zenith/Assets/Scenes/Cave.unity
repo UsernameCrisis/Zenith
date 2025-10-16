@@ -1842,7 +1842,7 @@ GameObject:
   - component: {fileID: 225827001}
   - component: {fileID: 225827000}
   - component: {fileID: 225826999}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Floor_2 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10083,7 +10083,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1223623183}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11679,7 +11679,7 @@ GameObject:
   - component: {fileID: 1378379929}
   - component: {fileID: 1378379928}
   - component: {fileID: 1378379927}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Floor_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18882,10 +18882,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7575473950832413123, guid: a56d5523e2836d54888c97353aa9cee1, type: 3}
-      propertyPath: m_NavMeshData
-      value: 
-      objectReference: {fileID: 23800000, guid: 94e8c370617a2d04f9066e7fbc5d4462, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19013,14 +19009,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1574465413832538959, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye
       objectReference: {fileID: 0}
+    - target: {fileID: 8187569071087241779, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 8849100482313379016, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.53

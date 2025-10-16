@@ -53,8 +53,11 @@ public class PlayerMovement : MonoBehaviour
     }
     public void TakeHit()
     {
+        Debug.Log("I GOT HIT");
+
         if (!canMoveState) return;
         StartCoroutine(HitRoutine());
+        Debug.Log("hit routine");
     }
 
     private IEnumerator HitRoutine()

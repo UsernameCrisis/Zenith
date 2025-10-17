@@ -30,6 +30,7 @@ public class Projectile : MonoBehaviour
             }
         }
 
+        Debug.Log(other);
         Destroy(gameObject);
     }
 

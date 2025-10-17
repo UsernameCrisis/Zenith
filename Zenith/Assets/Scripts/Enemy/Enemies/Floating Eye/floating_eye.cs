@@ -56,7 +56,8 @@ public class EnemyAI : MonoBehaviour
 
         if (newState == EnemyState.Attack)
         {
-            lockedTargetPosition = player.position;
+            Vector3 offset = new Vector3(0f, 0.375f, 0f);
+            lockedTargetPosition = player.position + offset;
         }
 
         int stateInt = 1;

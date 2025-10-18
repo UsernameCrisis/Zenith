@@ -38,6 +38,7 @@ public abstract class Enemy : Character
 
     protected override void die()
     {
+        Destroy(gameObject);
     }
 
     public float getATB()

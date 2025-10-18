@@ -6,7 +6,7 @@ public class Guard : Enemy
     void Awake()
     {
         enemyName = "Guard";
-        HP = 100;
+        HP = 10;
         speed = 3;
         moves.Add(new Move("Slash", 10));
         nextMove = moves[0];

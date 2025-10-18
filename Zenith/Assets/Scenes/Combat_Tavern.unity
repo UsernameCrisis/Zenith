@@ -718,9 +718,6 @@ MonoBehaviour:
   player: {fileID: 1232748142}
   companion1: {fileID: 1154050839}
   companion2: {fileID: 1187039032}
-  enemy1: {fileID: 1283475079}
-  enemy2: {fileID: 2130602683}
-  enemy3: {fileID: 619801890}
   playerATB: {fileID: 363071351}
   combatManager: {fileID: 341141295}
 --- !u!114 &341141295
@@ -736,7 +733,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   cursorController: {fileID: 341141294}
-  EnemyMoveNameUI: {fileID: 955404374}
+  MoveNameUI: {fileID: 955404374}
   EnemyMoveNameText: {fileID: 1283858225}
   PlayerUI: {fileID: 2091564085}
   Companion1UI: {fileID: 1811303568}
@@ -4411,7 +4408,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7223,7 +7220,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7359,7 +7356,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private bool canMoveState = true;
     private bool isDead = false;
 
-    void Awake()
+    public void Initialize()
     {
         defaultMoveSpeed = moveSpeed;
         rb = gameObject.GetComponent<Rigidbody>();
@@ -52,12 +52,6 @@ public class PlayerMovement : MonoBehaviour
         if (canMoveState)
             rb.AddForce(new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed));
     }
-    public void TakeHit()
-    {
-        if (!canMoveState) return;
-        StartCoroutine(HitRoutine());
-        Debug.Log("hit routine");
-    }
 
     public void Die()
     {
@@ -66,22 +60,6 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isDead", true);
         Debug.Log("Player died");
     }
-
-
-    private IEnumerator HitRoutine()
-    {
-        canMove(false);
-        animator.SetBool("isHit", true);
-
-        yield return new WaitForSeconds(0.4f);
-
-        animator.SetBool("isHit", false);
-        if (!isDead)
-        {
-            canMove(true);
-        }
-    }
-
     public void canMove(bool canMove)
     {
         canMoveState = canMove;
@@ -105,4 +83,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+    public Animator getAnimator() { return animator; }
+    public bool dead() { return isDead; }
 }

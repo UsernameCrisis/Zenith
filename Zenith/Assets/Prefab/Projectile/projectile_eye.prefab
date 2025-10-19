@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8297054077133830638}
   - component: {fileID: 325887449096312034}
   - component: {fileID: 6030130343803395019}
+  - component: {fileID: 4792490260843692441}
   m_Layer: 8
   m_Name: projectile_eye
   m_TagString: Projectile
@@ -140,3 +141,17 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4792490260843692441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6486528927770764989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18fc5af9a6530ec498ec3ce15ecc6d40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Projectile_FloatingEye_0
+  speed: 10
+  attackPower: 10

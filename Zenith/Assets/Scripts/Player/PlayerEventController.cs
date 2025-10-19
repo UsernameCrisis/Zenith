@@ -3,15 +3,15 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-
 public class PlayerEventController : MonoBehaviour
 {
-    private PlayerMovement _playerMovement;
     private float invincibilityDuration;
+    private PlayerMovement _playerMovement;
     public void Initialize(PlayerMovement pm, float _invincibilityDuration)
     {
         _playerMovement = pm;
         invincibilityDuration = _invincibilityDuration;
+        Debug.Log(_playerMovement.GetInstanceID(), this);
     }
     private void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Projectile")) ProjectileHitEvent(other.GetComponent<Projectile>());
@@ -32,6 +32,7 @@ public class PlayerEventController : MonoBehaviour
 
     private IEnumerator HitRoutine()
     {
+        Debug.Log(_playerMovement.GetInstanceID(), this);
         _playerMovement.canMove(false);
         _playerMovement.getAnimator().SetBool("isHit", true);
 

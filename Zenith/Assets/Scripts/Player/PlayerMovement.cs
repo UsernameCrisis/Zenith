@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private float idleTime = 0f;
 
     private bool canMoveState = true;
+    private bool isDead = false;
 
     void Awake()
     {
@@ -58,6 +59,15 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("hit routine");
     }
 
+    public void Die()
+    {
+        canMove(false);
+        isDead = true;
+        animator.SetBool("isDead", true);
+        Debug.Log("Player died");
+    }
+
+
     private IEnumerator HitRoutine()
     {
         canMove(false);
@@ -66,7 +76,10 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
 
         animator.SetBool("isHit", false);
-        canMove(true); 
+        if (!isDead)
+        {
+            canMove(true);
+        }
     }
 
     public void canMove(bool canMove)

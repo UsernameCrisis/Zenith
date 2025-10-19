@@ -59,7 +59,7 @@ public class CombatManager : MonoBehaviour
         player.canMove(false);
         List<Character> companions = player.GetCompanions();
 
-        playerHP = player.GetHP();
+        // playerHP = player.GetHP();
 
         //temp 
         companions = new List<Character>();
@@ -128,7 +128,7 @@ public class CombatManager : MonoBehaviour
 
     void updateATB()
     {
-        playerATB.Add(player.getSpeed() / 8);
+        // playerATB.Add(player.getSpeed() / 8);
         if (playerATB.canAct() && !showAct)
         {
             showAct = true;
@@ -169,7 +169,7 @@ public class CombatManager : MonoBehaviour
     }
     void updatePlayerHP()
     {
-        PlayerUI.GetComponent<CharacterCombatData>().setHP(player.GetHP());
+        // PlayerUI.GetComponent<CharacterCombatData>().setHP(player.GetHP());
     }
     public void disableAct()
     {

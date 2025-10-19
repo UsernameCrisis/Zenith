@@ -1,20 +1,26 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-public class Player : Character
+public class Player : MonoBehaviour
 {
-    [SerializeField] private PlayerMovement playerMovement;
-    private List<Character> companions;
-    private List<Move> moves = new List<Move>();
-    void Start()
-    {
-        HP = 100;
-        speed = 5;
-        companions = new List<Character>();
+    [SerializeField] private PlayerMovement _playerMovement;
+    [SerializeField]  private PlayerUIController _playerUIController;
+    [SerializeField] private PlayerData _playerData;
+    [SerializeField] private PlayerEventController _playerEventController;
+    [SerializeReference] private static List<Character> companions = new List<Character>(2);
+    [SerializeReference] private List<Move> moves = new List<Move>();
 
-        moves.Add(new Move("Basic Attack", 10));
+    public void Initialize()
+    {
+        _playerMovement = Instantiate(_playerMovement);
+        _playerUIController = Instantiate(_playerUIController);
+        _playerData = Instantiate(_playerData);
+        _playerEventController = Instantiate(_playerEventController);
+
+        Debug.Log(companions == null);
     }
 
     public List<Character> GetCompanions()
@@ -31,12 +37,7 @@ public class Player : Character
 
     public void canMove(bool canMove)
     {
-        playerMovement.canMove(canMove);
-    }
-
-    protected override void die()
-    {
-        throw new NotImplementedException();
+        // playerMovement.canMove(canMove);
     }
 
     //temp

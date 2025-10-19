@@ -26,8 +26,6 @@ public abstract class Character : MonoBehaviour
         damageTakenNumber.SetActive(true);
 
         StartCoroutine(removeDamageNumber());
-
-        if (HP < 0) die();
     }
 
     protected IEnumerator removeDamageNumber()
@@ -35,8 +33,6 @@ public abstract class Character : MonoBehaviour
         yield return new WaitForSeconds((float)0.5);
         damageTakenNumber.SetActive(false);
     }
-
-    protected abstract void die();
 
     public float getSpeed()
     {

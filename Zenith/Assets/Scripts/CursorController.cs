@@ -104,18 +104,18 @@ public class CursorController : MonoBehaviour
             stateStack.Clear();
             SetEnum(STATE.ACT);
             
-            if (_targetCounter == 0) //left
-            {
-                combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy1());
-            }
-            else if (_targetCounter == 1) //middle
-            {
-                combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy2());
-            }
-            else if (_targetCounter == 2) //right
-            {
-                combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy3());
-            }
+            // if (_targetCounter == 0) //left
+            // {
+            //     combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy1());
+            // }
+            // else if (_targetCounter == 1) //middle
+            // {
+            //     combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy2());
+            // }
+            // else if (_targetCounter == 2) //right
+            // {
+            //     combatManager.enqueueMove(player.getMoves()[0], player, combatManager.getEnemy3());
+            // }
             _targetCounter = 0;
             playerATB.GetComponent<ATB_ProgressBar>().resetPlayer();
         }

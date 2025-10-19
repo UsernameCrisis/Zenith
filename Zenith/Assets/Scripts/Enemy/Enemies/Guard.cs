@@ -30,11 +30,7 @@ public class Guard : Enemy
 
         return nextMove;
     }
-    public override Character bestTarget()
-    {
-        //implement logic
-        return FindObjectOfType<Player>();
-    }
+   
 
     public Move GetNextMove()
     {
@@ -43,5 +39,10 @@ public class Guard : Enemy
 
     protected override void die()
     {
+    }
+
+    public override Character bestTarget()
+    {
+        throw new System.NotImplementedException();
     }
 }

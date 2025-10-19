@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6030130343803395019}
   m_Layer: 8
   m_Name: projectile_eye
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 10
+  attackPower: 10
 --- !u!135 &6030130343803395019
 SphereCollider:
   m_ObjectHideFlags: 0

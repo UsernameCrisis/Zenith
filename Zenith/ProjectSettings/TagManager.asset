@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - ATB_Bar
+  - Projectile
+  - Enemy
   layers:
   - Default
   - TransparentFX

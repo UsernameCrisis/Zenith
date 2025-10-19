@@ -36,10 +36,7 @@ public abstract class Enemy : Character
         atb_current = 0;
     }
 
-    protected override void die()
-    {
-        Destroy(gameObject);
-    }
+    protected abstract void die();
 
     public float getATB()
     {

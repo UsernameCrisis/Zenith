@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -24,13 +25,11 @@ public class PlayerMovement : MonoBehaviour
     {
         defaultMoveSpeed = moveSpeed;
         rb = gameObject.GetComponent<Rigidbody>();
-        moveAction = InputSystem.actions.FindAction("Move");
     }
 
     void Update()
     {
-        Debug.Log(moveAction);
-        // moveValue = moveAction.ReadValue<Vector2>();
+        moveValue = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
 
         bool isRunning = moveValue.magnitude > 0.01f;
         animator.SetBool("isRunning", isRunning);

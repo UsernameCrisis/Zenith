@@ -4,12 +4,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Rendering;
+using System.Threading.Tasks;
 
+[Serializable]
 public class Player : MonoBehaviour
 {
     [Header("Player Components")]
     [SerializeField] private PlayerMovement _playerMovement;
-    [SerializeField]  private PlayerUIController _playerUIController;
+    [SerializeField] private PlayerUIController _playerUIController;
     [SerializeField] private PlayerData _playerData;
     [SerializeField] private PlayerEventController _playerEventController;
     [Header("Base Stats")]
@@ -25,7 +27,7 @@ public class Player : MonoBehaviour
     [SerializeReference] private List<Move> moves = new List<Move>();
 
 
-    public void Initialize()
+    public async void Initialize()
     {
         _playerMovement = Instantiate(_playerMovement);
         _playerUIController = Instantiate(_playerUIController);
@@ -37,7 +39,7 @@ public class Player : MonoBehaviour
         _playerData.Initialize(_baseHP, _baseSPD, _deathVolume, _inventory);
         _playerEventController.Initialize(_playerMovement, _invincibilityDuration);
 
-        Debug.Log(companions == null);
+        await Task.CompletedTask;
     }
 
     public List<Character> GetCompanions()

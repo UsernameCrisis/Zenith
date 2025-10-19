@@ -19,18 +19,10 @@ public class PlayerHealthUI : MonoBehaviour
     public void Initialize(PlayerData pd)
     {
         _playerHealth = pd;
-    }
-
-    void Awake()
-    {
         if (_playerHealth != null)
         {
             _playerHealth.HealthChanged += UpdateUI;
         }
-    }
-
-    void Start()
-    {
         UpdateUI(_playerHealth.getHP(), _playerHealth.getMaxHP());
     }
 

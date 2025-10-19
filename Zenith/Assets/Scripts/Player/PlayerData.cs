@@ -14,7 +14,7 @@ public class PlayerData : Character
     private float invincibilityDuration;
     public void Initialize(int baseHP, int baseSPD, Volume deathVolume, Inventory inventory)
     {
-        deathVolume.profile.TryGet(out vignette);
+        // deathVolume.profile.TryGet(out vignette);
         HP = baseHP;
         speed = baseSPD;
         maxHP = HP;

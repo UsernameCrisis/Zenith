@@ -1,23 +1,23 @@
 using System;
 using System.Threading.Tasks;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameInitiator : MonoBehaviour
 {
     [SerializeField] private Player _player;
     [SerializeField] private Camera _mainCamera;
-    [SerializeField] private LoadingScreen _loadingScreen;
+    [SerializeField] private SceneSwapManager SceneSwapManager;
+    [SerializeField] private LoadingScreen loadingSceneScript;
+    [SerializeField] private SceneField FirstScene;
     private async void Start()
     {
         BindObjects();
-        _loadingScreen.show(_mainCamera);
+        loadingSceneScript.show(_mainCamera);
         await InitializePlayer();
-        // await InitializeFirstScene();
-    }
-
-    private async Task InitializeFirstScene()
-    {
-        throw new NotImplementedException();
+        SceneSwapManager.SWAP_SCENE(FirstScene);
+        loadingSceneScript.disable();
     }
 
     private async Task InitializePlayer()
@@ -29,6 +29,6 @@ public class GameInitiator : MonoBehaviour
     {
         _mainCamera = Instantiate(_mainCamera);
         _player = Instantiate(_player);
-        _loadingScreen = Instantiate(_loadingScreen);
+        SceneSwapManager = Instantiate(SceneSwapManager);
     }
 }

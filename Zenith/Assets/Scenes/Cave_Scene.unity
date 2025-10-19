@@ -6202,24 +6202,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 717763633}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &734850005 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
-  m_PrefabInstance: {fileID: 6965844446161229229}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &734850011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 734850005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e40ec733be5b2b4cb385b829887936c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Floating_Eye
-  damageTakenNumber: {fileID: 0}
 --- !u!1 &739178598
 GameObject:
   m_ObjectHideFlags: 0
@@ -18650,6 +18632,14 @@ PrefabInstance:
       propertyPath: deathVolume
       value: 
       objectReference: {fileID: 832575518}
+    - target: {fileID: 5701672544788734462, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5701672544788734462, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18994,10 +18984,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 734850011}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
 --- !u!1001 &7834922144488099155
 PrefabInstance:

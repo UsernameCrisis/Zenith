@@ -10,7 +10,6 @@ public class Guard : Enemy
         speed = 3;
         moves.Add(new Move("Slash", 10));
         nextMove = moves[0];
-        
     }
     // Update is called once per frame
     void Update()

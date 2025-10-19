@@ -5,6 +5,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] float speed = 10f;
     private Vector3 direction;
     private Collider shooterCollider;
+    public int attackPower = 10;
 
     public void Initialize(Vector3 targetDirection)
     {
@@ -23,10 +24,10 @@ public class Projectile : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            PlayerMovement player = other.GetComponent<PlayerMovement>();
+            PlayerHealth player = other.GetComponent<PlayerHealth>();
             if (player != null)
             {
-                player.TakeHit();
+                player.TakeDamage(attackPower);
             }
         }
 

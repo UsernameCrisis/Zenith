@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 135507309436772803}
   - component: {fileID: 5234813713430550328}
   - component: {fileID: 7169127402685213013}
+  - component: {fileID: 4802317184675670961}
   - component: {fileID: 2835819776977226559}
   - component: {fileID: 4117339652108580568}
   m_Layer: 0
@@ -198,6 +199,21 @@ MonoBehaviour:
   sr: {fileID: 1364532180629692074}
   rb: {fileID: 5234813713430550328}
   animator: {fileID: 4827329345341099098}
+--- !u!114 &4802317184675670961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4366758908039255003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8804ac5c2db6e2445b832eaf4bbfced6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHP: 100
+  currentHP: 100
+  invincibilityDuration: 1
 --- !u!65 &2835819776977226559
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -357,7 +373,7 @@ Transform:
   m_GameObject: {fileID: 6713423391351491353}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.45, z: -0.15}
   m_LocalScale: {x: 0.59999996, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

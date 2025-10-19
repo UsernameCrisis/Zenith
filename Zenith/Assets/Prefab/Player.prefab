@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 4000603623970284719}
   serializedVersion: 2
   m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.02, z: 0}
   m_LocalScale: {x: 3.3, y: 3.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -214,6 +214,7 @@ MonoBehaviour:
   maxHP: 100
   currentHP: 100
   invincibilityDuration: 1
+  deathVolume: {fileID: 0}
 --- !u!65 &2835819776977226559
 BoxCollider:
   m_ObjectHideFlags: 0

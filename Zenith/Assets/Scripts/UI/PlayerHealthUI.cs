@@ -15,6 +15,7 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
 
+
     void Awake()
     {
         if (playerHealth != null)
@@ -25,6 +26,7 @@ public class PlayerHealthUI : MonoBehaviour
 
     void Start()
     {
+        hpText.enabled = false;
         UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
     }
 
@@ -40,6 +42,18 @@ public class PlayerHealthUI : MonoBehaviour
         StartCoroutine(ShakeHPBar());
         StartCoroutine(FlashFill());
     }
+    public void ShowHPText()
+    {
+        Debug.Log("Showing");
+        hpText.enabled = true;
+    }
+
+    public void HideHPText()
+    {
+        Debug.Log("Not Showing");
+        hpText.enabled = false;
+    }
+
 
     string FormatHP(int value)
     {

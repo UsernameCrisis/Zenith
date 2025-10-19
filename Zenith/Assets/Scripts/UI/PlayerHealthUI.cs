@@ -7,25 +7,31 @@ public class PlayerHealthUI : MonoBehaviour
 {
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Visual Feedback")]
     [SerializeField] private RectTransform hpBarTransform;
     [SerializeField] private Image fillImage;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
+    
+    private PlayerData _playerHealth;
+
+    public void Initialize(PlayerData pd)
+    {
+        _playerHealth = pd;
+    }
 
     void Awake()
     {
-        if (playerHealth != null)
+        if (_playerHealth != null)
         {
-            playerHealth.HealthChanged += UpdateUI;
+            _playerHealth.HealthChanged += UpdateUI;
         }
     }
 
     void Start()
     {
-        UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
+        UpdateUI(_playerHealth.getHP(), _playerHealth.getMaxHP());
     }
 
     void UpdateUI(int current, int max)

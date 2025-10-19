@@ -1,13 +1,14 @@
+using System;
 using UnityEngine;
 
 public class PlayerUIController : MonoBehaviour
 {
-    [SerializeField]
-    private Canvas canvas;
-    [SerializeField]
-    private Camera camera;
-    void Awake()
+    private PlayerHealthUI _playerHealthUI;
+    private PlayerData _playerData;
+    public void Initialize(PlayerHealthUI healthUI, PlayerData playerData)
     {
-        canvas.worldCamera = camera;
+        _playerHealthUI = healthUI;
+        _playerData = playerData;
+        _playerHealthUI.Initialize(_playerData);
     }
 }

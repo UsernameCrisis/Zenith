@@ -56,7 +56,7 @@ public class CombatManager : MonoBehaviour
         MoveNameUI.SetActive(false);
         disableAct();
         playerATB = PlayerUI.GetComponentInChildren<ATB_ProgressBar>();
-        player.canMove(false);
+        // player.canMove(false);
         List<Character> companions = player.GetCompanions();
 
         // playerHP = player.GetHP();

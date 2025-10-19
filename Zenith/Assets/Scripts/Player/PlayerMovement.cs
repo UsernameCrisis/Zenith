@@ -29,7 +29,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        moveValue = moveAction.ReadValue<Vector2>();
+        Debug.Log(moveAction);
+        // moveValue = moveAction.ReadValue<Vector2>();
 
         bool isRunning = moveValue.magnitude > 0.01f;
         animator.SetBool("isRunning", isRunning);

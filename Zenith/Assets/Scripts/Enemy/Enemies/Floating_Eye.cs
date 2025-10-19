@@ -12,6 +12,11 @@ public class Floating_Eye : Enemy
         throw new System.NotImplementedException();
     }
 
+    protected override void die()
+    {
+        throw new System.NotImplementedException();
+    }
+
     void Awake()
     {
         enemyName = "Floating Eye";

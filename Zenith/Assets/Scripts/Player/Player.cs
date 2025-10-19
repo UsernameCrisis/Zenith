@@ -13,11 +13,13 @@ public class Player : MonoBehaviour
     [SerializeField] private PlayerData _playerData;
     [SerializeField] private PlayerEventController _playerEventController;
     [Header("Base Stats")]
-    [SerializeField] private int baseHP;
-    [SerializeField] private int baseSPD;
-    [SerializeField] private float invincibilityDuration = 0.4f;
-    [SerializeField] private Volume deathVolume;
-    [SerializeField] private Inventory inventory;
+    [SerializeField] private int _baseHP;
+    [SerializeField] private int _baseSPD;
+    [SerializeField] private float _invincibilityDuration = 0.4f;
+    [Header("Component Dependencies")]
+    [SerializeField] private Volume _deathVolume;
+    [SerializeField] private Inventory _inventory;
+    [SerializeField] private PlayerHealthUI _playerHealthUI;
     [Header("Lists")]
     [SerializeReference] private static List<Character> companions = new List<Character>(2);
     [SerializeReference] private List<Move> moves = new List<Move>();
@@ -30,9 +32,10 @@ public class Player : MonoBehaviour
         _playerData = Instantiate(_playerData);
         _playerEventController = Instantiate(_playerEventController);
 
-        _playerData.Initialize(baseHP, baseSPD, deathVolume, inventory, invincibilityDuration);
         _playerMovement.Initialize();
-        _playerEventController.Initialize(_playerMovement);
+        _playerUIController.Initialize(_playerHealthUI, _playerData);
+        _playerData.Initialize(_baseHP, _baseSPD, _deathVolume, _inventory);
+        _playerEventController.Initialize(_playerMovement, _invincibilityDuration);
 
         Debug.Log(companions == null);
     }

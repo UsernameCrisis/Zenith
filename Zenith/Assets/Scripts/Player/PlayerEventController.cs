@@ -7,9 +7,11 @@ using UnityEngine.Rendering.Universal;
 public class PlayerEventController : MonoBehaviour
 {
     private PlayerMovement _playerMovement;
-    public void Initialize(PlayerMovement pm)
+    private float invincibilityDuration;
+    public void Initialize(PlayerMovement pm, float _invincibilityDuration)
     {
         _playerMovement = pm;
+        invincibilityDuration = _invincibilityDuration;
     }
     private void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Projectile")) ProjectileHitEvent(other.GetComponent<Projectile>());
@@ -33,7 +35,7 @@ public class PlayerEventController : MonoBehaviour
         _playerMovement.canMove(false);
         _playerMovement.getAnimator().SetBool("isHit", true);
 
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(invincibilityDuration);
 
         _playerMovement.getAnimator().SetBool("isHit", false);
         if (!_playerMovement.dead())

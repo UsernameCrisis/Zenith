@@ -12,14 +12,13 @@ public class PlayerData : Character
     public event Action<int, int> HealthChanged;
     private Inventory inventory;
     private float invincibilityDuration;
-    public void Initialize(int baseHP, int baseSPD, Volume deathVolume, Inventory inventory, float invincibilityDuration)
+    public void Initialize(int baseHP, int baseSPD, Volume deathVolume, Inventory inventory)
     {
         deathVolume.profile.TryGet(out vignette);
         HP = baseHP;
         speed = baseSPD;
         maxHP = HP;
         inventory = this.inventory;
-        invincibilityDuration = this.invincibilityDuration;
     }
 
     public void TakeDamage(int amount)
@@ -30,7 +29,6 @@ public class PlayerData : Character
         HP = Mathf.Clamp(HP, 0, maxHP);
         HealthChanged?.Invoke(HP, maxHP);
     }
-
-    public int getHP() { return HP; }
+    public int getMaxHP(){ return maxHP; }
     public Vignette getVignette() { return vignette; }
 }

@@ -7,11 +7,10 @@ using UnityEngine.SceneManagement;
 public class GameInitiator : MonoBehaviour
 {
     [SerializeField] private Player _player;
-    [SerializeField] private Camera _mainCamera;
     [SerializeField] private SceneSwapManager SceneSwapManager;
     [SerializeField] private LoadingScreen loadingSceneScript;
     [SerializeField] private SceneField FirstScene;
-    [SerializeField] private CameraMovement cameraMovement;
+    private Camera _mainCamera;
 
     private async void Start()
     {
@@ -23,10 +22,10 @@ public class GameInitiator : MonoBehaviour
 
     private void BindObjects()
     {
-        _mainCamera = Instantiate(_mainCamera);
         _player = Instantiate(_player);
+        _mainCamera = Player.Instance.GetComponentInChildren<Camera>();
+        _mainCamera = Instantiate(_mainCamera);
         DontDestroyOnLoad(_mainCamera);
-        cameraMovement = Instantiate(cameraMovement);
-        cameraMovement = _mainCamera.gameObject.GetComponent<CameraMovement>();
+        _mainCamera.GetComponent<CameraMovement>().Initialize();
     }
 }

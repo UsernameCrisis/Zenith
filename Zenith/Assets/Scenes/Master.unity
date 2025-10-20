@@ -156,6 +156,7 @@ MonoBehaviour:
   FirstScene:
     m_SceneAsset: {fileID: 102900000, guid: fb3f0f62922614846afd3b3584a32e3b, type: 3}
     m_SceneName: Cave_Scene
+  cameraMovement: {fileID: 1315534065352920731, guid: 0d1df905c96b6734a826837ca6b3d2cb, type: 3}
 --- !u!4 &1566359131
 Transform:
   m_ObjectHideFlags: 0

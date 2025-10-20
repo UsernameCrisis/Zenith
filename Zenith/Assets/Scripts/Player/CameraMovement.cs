@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    public static CameraMovement Instance;
     private float yPosOffset;
     private GameObject player;
 
@@ -19,16 +18,6 @@ public class CameraMovement : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            Initialize();
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
         /*
         IMPORTANT!!!
 
@@ -38,16 +27,18 @@ public class CameraMovement : MonoBehaviour
         */
     }
 
-    private void Initialize()
+    public void Initialize()
     {
-        yPosOffset = player.transform.position.y + yOffset;
         player = Player.Instance.gameObject;
+        yPosOffset = player.transform.position.y + yOffset;
     }
 
     // Update is called once per frame
 
     void Update()
     {
-        transform.position = new Vector3(player.transform.position.x + xOffset, player.transform.position.y + yOffset,  player.transform.position.z + zOffset);
+        Debug.Log("Updating Camera Position");
+        transform.position = new Vector3(player.transform.position.x + xOffset, player.transform.position.y + yOffset, player.transform.position.z + zOffset);
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, zRotation);
     }
 }

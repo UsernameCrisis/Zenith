@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    public static CameraMovement Instance;
     private float yPosOffset;
-    [SerializeField] private GameObject player;
+    private GameObject player;
 
     [Header("Offset")]
     [SerializeField] private float xOffset = 0f;
@@ -17,6 +19,16 @@ public class CameraMovement : MonoBehaviour
 
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            Initialize();
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         /*
         IMPORTANT!!!
 
@@ -24,10 +36,16 @@ public class CameraMovement : MonoBehaviour
         The bug causes the camera to be in a state of falling and snapping back to the offset position.
         This will cause problems in the future, if height difference for the floor is added.
         */
+    }
+
+    private void Initialize()
+    {
         yPosOffset = player.transform.position.y + yOffset;
+        player = Player.Instance.gameObject;
     }
 
     // Update is called once per frame
+
     void Update()
     {
         transform.position = new Vector3(player.transform.position.x + xOffset, player.transform.position.y + yOffset,  player.transform.position.z + zOffset);

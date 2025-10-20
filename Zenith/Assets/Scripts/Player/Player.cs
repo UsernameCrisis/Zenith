@@ -11,10 +11,10 @@ public class Player : MonoBehaviour
 {
     public static Player Instance;
     [Header("Player Components")]
-    [SerializeField] public PlayerMovement _playerMovement { get; set; }
-    [SerializeField] public PlayerUIController _playerUIController{ get; set; }
-    [SerializeField] public PlayerData _playerData{ get; set; }
-    [SerializeField] public PlayerEventController _playerEventController{ get; set; }
+    [SerializeField] public PlayerMovement _playerMovement { get; private set; }
+    [SerializeField] public PlayerUIController _playerUIController{ get; private set; }
+    [SerializeField] public PlayerData _playerData{ get; private set; }
+    [SerializeField] public PlayerEventController _playerEventController { get; private set; }
     [Header("Base Stats")]
     [SerializeField] private int _baseHP;
     [SerializeField] private int _baseSPD;

@@ -11,6 +11,7 @@ public class GameInitiator : MonoBehaviour
     [SerializeField] private SceneSwapManager SceneSwapManager;
     [SerializeField] private LoadingScreen loadingSceneScript;
     [SerializeField] private SceneField FirstScene;
+    [SerializeField] private CameraMovement cameraMovement;
 
     private async void Start()
     {
@@ -24,5 +25,8 @@ public class GameInitiator : MonoBehaviour
     {
         _mainCamera = Instantiate(_mainCamera);
         _player = Instantiate(_player);
+        DontDestroyOnLoad(_mainCamera);
+        cameraMovement = Instantiate(cameraMovement);
+        cameraMovement = _mainCamera.gameObject.GetComponent<CameraMovement>();
     }
 }

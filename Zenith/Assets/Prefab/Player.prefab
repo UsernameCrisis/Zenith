@@ -658,6 +658,50 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: easeCurve.m_Curve.Array.data[1].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 5734279910087950154, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: damageLabelPrefab
+      value: 
+      objectReference: {fileID: 4284402127267361038}
+    - target: {fileID: 7508974830549871426, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7912453298184881433, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -738,8 +782,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8026773665726896655, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -749,6 +792,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7912453298184881433, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
   m_PrefabInstance: {fileID: 8568299166806124292}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4284402127267361038 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5592898694534125066, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}
+  m_PrefabInstance: {fileID: 8568299166806124292}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 200582a4a1a95304983ce7c21f790dd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageLabel
 --- !u!114 &4449526313947984712 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5428898214673536076, guid: a0d64349b9a47d247b96b7d4386efa27, type: 3}

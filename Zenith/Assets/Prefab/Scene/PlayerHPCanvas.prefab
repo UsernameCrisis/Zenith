@@ -239,7 +239,6 @@ GameObject:
   - component: {fileID: 7616739618819324568}
   - component: {fileID: 1729692124377873694}
   - component: {fileID: 5428898214673536076}
-  - component: {fileID: 8026773665726896655}
   - component: {fileID: 5734279910087950154}
   m_Layer: 5
   m_Name: PlayerHPCanvas
@@ -350,20 +349,6 @@ MonoBehaviour:
   fillImage: {fileID: 4519502913363694950}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   normalColor: {r: 1, g: 0, b: 0, a: 1}
---- !u!114 &8026773665726896655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591807308389769093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6951d0403b4b7f04fb6d5e359ae77db9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpawnsDamagePopups
-  damageLabelPrefab: {fileID: 0}
-  displayLength: 1
 --- !u!114 &5734279910087950154
 MonoBehaviour:
   m_ObjectHideFlags: 0

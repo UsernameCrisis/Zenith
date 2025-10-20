@@ -28,6 +28,5 @@ public class GameInitiator : MonoBehaviour
         _mainCamera = Instantiate(_mainCamera);
         DontDestroyOnLoad(_mainCamera);
         _mainCamera.GetComponent<CameraMovement>().Initialize();
-        _spawnsDamagePopups = Instantiate(_spawnsDamagePopups);
     }
 }

@@ -149,8 +149,6 @@ public class DamageLabel : MonoBehaviour
                 color.a = newAlpha;
                 damageText.color = color;
             }
-            
-            Debug.Log(easedTime);
         
             transform.position = CalculateBezierPoint(easedTime, start, highPoint, dropPoint);
         

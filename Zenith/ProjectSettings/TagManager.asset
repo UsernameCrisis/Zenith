@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - ATB_Bar
+  - Sprite
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Ignore Projectile Collision
   - Projectile
   - Grid
-  - 
+  - SelectSprite
   - 
   - 
   - 

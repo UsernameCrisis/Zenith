@@ -8,8 +8,11 @@ public class GridSelectSystem : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private ObjectDatabaseSO database;
     [SerializeField] private GameObject gridVisualization;
+    [SerializeField] AudioSource source; // gunakan untuk suara
 
     private Vector3 mousePos;
+    private GridData objectsData;
+    private Renderer previewRenderer;
 
     void OnEnable()
     {
@@ -30,6 +33,8 @@ public class GridSelectSystem : MonoBehaviour
     void Start()
     {
         ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
+        objectsData = new();
+        previewRenderer = cellIndicator.GetComponentInChildren<Renderer>(); 
     }
 
     void Update()
@@ -43,7 +48,8 @@ public class GridSelectSystem : MonoBehaviour
 
     private void VisualizeHoveredGrid()
     {
-        Vector3Int gridPosition = grid.WorldToCell(mousePos);
+        // Grid pos (x,y,0), world pos (x,0,z) y == z
+        Vector3Int gridPosition = grid.WorldToCell(mousePos); 
         cellIndicator.transform.position = grid.CellToWorld(gridPosition);
     }
 

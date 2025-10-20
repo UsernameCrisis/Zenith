@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a7c578f3d7526949b04e04b0ed14ffb, type: 3}
   m_Name: Database
   m_EditorClassIdentifier: Assembly-CSharp::ObjectDatabaseSO
-  objectDatas:
-  - <Name>k__BackingField: MainCharacter
+  objectsData:
+  - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: f90029b800a38ac4b945901c452da9b2, type: 3}

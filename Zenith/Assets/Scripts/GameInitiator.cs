@@ -10,6 +10,7 @@ public class GameInitiator : MonoBehaviour
     [SerializeField] private SceneSwapManager SceneSwapManager;
     [SerializeField] private LoadingScreen loadingSceneScript;
     [SerializeField] private SceneField FirstScene;
+    [SerializeField] private SpawnsDamagePopups _spawnsDamagePopups;
     private Camera _mainCamera;
 
     private async void Start()
@@ -27,5 +28,6 @@ public class GameInitiator : MonoBehaviour
         _mainCamera = Instantiate(_mainCamera);
         DontDestroyOnLoad(_mainCamera);
         _mainCamera.GetComponent<CameraMovement>().Initialize();
+        _spawnsDamagePopups = Instantiate(_spawnsDamagePopups);
     }
 }

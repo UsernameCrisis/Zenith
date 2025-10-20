@@ -24,6 +24,9 @@ public class PlayerEventController : MonoBehaviour
     {
         Player.Instance._playerData.TakeDamage(projectile.getDamage());
         Player.Instance._playerUIController._playerHealthUI.UpdateUI(Player.Instance._playerData.getCurrentHP(), Player.Instance._playerData.getMaxHP());
+        SpawnsDamagePopups.Instance.DamageDone(projectile.getDamage(),
+                                                        projectile.transform.position,
+                                                        false);
         Destroy(projectile.gameObject);
         StartCoroutine(HitRoutine());
     }

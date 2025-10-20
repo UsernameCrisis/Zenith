@@ -21,8 +21,6 @@ public abstract class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other == shooterCollider) return;
-
-        Debug.Log(other);
         Destroy(gameObject);
     }
 

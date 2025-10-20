@@ -5,14 +5,17 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour
 {
     private InputAction moveAction;
+    private InputAction sprintAction;
     private Vector3 moveValue;
 
     [SerializeField] private float moveSpeed = 1f;
+    [SerializeField] private float runMultiplier = 2f;
     [SerializeField] private float groundDist;
     [SerializeField] private LayerMask terrainLayer;
     [SerializeField] private SpriteRenderer sr;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Animator animator;
+    [SerializeField] private GameObject shadow;
 
     private float defaultMoveSpeed;
     private float idleTime = 0f;
@@ -25,16 +28,21 @@ public class PlayerMovement : MonoBehaviour
         defaultMoveSpeed = moveSpeed;
         rb = gameObject.GetComponent<Rigidbody>();
         moveAction = InputSystem.actions.FindAction("Move");
+        sprintAction = InputSystem.actions.FindAction("Sprint");
     }
 
     void Update()
     {
+        if (isDead) return;
         moveValue = moveAction.ReadValue<Vector2>();
 
-        bool isRunning = moveValue.magnitude > 0.01f;
-        animator.SetBool("isRunning", isRunning);
+        bool isMoving = moveValue.magnitude > 0.01f;
+        bool isSprinting = sprintAction.IsPressed();
+        float speedMultiplier = isSprinting ? runMultiplier : 1f;
+        moveValue = moveValue * speedMultiplier;
+        animator.SetInteger("stateRun", isMoving ? (isSprinting ? 2 : 1) : 0);
 
-        if (!isRunning)
+        if (!isMoving)
             idleTime += Time.deltaTime;
         else
             idleTime = 0f;
@@ -64,7 +72,13 @@ public class PlayerMovement : MonoBehaviour
         canMove(false);
         isDead = true;
         animator.SetBool("isDead", true);
-        Debug.Log("Player died");
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.constraints = RigidbodyConstraints.FreezeAll;
+
+        if (shadow != null)
+            shadow.SetActive(false);
     }
 
 

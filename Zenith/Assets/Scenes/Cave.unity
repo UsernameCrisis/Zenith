@@ -19459,6 +19459,10 @@ PrefabInstance:
       propertyPath: deathVolume
       value: 
       objectReference: {fileID: 832575518}
+    - target: {fileID: 7169127402685213013, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
+      propertyPath: moveSpeed
+      value: 45
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

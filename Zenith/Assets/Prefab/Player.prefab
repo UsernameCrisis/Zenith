@@ -199,6 +199,7 @@ MonoBehaviour:
   sr: {fileID: 1364532180629692074}
   rb: {fileID: 5234813713430550328}
   animator: {fileID: 4827329345341099098}
+  shadow: {fileID: 6376279058266744994}
 --- !u!114 &4802317184675670961
 MonoBehaviour:
   m_ObjectHideFlags: 0

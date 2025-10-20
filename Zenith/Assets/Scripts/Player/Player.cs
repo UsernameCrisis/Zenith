@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 [Serializable]
 public class Player : MonoBehaviour
 {
+    public static Player Instance;
     [Header("Player Components")]
-    [SerializeField] private PlayerMovement _playerMovement;
-    [SerializeField] private PlayerUIController _playerUIController;
-    [SerializeField] private PlayerData _playerData;
-    [SerializeField] private PlayerEventController _playerEventController;
+    [SerializeField] public PlayerMovement _playerMovement { get; set; }
+    [SerializeField] public PlayerUIController _playerUIController{ get; set; }
+    [SerializeField] public PlayerData _playerData{ get; set; }
+    [SerializeField] public PlayerEventController _playerEventController{ get; set; }
     [Header("Base Stats")]
     [SerializeField] private int _baseHP;
     [SerializeField] private int _baseSPD;
@@ -26,18 +27,31 @@ public class Player : MonoBehaviour
     [SerializeReference] private static List<Character> companions = new List<Character>(2);
     [SerializeReference] private List<Move> moves = new List<Move>();
 
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            Initialize();
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public async void Initialize()
     {
-        _playerMovement = Instantiate(_playerMovement);
-        _playerUIController = Instantiate(_playerUIController);
-        _playerData = Instantiate(_playerData);
-        _playerEventController = Instantiate(_playerEventController);
+        _playerMovement = gameObject.GetComponent<PlayerMovement>();
+        _playerUIController = gameObject.GetComponent<PlayerUIController>();
+        _playerData = gameObject.GetComponent<PlayerData>();
+        _playerEventController = gameObject.GetComponent<PlayerEventController>();
 
         _playerMovement.Initialize();
-        _playerUIController.Initialize(_playerHealthUI, _playerData);
+        _playerUIController.Initialize(_playerHealthUI);
         _playerData.Initialize(_baseHP, _baseSPD, _deathVolume, _inventory);
-        _playerEventController.Initialize(_playerMovement, _invincibilityDuration);
+        _playerEventController.Initialize(_invincibilityDuration);
 
         await Task.CompletedTask;
     }

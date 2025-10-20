@@ -11,20 +11,13 @@ public class GameInitiator : MonoBehaviour
     [SerializeField] private SceneSwapManager SceneSwapManager;
     [SerializeField] private LoadingScreen loadingSceneScript;
     [SerializeField] private SceneField FirstScene;
-    private Player player;
 
     private async void Start()
     {
         BindObjects();
         loadingSceneScript.show(_mainCamera);
-        await InitializePlayer();
         SceneSwapManager.SWAP_SCENE(FirstScene);
         loadingSceneScript.disable();
-    }
-
-    private async Task InitializePlayer()
-    {
-        _player.Initialize();
     }
 
     private void BindObjects()

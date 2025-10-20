@@ -3,12 +3,10 @@ using UnityEngine;
 
 public class PlayerUIController : MonoBehaviour
 {
-    private PlayerHealthUI _playerHealthUI;
+    public PlayerHealthUI _playerHealthUI{ get; set; }
     private PlayerData _playerData;
-    public void Initialize(PlayerHealthUI healthUI, PlayerData playerData)
+    public void Initialize(PlayerHealthUI healthUI)
     {
         _playerHealthUI = healthUI;
-        _playerData = playerData;
-        _playerHealthUI.Initialize(_playerData);
     }
 }

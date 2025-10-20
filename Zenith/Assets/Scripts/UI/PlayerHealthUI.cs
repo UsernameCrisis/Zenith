@@ -26,7 +26,7 @@ public class PlayerHealthUI : MonoBehaviour
         UpdateUI(_playerHealth.getHP(), _playerHealth.getMaxHP());
     }
 
-    void UpdateUI(int current, int max)
+    public void UpdateUI(int current, int max)
     {
         hpBar.maxValue = max;
         hpBar.value = current;

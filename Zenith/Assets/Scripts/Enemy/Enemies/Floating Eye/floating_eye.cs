@@ -18,7 +18,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] int maxAmmo = 5;
     [SerializeField] float cooldown_attack = 1.10f;
     [SerializeField] float attackRange = 6f;
-    [SerializeField] Transform player;
+    Transform player;
 
     [Header("References")]
     [SerializeField] private Animator animator;
@@ -41,6 +41,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        player = Player.Instance.transform;
         switch (currentState)
         {
             case EnemyState.Idle: Idle(); break;

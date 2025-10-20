@@ -6,12 +6,9 @@ using UnityEngine.Rendering.Universal;
 public class PlayerEventController : MonoBehaviour
 {
     private float invincibilityDuration;
-    private PlayerMovement _playerMovement;
-    public void Initialize(PlayerMovement pm, float _invincibilityDuration)
+    public void Initialize(float _invincibilityDuration)
     {
-        _playerMovement = pm;
         invincibilityDuration = _invincibilityDuration;
-        Debug.Log(_playerMovement.GetInstanceID(), this);
     }
     private void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Projectile")) ProjectileHitEvent(other.GetComponent<Projectile>());
@@ -25,16 +22,18 @@ public class PlayerEventController : MonoBehaviour
     //Take Damage From Projectile
     private void ProjectileHitEvent(Projectile projectile)
     {
-        gameObject.GetComponentInParent<PlayerData>().takeDamage(projectile.getDamage());
+        Player.Instance._playerData.TakeDamage(projectile.getDamage());
+        Player.Instance._playerUIController._playerHealthUI.UpdateUI(Player.Instance._playerData.getCurrentHP(), Player.Instance._playerData.getMaxHP());
         Destroy(projectile.gameObject);
         StartCoroutine(HitRoutine());
     }
 
     private IEnumerator HitRoutine()
     {
-        Debug.Log(_playerMovement.GetInstanceID(), this);
+        var _playerMovement = gameObject.GetComponentInParent<PlayerMovement>();
         _playerMovement.canMove(false);
         _playerMovement.getAnimator().SetBool("isHit", true);
+        
 
         yield return new WaitForSeconds(invincibilityDuration);
 

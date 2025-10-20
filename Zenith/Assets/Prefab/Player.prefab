@@ -168,10 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5f545c19a316841afbabfe565a039a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  _playerMovement: {fileID: 7169127402685213013}
-  _playerUIController: {fileID: 3838482869802009602}
-  _playerData: {fileID: 467662541341040617}
-  _playerEventController: {fileID: 7813969950259555158}
   _baseHP: 100
   _baseSPD: 7
   _invincibilityDuration: 0.4
@@ -198,6 +194,7 @@ MonoBehaviour:
   sr: {fileID: 1364532180629692074}
   rb: {fileID: 5234813713430550328}
   animator: {fileID: 4827329345341099098}
+  defaultMoveSpeed: 70
 --- !u!114 &467662541341040617
 MonoBehaviour:
   m_ObjectHideFlags: 0

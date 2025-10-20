@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Animator animator;
 
-    private float defaultMoveSpeed;
+    [SerializeField] private float defaultMoveSpeed;
     private float idleTime = 0f;
 
     private bool canMoveState = true;
@@ -23,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Initialize()
     {
-        defaultMoveSpeed = moveSpeed;
+        moveSpeed = defaultMoveSpeed;
         rb = gameObject.GetComponent<Rigidbody>();
     }
 

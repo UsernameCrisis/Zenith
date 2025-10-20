@@ -31,4 +31,5 @@ public class PlayerData : Character
     }
     public int getMaxHP(){ return maxHP; }
     public Vignette getVignette() { return vignette; }
+    public int getCurrentHP() { return HP; }
 }

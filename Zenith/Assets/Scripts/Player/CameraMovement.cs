@@ -37,8 +37,9 @@ public class CameraMovement : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("Updating Camera Position");
-        transform.position = new Vector3(player.transform.position.x + xOffset, player.transform.position.y + yOffset, player.transform.position.z + zOffset);
+        transform.position = new Vector3(Player.Instance.gameObject.transform.position.x + xOffset,
+                                        Player.Instance.gameObject.transform.position.y + yOffset,
+                                        Player.Instance.gameObject.transform.position.z + zOffset);
         transform.rotation = Quaternion.Euler(xRotation, yRotation, zRotation);
     }
 }

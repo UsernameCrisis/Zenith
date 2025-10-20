@@ -32,6 +32,8 @@ public class PlayerHealthUI : MonoBehaviour
 
     void UpdateUI(int current, int max)
     {
+        int previous = (int)hpBar.value;
+
         hpBar.maxValue = max;
         hpBar.value = current;
 
@@ -39,7 +41,8 @@ public class PlayerHealthUI : MonoBehaviour
         string maxFormatted = FormatHP(max);
         hpText.text = $"{currentFormatted}/{maxFormatted}";
 
-        StartCoroutine(ShakeHPBar());
+        if (current < previous)
+            StartCoroutine(ShakeHPBar());
         StartCoroutine(FlashFill());
     }
     public void ShowHPText()

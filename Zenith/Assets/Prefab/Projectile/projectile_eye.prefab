@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 10
+  attackPower: 10
 --- !u!135 &6030130343803395019
 SphereCollider:
   m_ObjectHideFlags: 0

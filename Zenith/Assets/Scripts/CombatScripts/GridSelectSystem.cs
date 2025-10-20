@@ -9,16 +9,19 @@ public class GridSelectSystem : MonoBehaviour
     [SerializeField] private ObjectDatabaseSO database;
     [SerializeField] private GameObject gridVisualization;
     [SerializeField] AudioSource source; // gunakan untuk suara
+    [SerializeField] private GameObject populateMap;
 
     private Vector3 mousePos;
     private GridData objectsData;
     private Renderer previewRenderer;
+    private GameObject selectedChar;
+    
 
     void OnEnable()
     {
         // inputManager.OnHoverEnter += ShowHover;
         // inputManager.OnHoverExit += HideHover;
-        inputManager.OnColliderClicked += SelectCharacter;
+        inputManager.OnColliderClicked += ColliderClicked;
         inputManager.OnExit += ExitCharacter;
     }
 
@@ -26,14 +29,14 @@ public class GridSelectSystem : MonoBehaviour
     {
         // inputManager.OnHoverEnter -= ShowHover;
         // inputManager.OnHoverExit -= HideHover;
-        inputManager.OnColliderClicked -= SelectCharacter;
+        inputManager.OnColliderClicked -= ColliderClicked;
         inputManager.OnExit -= ExitCharacter;
     }
 
     void Start()
     {
         ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
-        objectsData = new();
+        objectsData = populateMap.GetComponent<PopulateMap>().objectsData;
         previewRenderer = cellIndicator.GetComponentInChildren<Renderer>(); 
     }
 
@@ -49,18 +52,33 @@ public class GridSelectSystem : MonoBehaviour
     private void VisualizeHoveredGrid()
     {
         // Grid pos (x,y,0), world pos (x,0,z) y == z
-        Vector3Int gridPosition = grid.WorldToCell(mousePos); 
+        Vector3Int gridPosition = grid.WorldToCell(mousePos);
         cellIndicator.transform.position = grid.CellToWorld(gridPosition);
+    }
+    
+    private void ColliderClicked(Collider collider)
+    {
+        if (collider.CompareTag("Sprite"))
+            SelectCharacter(collider);
+        else if (gridVisualization.activeSelf && collider.CompareTag("Grid"))
+            MoveCharacter();
+    }
+
+    private void MoveCharacter()
+    {
+        Vector3Int gridPos = grid.WorldToCell(mousePos);
+        if (objectsData.CanPlaceObjectAt(gridPos))
+        {
+            objectsData.MoveObject(grid.WorldToCell(selectedChar.transform.position), gridPos);
+            selectedChar.transform.position = grid.CellToWorld(gridPos);
+        }
     }
 
     private void SelectCharacter(Collider collider)
     {
-        if (collider.CompareTag("Sprite"))
-        {
-            gridVisualization.SetActive(true);
-            cellIndicator.SetActive(true);
-        }
-        
+        selectedChar = collider.transform.parent.gameObject;
+        gridVisualization.SetActive(true);
+        cellIndicator.SetActive(true);
     }
 
     private void ExitCharacter()

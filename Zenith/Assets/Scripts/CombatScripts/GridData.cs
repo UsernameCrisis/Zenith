@@ -22,6 +22,15 @@ public class GridData
         }
         return true;
     }
+
+    public void MoveObject(Vector3Int Start, Vector3Int End)
+    {
+        if (CanPlaceObjectAt(End))
+        {
+            TileData tempData = placedObjects[Start];
+            placedObjects[End] = tempData;
+        }
+    }
 }
 
 public class TileData

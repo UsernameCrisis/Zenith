@@ -18,6 +18,14 @@ public abstract class Projectile : MonoBehaviour
         transform.position += direction * speed * Time.deltaTime;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other == shooterCollider) return;
+
+        Debug.Log(other);
+        Destroy(gameObject);
+    }
+
     public void IgnoreShooter(Collider shooter)
     {
         shooterCollider = shooter;

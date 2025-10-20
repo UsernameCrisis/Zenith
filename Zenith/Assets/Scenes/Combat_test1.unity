@@ -398,6 +398,7 @@ MonoBehaviour:
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
   gridVisualization: {fileID: 1127068153}
   source: {fileID: 0}
+  populateMap: {fileID: 1118025223}
 --- !u!1 &366886310
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,7 +960,7 @@ GameObject:
   - component: {fileID: 1363116876}
   m_Layer: 9
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: Grid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1126,9 +1127,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainCharacterParent
       objectReference: {fileID: 0}
+    - target: {fileID: 5813913746638748159, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8888875954917989042, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8888875954917989042, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1136,7 +1141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8888875954917989042, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 8888875954917989042, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
       propertyPath: m_LocalRotation.w

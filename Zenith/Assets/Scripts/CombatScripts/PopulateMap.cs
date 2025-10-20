@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class PopulateMap : MonoBehaviour
 {
     [SerializeField] private ObjectDatabaseSO database;
     [SerializeField] private Grid grid;
@@ -10,9 +10,13 @@ public class NewMonoBehaviourScript : MonoBehaviour
     public List<GameObject> placedGameObjects = new();
 
     // Sementara manual isinya, nanti kedepan pakai json
-    void Start()
+
+    void Awake()
     {
         objectsData = new();
+    }
+    void Start()
+    {
         PlaceObject(new Vector3Int(1, 1, 0), 0, placedGameObjects.Count - 1);
     }
     

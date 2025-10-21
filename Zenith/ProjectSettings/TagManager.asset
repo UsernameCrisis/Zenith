@@ -7,6 +7,7 @@ TagManager:
   - ATB_Bar
   - Sprite
   - Grid
+  - Character
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Projectile
   - Grid
   - SelectSprite
-  - 
+  - ArenaObstacle
   - 
   - 
   - 

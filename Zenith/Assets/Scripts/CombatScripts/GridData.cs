@@ -28,7 +28,9 @@ public class GridData
         if (CanPlaceObjectAt(End))
         {
             TileData tempData = placedObjects[Start];
+            tempData.occupiedPos = End;
             placedObjects[End] = tempData;
+            placedObjects.Remove(Start);
         }
     }
 }

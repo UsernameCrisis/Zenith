@@ -32,7 +32,7 @@ public class InputManager : MonoBehaviour
         if (EventSystem.current != null && IsPointerOverUI())
             return;
 
-        if (mouseInputLeftClick.ReadValue<float>() == 1)
+        if (mouseInputLeftClick.triggered)
         {
             Onclicked?.Invoke();
 

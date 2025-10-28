@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 8247698926974481515}
   - component: {fileID: 6560684903664046659}
   - component: {fileID: 3424404094389478716}
+  - component: {fileID: 2904024251585752396}
   - component: {fileID: 2835819776977226559}
   - component: {fileID: 5234813713430550328}
   - component: {fileID: 4117339652108580568}
@@ -179,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b28f5c0445951ca44b14b1b7b5b4af63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 1
+  moveSpeed: 8
   runMultiplier: 2
   groundDist: 0
   terrainLayer:
@@ -187,8 +188,6 @@ MonoBehaviour:
     m_Bits: 0
   sr: {fileID: 1364532180629692074}
   rb: {fileID: 5234813713430550328}
-  animator: {fileID: 4827329345341099098}
-  shadow: {fileID: 6376279058266744994}
 --- !u!114 &8247698926974481515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,6 +200,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58042058aa5de254f9a0f279ce2fba8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
+  maxHP: 100
+  invincibilityDuration: 0.4
 --- !u!114 &6560684903664046659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +226,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99917dd7707b2474d87527e57509fee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUIManager
+  deathVolume: {fileID: 0}
+--- !u!114 &2904024251585752396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4366758908039255003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81c9895f623f41c4cb780362ecf86925, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationManager
+  Animator: {fileID: 4827329345341099098}
+  shadow: {fileID: 6376279058266744994}
 --- !u!65 &2835819776977226559
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -255,7 +271,7 @@ Rigidbody:
   m_GameObject: {fileID: 4366758908039255003}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 14
+  m_LinearDamping: 0.5
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}

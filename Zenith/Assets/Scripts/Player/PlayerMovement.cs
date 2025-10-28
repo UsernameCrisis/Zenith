@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if (isDead) return;
-        moveValue = moveAction.ReadValue<Vector2>();
+        moveValue = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
 
         bool isMoving = IsMoving();
         bool isSprinting = IsSprinting();
@@ -53,8 +53,12 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (canMoveState)
+        if (canMoveState){
+            // transform.position += new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed);
+            // Vector3 moveDir = new Vector3(moveValue.x, 0, moveValue.y);
+            // rb.linearVelocity = moveDir * moveSpeed;
             rb.AddForce(new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed));
+        }
     }
 
     public IEnumerator HitRoutine()

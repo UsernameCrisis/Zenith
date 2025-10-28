@@ -17,16 +17,16 @@ public class PlayerHealthUI : MonoBehaviour
 
     void Awake()
     {
-        if (playerHealth != null)
+        // if (playerHealth != null)
         {
-            playerHealth.HealthChanged += UpdateUI;
+            // playerHealth.HealthChanged += UpdateUI;
         }
     }
 
     void Start()
     {
         hpText.enabled = false;
-        UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
+        // UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
     }
 
     void UpdateUI(int current, int max)

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAnimationManager : MonoBehaviour
 {
-    public Animator Animator { get; set; }
+    [SerializeField] public Animator Animator;
     [SerializeField] private GameObject shadow;
 
     void Update()

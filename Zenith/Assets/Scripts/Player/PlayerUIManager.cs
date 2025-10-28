@@ -9,7 +9,7 @@ public class PlayerUIManager : MonoBehaviour
     private Vignette vignette;
     void Start()
     {
-        deathVolume.profile.TryGet(out vignette);
+        // deathVolume.profile.TryGet(out vignette);
     }
 
     

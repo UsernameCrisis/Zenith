@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,7 +25,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Player Player {get; set;}
+    public Player Player { get; set; }
+    [SerializeField] Player PlayerPrefab;
 
 
     private void Awake()
@@ -36,6 +39,16 @@ public class GameManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        if (Player == null)
+        {
+            Player = Instantiate(PlayerPrefab);
+        }
     }
 
     void Update()

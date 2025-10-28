@@ -44,4 +44,20 @@ public class Player : Character
     {
         return moves;
     }
+
+    public void save(ref PlayerSaveData data)
+    {
+        data.Position = transform.position;
+    }
+    public void load(PlayerSaveData data)
+    {
+        transform.position = data.Position;
+    }
+}
+
+
+[System.Serializable]
+public struct PlayerSaveData
+{
+    public Vector3 Position;
 }

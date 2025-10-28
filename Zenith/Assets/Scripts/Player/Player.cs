@@ -5,16 +5,29 @@ using UnityEngine.Scripting.APIUpdating;
 
 public class Player : Character
 {
-    [SerializeField] private PlayerMovement playerMovement;
+    // private static Player Instance;
+    public PlayerMovement playerMovement { get; private set; }
+    public PlayerData playerData { get; private set; }
+    public PlayerUIManager playerUIManager { get; private set; }
+    public PlayerEventManager playerEventManager { get; private set; }
     private List<Character> companions;
     private List<Move> moves = new List<Move>();
+
+    // void Awake()
+    // {
+    //     if (Instance != null && Instance != this)
+    //     {
+    //         Destroy(gameObject);
+    //         return;
+    //     }
+
+    //     Instance = this;
+    //     DontDestroyOnLoad(gameObject);
+    // }
     void Start()
     {
-        HP = 100;
-        speed = 5;
-        companions = new List<Character>();
-
-        moves.Add(new Move("Basic Attack", 10));
+        playerMovement = gameObject.GetComponent<PlayerMovement>();
+        playerData = gameObject.GetComponent<PlayerData>();
     }
 
     public List<Character> GetCompanions()

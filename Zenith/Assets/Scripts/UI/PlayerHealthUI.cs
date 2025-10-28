@@ -7,7 +7,6 @@ public class PlayerHealthUI : MonoBehaviour
 {
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Visual Feedback")]
     [SerializeField] private RectTransform hpBarTransform;

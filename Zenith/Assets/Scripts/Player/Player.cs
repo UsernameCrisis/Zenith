@@ -10,7 +10,8 @@ public class Player : Character
     public PlayerData playerData { get; private set; }
     public PlayerUIManager playerUIManager { get; private set; }
     public PlayerEventManager playerEventManager { get; private set; }
-    public PlayerAnimationManager playerAnimationManager{ get; private set; }
+    public PlayerAnimationManager playerAnimationManager { get; private set; }
+    public Canvas canvas{ get; private set; }
     private List<Character> companions;
     private List<Move> moves = new List<Move>();
 
@@ -32,6 +33,7 @@ public class Player : Character
         playerUIManager = gameObject.GetComponent<PlayerUIManager>();
         playerEventManager = gameObject.GetComponent<PlayerEventManager>();
         playerAnimationManager = gameObject.gameObject.GetComponent<PlayerAnimationManager>();
+        canvas = gameObject.GetComponentInChildren<Canvas>();
     }
 
     public List<Character> GetCompanions()

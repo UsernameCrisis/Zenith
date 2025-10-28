@@ -7,6 +7,8 @@ public class MainMenu : MonoBehaviour
     {
         // Load your first scene (make sure it�s added to Build Settings)
         SceneManager.LoadScene("SampleScene");
+
+        GameManager.Instance.Player.gameObject.SetActive(true);
     }
 
     public void LoadSave()

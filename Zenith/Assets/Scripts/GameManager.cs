@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     public Player Player { get; set; }
     [SerializeField] Player PlayerPrefab;
+    public Canvas MainCanvas { get; set; }
 
 
     private void Awake()
@@ -42,12 +43,16 @@ public class GameManager : MonoBehaviour
 
         Initialize();
     }
-
     private void Initialize()
     {
+        //MainMenu setup
+        MainCanvas = FindAnyObjectByType<Canvas>();
+
+        //Player
         if (Player == null)
         {
             Player = Instantiate(PlayerPrefab);
+            Player.gameObject.SetActive(false);
         }
     }
 

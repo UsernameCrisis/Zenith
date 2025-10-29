@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 5721772813135744430}
   - component: {fileID: 7216900187594159275}
   - component: {fileID: 3312884164206091892}
-  - component: {fileID: 8187569071087241779}
+  - component: {fileID: 1304326194655933138}
   m_Layer: 0
   m_Name: Floating_eye
   m_TagString: Untagged
@@ -127,8 +127,8 @@ NavMeshAgent:
   m_GameObject: {fileID: 3359095611322043199}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.6
+  m_Radius: 0.6
+  m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -140,7 +140,7 @@ NavMeshAgent:
   m_BaseOffset: 0.6
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8187569071087241779
+--- !u!114 &1304326194655933138
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,18 +152,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6027362ba4de00e4cad44f34eeea75eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  moveSpeed: 2
   desRadius: 8
   minDistToDest: 0.5
   minWait: 1
-  maxWait: 3
-  maxAmmo: 3
-  cooldown_attack: 1.1
+  maxWait: 2
+  maxMoveDuration: 5
+  visionRange: 7
+  aggroDuration: 10
+  maxAmmo: 5
+  attackCooldown: 1.1
   attackRange: 6
   player: {fileID: 0}
   animator: {fileID: 7083525163737961892}
   projectilePrefab: {fileID: 6486528927770764989, guid: 2c9a0d2d8fe98174f9a8e2e773ede95f, type: 3}
   firePoint: {fileID: 695294832723724440}
+  agent: {fileID: 3312884164206091892}
 --- !u!1 &6227698151918975038
 GameObject:
   m_ObjectHideFlags: 0

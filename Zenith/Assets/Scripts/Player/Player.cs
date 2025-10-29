@@ -6,11 +6,11 @@ using UnityEngine.Scripting.APIUpdating;
 public class Player : Character
 {
     private static Player Instance;
-    public PlayerMovement playerMovement { get; private set; }
-    public PlayerData playerData { get; private set; }
-    public PlayerUIManager playerUIManager { get; private set; }
-    public PlayerEventManager playerEventManager { get; private set; }
-    public PlayerAnimationManager playerAnimationManager { get; private set; }
+    public PlayerMovement PlayerMovement { get; private set; }
+    public PlayerData PlayerData { get; private set; }
+    public PlayerUIManager PlayerUIManager { get; private set; }
+    public PlayerEventManager PlayerEventManager { get; private set; }
+    public PlayerAnimationManager PlayerAnimationManager { get; private set; }
     public Canvas canvas{ get; private set; }
     private List<Character> companions;
     private List<Move> moves = new List<Move>();
@@ -28,11 +28,11 @@ public class Player : Character
     }
     void Start()
     {
-        playerMovement = gameObject.GetComponent<PlayerMovement>();
-        playerData = gameObject.GetComponent<PlayerData>();
-        playerUIManager = gameObject.GetComponent<PlayerUIManager>();
-        playerEventManager = gameObject.GetComponent<PlayerEventManager>();
-        playerAnimationManager = gameObject.gameObject.GetComponent<PlayerAnimationManager>();
+        PlayerMovement = gameObject.GetComponent<PlayerMovement>();
+        PlayerData = gameObject.GetComponent<PlayerData>();
+        PlayerUIManager = gameObject.GetComponent<PlayerUIManager>();
+        PlayerEventManager = gameObject.GetComponent<PlayerEventManager>();
+        PlayerAnimationManager = gameObject.gameObject.GetComponent<PlayerAnimationManager>();
         canvas = gameObject.GetComponentInChildren<Canvas>();
     }
 
@@ -48,9 +48,11 @@ public class Player : Character
 
     }
 
+
+
     public void canMove(bool canMove)
     {
-        playerMovement.canMove(canMove);
+        PlayerMovement.canMove(canMove);
     }
 
     protected override void die()
@@ -58,11 +60,7 @@ public class Player : Character
         throw new NotImplementedException();
     }
 
-    //temp
-    public List<Move> getMoves()
-    {
-        return moves;
-    }
+    public void TakeDamage(int damage) {this.PlayerData.TakeDamage(damage);}
 
     public void save(ref PlayerSaveData data)
     {

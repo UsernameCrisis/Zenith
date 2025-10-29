@@ -5,6 +5,7 @@ public class PlayerEventManager : MonoBehaviour
     public void TakeHit()
     {
         StartCoroutine(GameManager.Instance.Player.GetComponent<PlayerMovement>().HitRoutine());
+        PlayerHealthUI.Instance.UpdateUI();
     }
     
     public void Die()

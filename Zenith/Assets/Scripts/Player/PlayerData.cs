@@ -21,7 +21,7 @@ public class PlayerData : MonoBehaviour
     public void TakeDamage(int amount)
     {
         if (currentHP <= 0 || isInvincible) return;
-        
+
         currentHP -= amount;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
         HealthChanged?.Invoke(currentHP, maxHP);
@@ -36,5 +36,8 @@ public class PlayerData : MonoBehaviour
         }
 
     }
+    
+    public int getMaxHP() { return maxHP; }
+    public int getHP() { return currentHP; }
 
 }

@@ -8,6 +8,7 @@ TagManager:
   - Sprite
   - Grid
   - Character
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -16,5 +16,13 @@ public class ObjectData
     [field: SerializeField]
     public int ID { get; private set; }
     [field: SerializeField]
+    public int Damage { get; private set; }
+    [field: SerializeField]
+    public int Defense { get; private set; }
+    [field: SerializeField]
+    public ObjectType Type { get; private set; }
+    [field: SerializeField]
+    public bool IsPlayer { get; private set; }
+    [field: SerializeField]
     public GameObject Prefab { get; private set; }
-}
+} 

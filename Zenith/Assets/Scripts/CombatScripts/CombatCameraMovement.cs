@@ -65,13 +65,18 @@ public class CombatCameraMovement : MonoBehaviour
             if (character == null) continue;
 
             Vector3 direction = character.transform.position - cameraPos;
+            float distanceToCharacter = direction.magnitude;
             Ray ray = new(cameraPos, direction);
-            int hitCount = Physics.RaycastNonAlloc(ray, hits, 100f);
+
+            Debug.DrawRay(cameraPos, direction.normalized * 100f, Color.green, 0.05f);
+            int hitCount = Physics.RaycastNonAlloc(ray, hits, distanceToCharacter);
 
             for (int i = 0; i < hitCount; i++)
             {
                 RaycastHit hit = hits[i];
                 if (hit.collider == null) continue;
+
+                Debug.DrawLine(cameraPos, hit.point, Color.red, 0.05f);
 
                 if (hit.collider.gameObject == character)
                 {

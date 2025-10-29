@@ -98,6 +98,8 @@ public class GridSelectSystem : MonoBehaviour
         gridVisualization.SetActive(true);
         cellIndicator.SetActive(true);
 
+        inputManager.SendMessage("SetSelectMode", false);
+
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
         int moveRange = 3; // can be dynamic based on character stats later
 
@@ -109,6 +111,9 @@ public class GridSelectSystem : MonoBehaviour
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
         movePreview.ClearAll();
+
+        inputManager.SendMessage("SetSelectMode", true);
+
         if (cellIndicatorRenderer != null)
             cellIndicatorRenderer.material.color = defaultColor;
     }

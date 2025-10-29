@@ -7,12 +7,14 @@ public class InputManager : MonoBehaviour
 {
     [SerializeField] private Camera sceneCamera;
     [SerializeField] private LayerMask gridLayerMask;
+    [SerializeField] private LayerMask selectionLayerMask;
 
     private Vector3 lastPosition;
     private Collider lastCollider;
     private InputAction mouseInputPosition, mouseInputLeftClick, escapeKeyAction;
     public event Action Onclicked, OnExit;
     public event Action<Collider> OnHoverEnter, OnHoverExit, OnColliderClicked;
+    private bool selectMode = true;
 
     void Awake()
     {
@@ -72,7 +74,9 @@ public class InputManager : MonoBehaviour
         Vector2 mouseScreenPos = mouseInputPosition.ReadValue<Vector2>();
         Ray ray = sceneCamera.ScreenPointToRay(mouseScreenPos);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 100, gridLayerMask))
+        LayerMask currentMask = selectMode ? selectionLayerMask : gridLayerMask;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 100, currentMask))
         {
             lastPosition = hit.point;
             return hit.collider;
@@ -85,6 +89,11 @@ public class InputManager : MonoBehaviour
         EventSystem.current.IsPointerOverGameObject();
 
     public Vector3 GetHoveredMapPosition() => lastPosition;
+
+    public void SetSelectMode(bool value)
+    {
+        selectMode = value;
+    }
 
     // public Collider GetHoveredCollider()
     // {

@@ -39,5 +39,5 @@ public class PlayerData : MonoBehaviour
     
     public int getMaxHP() { return maxHP; }
     public int getHP() { return currentHP; }
-    public void resetHP() { currentHP = maxHP; PlayerHealthUI.Instance.UpdateUI(); }
+    public void resetHP() { currentHP = maxHP; MainCanvasManager.Instance.PlayerHealthUI.UpdateUI(); }
 }

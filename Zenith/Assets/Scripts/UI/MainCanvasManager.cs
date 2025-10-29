@@ -1,11 +1,16 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MainCanvasManager : MonoBehaviour
 {
     public static MainCanvasManager Instance { get; private set; }
-    
+    public PlayerHealthUI PlayerHealthUI { get; private set; }
+
+   public Inventory Inventory { get; set; }
+
 
     void Awake()
     {
@@ -18,19 +23,23 @@ public class MainCanvasManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        LoadPrefabs();
+        Initialize();
     }
 
-    public void LoadPrefabs()
+    private void Initialize()
     {
+        PlayerHealthUI = GetComponentInChildren<PlayerHealthUI>();
+        PlayerHealthUI.UpdateUI();
+        PlayerHealthUI.hpText.enabled = false;
+
+        Inventory = GetComponentInChildren<Inventory>();
+        Inventory.ToggleInventory();
     }
 
-    //Get Prefab(GameObject) by name
-    public void Activate(string name)
-    {
-    }
-
-    public void Deactivate(string name)
-    {
+    private void Update() {
+        if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
+        {
+            Inventory.ToggleInventory();
+        }
     }
 }

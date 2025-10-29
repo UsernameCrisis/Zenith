@@ -5,9 +5,8 @@ using System.Collections;
 
 public class PlayerHealthUI : MonoBehaviour
 {
-    public static PlayerHealthUI Instance;
     [SerializeField] private Slider hpBar;
-    [SerializeField] private TextMeshProUGUI hpText;
+    public TextMeshProUGUI hpText;
 
     [Header("Visual Feedback")]
     [SerializeField] private RectTransform hpBarTransform;
@@ -15,20 +14,6 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
 
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        // DontDestroyOnLoad(gameObject);
-        hpText.enabled = false;
-        UpdateUI();
-    }
 
     public void UpdateUI()
     {

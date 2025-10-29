@@ -267,6 +267,7 @@ public class FloatingEye: MonoBehaviour
 
     private void SeePlayerCheck()
     {
+        player = GameManager.Instance.Player.transform;
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
         float fovAngle = 95f;
 

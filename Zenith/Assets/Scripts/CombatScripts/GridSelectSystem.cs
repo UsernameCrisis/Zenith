@@ -17,6 +17,7 @@ public class GridSelectSystem : MonoBehaviour
     private Renderer cellIndicatorRenderer;
     private GameObject selectedChar;
     private Color defaultColor;
+    private bool isAttackMode = false;
     
 
     void OnEnable()
@@ -68,13 +69,57 @@ public class GridSelectSystem : MonoBehaviour
         Vector3Int gridPosition = grid.WorldToCell(mousePos);
         cellIndicator.transform.position = grid.CellToWorld(gridPosition);
     }
-    
+
     private void ColliderClicked(Collider collider)
     {
-        if (collider.CompareTag("Sprite"))
+        if (collider.CompareTag("Player"))
+        {
             SelectCharacter(collider);
-        else if (gridVisualization.activeSelf && collider.CompareTag("Grid"))
-            MoveCharacter();
+            return;
+        }
+
+        if (selectedChar != null)
+        {
+            Vector3Int clickedGrid = grid.WorldToCell(collider.transform.position);
+
+            if (collider.CompareTag("Enemy"))
+            {
+                TileData attackerTile = objectsData.GetTileAt(grid.WorldToCell(selectedChar.transform.position));
+                TileData targetTile = objectsData.GetTileAt(clickedGrid);
+
+                if (attackerTile?.PlacedObject is CharacterObject attacker &&
+                    targetTile?.PlacedObject is CharacterObject target)
+                {
+                    if (attacker.IsPlayer != target.IsPlayer) // Nanti perlu ganti jadi apakah ini tim, sementara placeholder
+                    {
+                        isAttackMode = true;
+                        HandleAttack(clickedGrid);
+                        return;
+                    }
+                }
+            }
+
+            if (collider.CompareTag("Grid"))
+            {
+                isAttackMode = false;
+                MoveCharacter();
+            }
+        }
+    }
+    
+    private void HandleAttack(Vector3Int targetGrid)
+    {
+        if (objectsData == null) return;
+
+        Vector3Int attackerGrid = grid.WorldToCell(selectedChar.transform.position);
+
+        if (attackerGrid == targetGrid)
+            return; // cannot attack self
+
+        objectsData.AttackObject(attackerGrid, targetGrid);
+
+        isAttackMode = false;
+        ExitCharacter();
     }
 
     private void MoveCharacter()

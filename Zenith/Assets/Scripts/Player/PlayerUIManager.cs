@@ -5,10 +5,11 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerUIManager : MonoBehaviour
 {
-    [SerializeField] private Volume deathVolume;
+    private Volume deathVolume;
     private Vignette vignette;
     void Start()
     {
+        deathVolume = FindFirstObjectByType<Volume>();
         // deathVolume.profile.TryGet(out vignette);
     }
 

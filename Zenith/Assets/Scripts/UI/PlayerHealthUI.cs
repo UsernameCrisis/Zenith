@@ -25,14 +25,9 @@ public class PlayerHealthUI : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
-        UpdateUI();
-    }
-
-    void Start()
-    {
+        // DontDestroyOnLoad(gameObject);
         hpText.enabled = false;
-        // UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
+        UpdateUI();
     }
 
     public void UpdateUI()

@@ -32,12 +32,12 @@ public class PlayerData : MonoBehaviour
         }
         else
         {
-            GameManager.Instance.Player.GetComponent<PlayerEventManager>().Die();
+            StartCoroutine(GameManager.Instance.Player.GetComponent<PlayerEventManager>().Die());
         }
 
     }
     
     public int getMaxHP() { return maxHP; }
     public int getHP() { return currentHP; }
-
+    public void resetHP() { currentHP = maxHP; PlayerHealthUI.Instance.UpdateUI(); }
 }

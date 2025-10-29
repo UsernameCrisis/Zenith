@@ -7,16 +7,12 @@ public class PlayerUIManager : MonoBehaviour
 {
     private Volume deathVolume;
     private Vignette vignette;
-    void Start()
-    {
-        deathVolume = FindFirstObjectByType<Volume>();
-        // deathVolume.profile.TryGet(out vignette);
-    }
 
-    
 
     public IEnumerator DeathVignette(float duration = 1f)
     {
+        deathVolume = FindFirstObjectByType<Volume>();
+        deathVolume.profile.TryGet(out vignette);
         float elapsed = 0f;
         float startIntensity = 0.3f;
         float targetIntensity = 0.75f;
@@ -30,5 +26,7 @@ public class PlayerUIManager : MonoBehaviour
         }
 
         vignette.intensity.value = targetIntensity;
+
+        yield return new WaitForSeconds(duration * 1.5f);
     }
 }

@@ -151,7 +151,10 @@ MonoBehaviour:
   sceneCamera: {fileID: 330585545}
   gridLayerMask:
     serializedVersion: 2
-    m_Bits: 1536
+    m_Bits: 512
+  selectionLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!4 &281358871
 Transform:
   m_ObjectHideFlags: 0

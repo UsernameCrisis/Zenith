@@ -6132,10 +6132,7 @@ MonoBehaviour:
   desRadius: 8
   minDistToDest: 0.5
   minWait: 1
-  maxWait: 2
-  maxMoveDuration: 5
-  visionRange: 7
-  aggroDuration: 10
+  maxWait: 3
   maxAmmo: 5
   attackCooldown: 1.1
   attackRange: 6

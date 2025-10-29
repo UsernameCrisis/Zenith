@@ -5,16 +5,35 @@ using UnityEngine.Scripting.APIUpdating;
 
 public class Player : Character
 {
-    [SerializeField] private PlayerMovement playerMovement;
+    private static Player Instance;
+    public PlayerMovement PlayerMovement { get; private set; }
+    public PlayerData PlayerData { get; private set; }
+    public PlayerUIManager PlayerUIManager { get; private set; }
+    public PlayerEventManager PlayerEventManager { get; private set; }
+    public PlayerAnimationManager PlayerAnimationManager { get; private set; }
+    public Canvas canvas{ get; private set; }
     private List<Character> companions;
     private List<Move> moves = new List<Move>();
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
     void Start()
     {
-        HP = 100;
-        speed = 5;
-        companions = new List<Character>();
-
-        moves.Add(new Move("Basic Attack", 10));
+        PlayerMovement = gameObject.GetComponent<PlayerMovement>();
+        PlayerData = gameObject.GetComponent<PlayerData>();
+        PlayerUIManager = gameObject.GetComponent<PlayerUIManager>();
+        PlayerEventManager = gameObject.GetComponent<PlayerEventManager>();
+        PlayerAnimationManager = gameObject.gameObject.GetComponent<PlayerAnimationManager>();
+        canvas = gameObject.GetComponentInChildren<Canvas>();
     }
 
     public List<Character> GetCompanions()
@@ -29,9 +48,11 @@ public class Player : Character
 
     }
 
+
+
     public void canMove(bool canMove)
     {
-        playerMovement.canMove(canMove);
+        PlayerMovement.canMove(canMove);
     }
 
     protected override void die()
@@ -39,9 +60,21 @@ public class Player : Character
         throw new NotImplementedException();
     }
 
-    //temp
-    public List<Move> getMoves()
+    public void TakeDamage(int damage) {this.PlayerData.TakeDamage(damage);}
+
+    public void save(ref PlayerSaveData data)
     {
-        return moves;
+        data.Position = transform.position;
     }
+    public void load(PlayerSaveData data)
+    {
+        transform.position = data.Position;
+    }
+}
+
+
+[System.Serializable]
+public struct PlayerSaveData
+{
+    public Vector3 Position;
 }

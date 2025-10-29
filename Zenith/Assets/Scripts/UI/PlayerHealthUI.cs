@@ -5,9 +5,9 @@ using System.Collections;
 
 public class PlayerHealthUI : MonoBehaviour
 {
+    public static PlayerHealthUI Instance;
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Visual Feedback")]
     [SerializeField] private RectTransform hpBarTransform;
@@ -18,20 +18,27 @@ public class PlayerHealthUI : MonoBehaviour
 
     void Awake()
     {
-        if (playerHealth != null)
+        if (Instance != null && Instance != this)
         {
-            playerHealth.HealthChanged += UpdateUI;
+            Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        UpdateUI();
     }
 
     void Start()
     {
         hpText.enabled = false;
-        UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
+        // UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
     }
 
-    void UpdateUI(int current, int max)
+    public void UpdateUI()
     {
+        int current = GameManager.Instance.Player.PlayerData.getHP();
+        int max = GameManager.Instance.Player.PlayerData.getMaxHP();
         int previous = (int)hpBar.value;
 
         hpBar.maxValue = max;

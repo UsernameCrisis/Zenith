@@ -104,6 +104,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "QuickSave",
+                    "type": "Button",
+                    "id": "735dfb38-8b9f-4124-874a-46a29851f837",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "QuickLoad",
+                    "type": "Button",
+                    "id": "cefc3631-955a-48a3-81eb-43e69e423808",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -511,6 +529,28 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "ExitSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c5c9a63e-ce96-40d4-9c8a-6722721b685f",
+                    "path": "<Keyboard>/f5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "QuickSave",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b625d11-d117-4260-bf16-bfe9edb79b2e",
+                    "path": "<Keyboard>/f6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QuickLoad",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

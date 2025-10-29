@@ -13,10 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundDist;
     [SerializeField] private LayerMask terrainLayer;
     [SerializeField] private SpriteRenderer sr;
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private Animator animator;
-    [SerializeField] private GameObject shadow;
-
+    public Rigidbody rb;
     private float defaultMoveSpeed;
     private float idleTime = 0f;
 
@@ -34,20 +31,19 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if (isDead) return;
-        moveValue = moveAction.ReadValue<Vector2>();
+        moveValue = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
 
-        bool isMoving = moveValue.magnitude > 0.01f;
-        bool isSprinting = sprintAction.IsPressed();
+        bool isMoving = IsMoving();
+        bool isSprinting = IsSprinting();
         float speedMultiplier = isSprinting ? runMultiplier : 1f;
         moveValue = moveValue * speedMultiplier;
-        animator.SetInteger("stateRun", isMoving ? (isSprinting ? 2 : 1) : 0);
 
         if (!isMoving)
             idleTime += Time.deltaTime;
         else
             idleTime = 0f;
 
-        animator.SetFloat("idleTime", idleTime);
+        GameManager.Instance.Player.GetComponent<PlayerAnimationManager>().Animator.SetFloat("idleTime", idleTime);
 
         if (moveValue.x != 0)
             sr.flipX = moveValue.x < 0;
@@ -57,39 +53,22 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (canMoveState)
+        if (canMoveState){
+            // transform.position += new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed);
+            // Vector3 moveDir = new Vector3(moveValue.x, 0, moveValue.y);
+            // rb.linearVelocity = moveDir * moveSpeed;
             rb.AddForce(new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed));
-    }
-    public void TakeHit()
-    {
-        if (!canMoveState) return;
-        StartCoroutine(HitRoutine());
-        Debug.Log("hit routine");
+        }
     }
 
-    public void Die()
+    public IEnumerator HitRoutine()
     {
         canMove(false);
-        isDead = true;
-        animator.SetBool("isDead", true);
-
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        rb.constraints = RigidbodyConstraints.FreezeAll;
-
-        if (shadow != null)
-            shadow.SetActive(false);
-    }
-
-
-    private IEnumerator HitRoutine()
-    {
-        canMove(false);
-        animator.SetBool("isHit", true);
+        GameManager.Instance.Player.GetComponent<PlayerAnimationManager>().Animator.SetBool("isHit", true);
 
         yield return new WaitForSeconds(0.4f);
 
-        animator.SetBool("isHit", false);
+        GameManager.Instance.Player.GetComponent<PlayerAnimationManager>().Animator.SetBool("isHit", false);
         if (!isDead)
         {
             canMove(true);
@@ -119,4 +98,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    public bool IsMoving() { return moveValue.magnitude > 0.01f; }
+    public bool IsSprinting() { return sprintAction.IsPressed(); }
 }

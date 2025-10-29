@@ -404,7 +404,7 @@ Transform:
   m_GameObject: {fileID: 247491661}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.66032, y: 1.35602, z: 4.5}
+  m_LocalPosition: {x: 3.66032, y: 0.35602, z: 4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3314,7 +3314,7 @@ Transform:
   m_GameObject: {fileID: 1223623182}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.58179, y: 0, z: 0.0529}
+  m_LocalPosition: {x: 4.58179, y: -1, z: 0.0529}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3410,7 +3410,7 @@ Transform:
   m_GameObject: {fileID: 1256388610}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.73368, y: -0, z: 1.06134}
+  m_LocalPosition: {x: 1.73368, y: -1, z: 1.06134}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3753,17 +3753,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 135507309436772803, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
   m_PrefabInstance: {fileID: 2207961507669318554}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1342543834 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4802317184675670961, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
-  m_PrefabInstance: {fileID: 2207961507669318554}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1342543826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8804ac5c2db6e2445b832eaf4bbfced6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
 --- !u!1 &1360867748
 GameObject:
   m_ObjectHideFlags: 0
@@ -5683,7 +5672,7 @@ PrefabInstance:
     - target: {fileID: 1169126075559426559, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: playerHealth
       value: 
-      objectReference: {fileID: 1342543834}
+      objectReference: {fileID: 0}
     - target: {fileID: 3835590873399808524, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_Name
       value: HP_UI_ow

@@ -16,3 +16,6 @@ MonoBehaviour:
   - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
+  - <Name>k__BackingField: Wall Obstacle
+    <ID>k__BackingField: 1
+    <Prefab>k__BackingField: {fileID: 7899849923332508408, guid: 7e5228f2b3302584fbea2f17e5305e54, type: 3}

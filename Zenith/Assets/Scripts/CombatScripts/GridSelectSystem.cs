@@ -10,11 +10,13 @@ public class GridSelectSystem : MonoBehaviour
     [SerializeField] private GameObject gridVisualization;
     [SerializeField] AudioSource source; // gunakan untuk suara
     [SerializeField] private GameObject populateMap;
+    [SerializeField] private MovementPreview movePreview;
 
     private Vector3 mousePos;
     private GridData objectsData;
-    private Renderer previewRenderer;
+    private Renderer cellIndicatorRenderer;
     private GameObject selectedChar;
+    private Color defaultColor;
     
 
     void OnEnable()
@@ -35,9 +37,10 @@ public class GridSelectSystem : MonoBehaviour
 
     void Start()
     {
-        ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
+        // ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
         objectsData = populateMap.GetComponent<PopulateMap>().objectsData;
-        previewRenderer = cellIndicator.GetComponentInChildren<Renderer>(); 
+        cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>(); 
+        defaultColor = cellIndicatorRenderer.material.color;
     }
 
     void Update()
@@ -47,6 +50,16 @@ public class GridSelectSystem : MonoBehaviour
 
         if (gridVisualization.activeSelf)
             VisualizeHoveredGrid();
+
+        if (selectedChar != null && gridVisualization.activeSelf)
+        {
+            Vector3Int hoverTile = grid.WorldToCell(mousePos);
+            bool inRange = movePreview.IsTileReachable(hoverTile);
+            movePreview.ShowPathPreview(hoverTile);
+
+            Color color = inRange ? defaultColor : Color.red;
+            cellIndicatorRenderer.material.SetColor("_EmissionColor", color);
+        }
     }
 
     private void VisualizeHoveredGrid()
@@ -67,10 +80,15 @@ public class GridSelectSystem : MonoBehaviour
     private void MoveCharacter()
     {
         Vector3Int gridPos = grid.WorldToCell(mousePos);
+
+        if (!movePreview.IsTileReachable(gridPos))
+            return;
+        
         if (objectsData.CanPlaceObjectAt(gridPos))
         {
             objectsData.MoveObject(grid.WorldToCell(selectedChar.transform.position), gridPos);
             selectedChar.transform.position = grid.CellToWorld(gridPos);
+            ExitCharacter();
         }
     }
 
@@ -79,12 +97,25 @@ public class GridSelectSystem : MonoBehaviour
         selectedChar = collider.transform.parent.gameObject;
         gridVisualization.SetActive(true);
         cellIndicator.SetActive(true);
+
+        inputManager.SendMessage("SetSelectMode", false);
+
+        Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
+        int moveRange = 3; // can be dynamic based on character stats later
+
+        movePreview.ShowMovementRange(startPos, moveRange);
     }
 
     private void ExitCharacter()
     {
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
+        movePreview.ClearAll();
+
+        inputManager.SendMessage("SetSelectMode", true);
+
+        if (cellIndicatorRenderer != null)
+            cellIndicatorRenderer.material.color = defaultColor;
     }
 
     private void HideHover(Collider collider)

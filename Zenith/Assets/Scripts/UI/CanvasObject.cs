@@ -10,6 +10,6 @@ public class CanvasObject : ScriptableObject
 
     void Awake()
     {
-        prefab.SetActive(false);
+        // prefab.SetActive(false);
     }
 }

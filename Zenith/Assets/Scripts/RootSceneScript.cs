@@ -2,19 +2,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class RootSceneScript : MonoBehaviour
-{    void Start()
+{    
+    void Awake()
     {
         if (GameManager.Instance == null)
         {
-            this.AddComponent<GameManager>();
+            transform.parent.AddComponent<GameManager>();
         }
-
-        var existingPlayer = GetComponentInChildren<Player>();
-        if (existingPlayer != null)
-        {
-            Destroy(existingPlayer.gameObject);
-        }
-        
-        GameManager.Instance.Player.transform.SetParent(transform);
     }
 }

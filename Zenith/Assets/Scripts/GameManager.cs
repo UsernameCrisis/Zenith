@@ -45,7 +45,6 @@ public class GameManager : MonoBehaviour
     }
     private void Initialize()
     {
-        //MainMenu setup
         MainCanvas = FindAnyObjectByType<Canvas>();
 
         //Player

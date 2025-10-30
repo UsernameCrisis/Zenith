@@ -60,7 +60,7 @@ public class Player : Character
         throw new NotImplementedException();
     }
 
-    public void TakeDamage(int damage) {this.PlayerData.TakeDamage(damage);}
+    public void TakeDamage(int damage) { this.PlayerData.TakeDamage(damage); }
 
     public void save(ref PlayerSaveData data)
     {

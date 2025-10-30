@@ -6,6 +6,7 @@ using System.Collections;
 
 public class PlayerOverworldAttributes : MonoBehaviour
 {
+    [Header("Default Values")]
     public int maxHP;
     public int currentHP;
     public int gold;
@@ -26,10 +27,17 @@ public class PlayerOverworldAttributes : MonoBehaviour
     void Awake()
     {
         movement = GetComponent<PlayerMovement>();
-        currentHP = GameManager.Instance.playerHP;
-        maxHP = GameManager.Instance.playerMaxHP;
-        gold = GameManager.Instance.gold;
-        HealthChanged?.Invoke(currentHP, maxHP);
+        if (GameManager.Instance != null)
+        {
+            currentHP = GameManager.Instance.playerHP;
+            maxHP = GameManager.Instance.playerMaxHP;
+            gold = GameManager.Instance.gold;
+        }
+
+        if (currentHP == 0)
+        {
+            currentHP++;
+        }
     }
 
     public void TakeDamage(int amount)

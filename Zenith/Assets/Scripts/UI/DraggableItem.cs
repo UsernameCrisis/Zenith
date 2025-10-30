@@ -23,7 +23,5 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         transform.SetParent(_parentAfterDrag);
         this.GetComponent<Image>().raycastTarget = true;
-
-        _parentAfterDrag.GetComponentInParent<InventoryRight>().CheckIfNeededNewRow();
     }
 }

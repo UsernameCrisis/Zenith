@@ -9,6 +9,7 @@ public class PlayerData : MonoBehaviour
     private bool isInvincible = false;
     [SerializeField] private float invincibilityDuration = 0.4f;
     public bool isDead { get; set; }
+    public int Gold;
 
     public event Action<int, int> HealthChanged;
 
@@ -16,6 +17,7 @@ public class PlayerData : MonoBehaviour
     void Awake()
     {
         currentHP = maxHP;
+        Gold = 0;
     }
 
     public void TakeDamage(int amount)

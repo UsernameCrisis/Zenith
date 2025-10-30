@@ -4,10 +4,11 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using System.Collections;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerOverworldAttributes : MonoBehaviour
 {
-    public int maxHP = 100;
+    public int maxHP;
     public int currentHP;
+    public int gold;
 
     private PlayerMovement movement;
     private bool isInvincible = false;
@@ -24,16 +25,17 @@ public class PlayerHealth : MonoBehaviour
 
     void Awake()
     {
-        currentHP = maxHP;
         movement = GetComponent<PlayerMovement>();
-
+        currentHP = GameManager.Instance.playerHP;
+        maxHP = GameManager.Instance.playerMaxHP;
+        gold = GameManager.Instance.gold;
         HealthChanged?.Invoke(currentHP, maxHP);
     }
 
     public void TakeDamage(int amount)
     {
         if (currentHP <= 0 || isInvincible) return;
-        
+
         currentHP -= amount;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
         HealthChanged?.Invoke(currentHP, maxHP);
@@ -41,13 +43,20 @@ public class PlayerHealth : MonoBehaviour
         if (currentHP > 0)
         {
             movement.TakeHit();
+            StartCoroutine(InvincibilityFrames());
         }
         else
         {
             movement.Die();
             StartCoroutine(DeathVignette());
         }
+    }
 
+    private IEnumerator InvincibilityFrames()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invincibilityDuration);
+        isInvincible = false;
     }
 
     IEnumerator DeathVignette(float duration = 1f)

@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            PlayerHealth player = other.GetComponent<PlayerHealth>();
+            PlayerOverworldAttributes player = other.GetComponent<PlayerOverworldAttributes>();
             if (player != null)
             {
                 player.TakeDamage(attackPower);

@@ -468,7 +468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthUI
   hpBar: {fileID: 4092810269431793725}
   hpText: {fileID: 881945954837702114}
-  playerHealth: {fileID: 0}
+  playerOverworldAttributes: {fileID: 0}
   hpBarTransform: {fileID: 5685507673455622641}
   fillImage: {fileID: 3665670101429151935}
   flashColor: {r: 1, g: 1, b: 1, a: 1}

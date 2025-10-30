@@ -3755,7 +3755,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1342543834 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4802317184675670961, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7613042265651345359, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
   m_PrefabInstance: {fileID: 2207961507669318554}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342543826}
@@ -5681,7 +5681,7 @@ PrefabInstance:
     m_TransformParent: {fileID: 1700291725}
     m_Modifications:
     - target: {fileID: 1169126075559426559, guid: a7304e832723af14880c15ff57e892a2, type: 3}
-      propertyPath: playerHealth
+      propertyPath: playerOverworldAttributes
       value: 
       objectReference: {fileID: 1342543834}
     - target: {fileID: 3835590873399808524, guid: a7304e832723af14880c15ff57e892a2, type: 3}
@@ -5833,7 +5833,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 4802317184675670961, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
+    - target: {fileID: 7613042265651345359, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
       propertyPath: deathVolume
       value: 
       objectReference: {fileID: 832575518}

@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 135507309436772803}
   - component: {fileID: 5234813713430550328}
   - component: {fileID: 7169127402685213013}
-  - component: {fileID: 4802317184675670961}
+  - component: {fileID: 7613042265651345359}
   - component: {fileID: 2835819776977226559}
   - component: {fileID: 4117339652108580568}
   m_Layer: 0
@@ -201,7 +201,7 @@ MonoBehaviour:
   rb: {fileID: 5234813713430550328}
   animator: {fileID: 4827329345341099098}
   shadow: {fileID: 6376279058266744994}
---- !u!114 &4802317184675670961
+--- !u!114 &7613042265651345359
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,8 +214,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHP: 100
-  currentHP: 100
-  invincibilityDuration: 1
+  currentHP: 0
+  gold: 0
+  invincibilityDuration: 0.4
   deathVolume: {fileID: 0}
 --- !u!65 &2835819776977226559
 BoxCollider:

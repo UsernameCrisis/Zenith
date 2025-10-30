@@ -7,7 +7,7 @@ public class PlayerHealthUI : MonoBehaviour
 {
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PlayerOverworldAttributes playerOverworldAttributes;
 
     [Header("Visual Feedback")]
     [SerializeField] private RectTransform hpBarTransform;
@@ -18,16 +18,16 @@ public class PlayerHealthUI : MonoBehaviour
 
     void Awake()
     {
-        if (playerHealth != null)
+        if (playerOverworldAttributes != null)
         {
-            playerHealth.HealthChanged += UpdateUI;
+            playerOverworldAttributes.HealthChanged += UpdateUI;
         }
     }
 
     void Start()
     {
         hpText.enabled = false;
-        UpdateUI(playerHealth.currentHP, playerHealth.maxHP);
+        UpdateUI(playerOverworldAttributes.currentHP, playerOverworldAttributes.maxHP);
     }
 
     void UpdateUI(int current, int max)

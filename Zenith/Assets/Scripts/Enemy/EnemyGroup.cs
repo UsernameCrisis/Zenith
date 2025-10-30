@@ -9,9 +9,6 @@ public class EnemyGroup : MonoBehaviour
     private List<Enemy> enemies;
     void Awake()
     {
-        enemies.Add(enemy1);
-        enemies.Add(enemy2);
-        enemies.Add(enemy3);
     }
 
     // Update is called once per frame

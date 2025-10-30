@@ -24,11 +24,7 @@ public class Projectile : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            PlayerHealth player = other.GetComponent<PlayerHealth>();
-            if (player != null)
-            {
-                player.TakeDamage(attackPower);
-            }
+            GameManager.Instance.Player.TakeDamage(attackPower);
         }
 
         Debug.Log(other);

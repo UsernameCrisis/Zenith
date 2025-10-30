@@ -2,55 +2,59 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class FloatingEye: MonoBehaviour
+public class FloatingEye : MonoBehaviour
 {
     private enum EnemyState { Idle, Alert, Attack, Reload }
 
     [Header("Idle Behavior")]
-    [SerializeField] float desRadius = 5f;
-    [SerializeField] float minDistToDest = 1f;
-    [SerializeField] float minWait = 1f;
-    [SerializeField] float maxWait = 2f;
+    [SerializeField] private float desRadius = 5f;
+    [SerializeField] private float minDistToDest = 1f;
+    [SerializeField] private float minWait = 1f;
+    [SerializeField] private float maxWait = 2f;
     [SerializeField] private float maxMoveDuration = 5f;
 
     [Header("Alert Behavior")]
-    [SerializeField] float visionRange = 7f;
+    [SerializeField] private float visionRange = 7f;
     [SerializeField] private float aggroDuration = 10f;
 
     [Header("Combat")]
-    [SerializeField] int maxAmmo = 5;
-    [SerializeField] float attackCooldown = 1.10f;
-    [SerializeField] float attackRange = 6f;
-    [SerializeField] Transform player;
+    [SerializeField] private int maxAmmo = 5;
+    [SerializeField] private float attackCooldown = 1.1f;
+    [SerializeField] private float attackRange = 6f;
+    [SerializeField] private Transform player;
 
     [Header("References")]
     [SerializeField] private Animator animator;
-    [SerializeField] GameObject projectilePrefab;
-    [SerializeField] Transform firePoint;
-    [SerializeField] NavMeshAgent agent;
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private NavMeshAgent agent;
 
     private EnemyState currentState;
     private Vector3 destination;
+    private Vector3 lastKnownPlayerPosition;
+
     private int ammo;
     private bool seePlayer;
+    private bool isWaiting;
+    private bool isReloading;
+
     private float attackCooldownTimer;
     private float originalSpeed;
 
-    private float idleCheckTimer = 0f;
+    private float idleCheckTimer;
+    private float idleWaitTimer;
+    private float idleWaitDuration;
+    private float moveTimeoutTimer;
+
+    private float alertCheckTimer;
+    private float aggroTimer;
+    private float lookAroundTimer;
+    private float pathUpdateTimer;
+
     private readonly float idleCheckInterval = 0.5f;
-    private float idleWaitTimer = 0f;
-    private float idleWaitDuration = 0f;
-    private float moveTimeoutTimer = 0f;
-    private bool isWaiting = false;
-
-    private float alertCheckTimer = 0f;
     private readonly float alertCheckInterval = 0.2f;
-    private float aggroTimer = 0f;
-    private Vector3 lastKnownPlayerPosition;
-    private float LookAroundTimer = 0f;
-    private float LookAroundCooldown = 2f;
-
-    private bool isReloading = false;
+    private readonly float lookAroundCooldown = 2f;
+    private readonly float pathUpdateInterval = 0.5f;
 
     private void Start()
     {
@@ -62,7 +66,6 @@ public class FloatingEye: MonoBehaviour
 
     private void Update()
     {
-        // lock rotation
         transform.rotation = Quaternion.identity;
 
         if (currentState == EnemyState.Attack)
@@ -74,51 +77,28 @@ public class FloatingEye: MonoBehaviour
         {
             case EnemyState.Idle: Idle(); break;
             case EnemyState.Alert: Alert(); break;
-            case EnemyState.Reload: Reload(); break;
             case EnemyState.Attack: Attack(); break;
+            case EnemyState.Reload: Reload(); break;
         }
     }
 
     private void ChangeState(EnemyState newState)
     {
         currentState = newState;
+        agent.speed = (newState == EnemyState.Attack || newState == EnemyState.Reload)
+            ? originalSpeed * 0.7f
+            : originalSpeed;
 
-        if (newState == EnemyState.Attack || newState == EnemyState.Reload)
+        int stateInt = newState switch
         {
-            agent.speed = originalSpeed * 0.7f;
-        }
-        else
-        {
-            agent.speed = originalSpeed;
-        }
-        int stateInt = 1;
-        switch (newState)
-        {
-            case EnemyState.Idle: stateInt = 1; break;
-            case EnemyState.Alert: stateInt = 2; break;
-            case EnemyState.Attack: stateInt = 3; break;
-            case EnemyState.Reload: stateInt = 4; break;
-        }
+            EnemyState.Idle => 1,
+            EnemyState.Alert => 2,
+            EnemyState.Attack => 3,
+            EnemyState.Reload => 4,
+            _ => 1
+        };
 
         animator.SetInteger("state", stateInt);
-    }
-
-    public void FireProjectile()
-    {
-        if (currentState != EnemyState.Attack || ammo <= 0) return;
-
-        ammo--;
-        attackCooldownTimer = attackCooldown;
-
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-
-        Vector3 offset = new(0f, 0.375f, 0f);
-        Vector3 targetPosition = player.position + offset;
-        Vector3 direction = (targetPosition - firePoint.position).normalized;
-
-        Projectile projectile = proj.GetComponent<Projectile>();
-        projectile.Initialize(direction);
-        projectile.IgnoreShooter(GetComponent<Collider>());
     }
 
     private void Idle()
@@ -133,11 +113,10 @@ public class FloatingEye: MonoBehaviour
 
         if (seePlayer)
         {
-            Debug.Log("See player, moving to alert");
             ChangeState(EnemyState.Alert);
             return;
         }
-        // move timeout
+
         if (!isWaiting && agent.hasPath)
         {
             moveTimeoutTimer += Time.deltaTime;
@@ -149,14 +128,13 @@ public class FloatingEye: MonoBehaviour
             }
         }
 
-        //start wait timer (destination reached)
         if (!isWaiting && agent.remainingDistance <= minDistToDest && !agent.pathPending)
         {
             isWaiting = true;
             idleWaitDuration = Random.Range(minWait, maxWait);
             idleWaitTimer = 0f;
         }
-        //wait timer
+
         if (isWaiting)
         {
             idleWaitTimer += Time.deltaTime;
@@ -172,7 +150,8 @@ public class FloatingEye: MonoBehaviour
     private void Alert()
     {
         alertCheckTimer += Time.deltaTime;
-        Debug.Log(aggroTimer);
+        pathUpdateTimer += Time.deltaTime;
+
         if (alertCheckTimer >= alertCheckInterval)
         {
             alertCheckTimer = 0f;
@@ -182,37 +161,44 @@ public class FloatingEye: MonoBehaviour
         if (seePlayer)
         {
             aggroTimer = 0f;
-            if (Vector3.Distance(transform.position, player.position) <= attackRange)
+            float distance = Vector3.Distance(transform.position, player.position);
+
+            if (distance <= attackRange)
             {
                 ChangeState(EnemyState.Attack);
                 return;
             }
-            agent.SetDestination(player.position);
+
+            if (pathUpdateTimer >= pathUpdateInterval)
+            {
+                agent.SetDestination(player.position);
+                pathUpdateTimer = 0f;
+            }
             return;
         }
 
-        LookAroundTimer += Time.deltaTime;
-        if (LookAroundTimer >= LookAroundCooldown)
+        lookAroundTimer += Time.deltaTime;
+        if (lookAroundTimer >= lookAroundCooldown)
         {
-            LookAroundTimer = 0f;
+            lookAroundTimer = 0f;
             StartCoroutine(LookAroundRoutine());
         }
-        // fallback
-        if (!agent.hasPath && !seePlayer)
+
+        if (!agent.hasPath && !seePlayer && pathUpdateTimer >= pathUpdateInterval)
         {
-            lastKnownPlayerPosition = GuessPlayerPosition(3f);
+            lastKnownPlayerPosition = GuessPlayerPosition(5f);
             agent.SetDestination(lastKnownPlayerPosition);
+            pathUpdateTimer = 0f;
         }
+
         aggroTimer += Time.deltaTime;
         if (aggroTimer >= aggroDuration)
-        {
-            Debug.Log("Player not found, changing to idle");
             ChangeState(EnemyState.Idle);
-        }
     }
 
     private void Attack()
     {
+        pathUpdateTimer += Time.deltaTime;
         attackCooldownTimer -= Time.deltaTime;
 
         if (attackCooldownTimer <= 0f && ammo > 0)
@@ -230,12 +216,25 @@ public class FloatingEye: MonoBehaviour
 
     private void Reload()
     {
+        pathUpdateTimer += Time.deltaTime;
         MaintainReloadDistance();
+
         if (!isReloading)
         {
             isReloading = true;
             StartCoroutine(ReloadRoutine());
         }
+    }
+
+    private void PickRandomDestination() 
+    { 
+        Vector3 randomDirection = Random.insideUnitSphere * desRadius;
+        randomDirection += transform.position;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomDirection, out hit, desRadius, NavMesh.AllAreas))
+        { 
+            destination = hit.position; agent.SetDestination(destination); 
+        } 
     }
 
     private IEnumerator ReloadRoutine()
@@ -246,35 +245,31 @@ public class FloatingEye: MonoBehaviour
         ChangeState(EnemyState.Alert);
     }
 
-    private void PickRandomDestination()
+    private void FireProjectile()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * desRadius;
-        randomDirection += transform.position;
+        if (currentState != EnemyState.Attack || ammo <= 0) return;
 
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomDirection, out hit, desRadius, NavMesh.AllAreas))
-        {
-            destination = hit.position;
-            agent.SetDestination(destination);
+        ammo--;
+        attackCooldownTimer = attackCooldown;
 
-            Debug.Log("New destination picked: " + destination);
-        }
-        else
-        {
-            Debug.LogWarning("Failed to find valid NavMesh destination.");
-        }
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        Vector3 offset = new(0f, 0.375f, 0f);
+        Vector3 targetPosition = player.position + offset;
+        Vector3 direction = (targetPosition - firePoint.position).normalized;
+
+        Projectile projectile = proj.GetComponent<Projectile>();
+        projectile.Initialize(direction);
+        projectile.IgnoreShooter(GetComponent<Collider>());
     }
 
     private void SeePlayerCheck()
     {
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
-        float fovAngle = 95f;
-
         Vector3 origin = transform.position;
         Vector3 facingDirection = transform.localScale.x < 0 ? Vector3.left : Vector3.right;
-
         float angleToPlayer = Vector3.Angle(facingDirection, directionToPlayer);
-        if (angleToPlayer > fovAngle)
+
+        if (angleToPlayer > 95f)
         {
             seePlayer = false;
             return;
@@ -289,6 +284,7 @@ public class FloatingEye: MonoBehaviour
                 return;
             }
         }
+
         seePlayer = false;
     }
 
@@ -305,22 +301,29 @@ public class FloatingEye: MonoBehaviour
         transform.localScale = scale;
         yield return new WaitForSeconds(0.25f);
 
-        lastKnownPlayerPosition = GuessPlayerPosition(3f);
+        lastKnownPlayerPosition = GuessPlayerPosition(5f);
         agent.SetDestination(lastKnownPlayerPosition);
-        LookAroundTimer = 0;
+        lookAroundTimer = 0;
     }
 
     private void MaintainAttackDistance()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (pathUpdateTimer < pathUpdateInterval) return;
 
-        if (distanceToPlayer < attackRange - 0.5f)
+        if (distance < attackRange - 0.5f)
         {
-            Vector3 retreatPosition = FindRetreatPosition(player.position, attackRange);
-            if (retreatPosition != Vector3.zero)
+            Vector3 retreatPos = FindRetreatPosition(player.position, attackRange);
+            if (retreatPos != Vector3.zero)
             {
-                agent.SetDestination(retreatPosition);
+                agent.SetDestination(retreatPos);
+                pathUpdateTimer = 0f;
             }
+        }
+        else if (distance > attackRange + 0.5f)
+        {
+            agent.SetDestination(player.position);
+            pathUpdateTimer = 0f;
         }
         else
         {
@@ -330,19 +333,26 @@ public class FloatingEye: MonoBehaviour
 
     private void MaintainReloadDistance()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (pathUpdateTimer < pathUpdateInterval) return;
 
-        if (distanceToPlayer < visionRange - 0.5f)
+        if (distance < visionRange - 0.5f)
         {
-            Vector3 retreatPosition = FindRetreatPosition(player.position, visionRange);
-            if (retreatPosition != Vector3.zero)
+            Vector3 retreatPos = FindRetreatPosition(player.position, visionRange);
+            if (retreatPos != Vector3.zero)
             {
-                agent.SetDestination(retreatPosition);
+                agent.SetDestination(retreatPos);
+                pathUpdateTimer = 0f;
             }
+        }
+        else if (distance > visionRange + 0.5f)
+        {
+            agent.SetDestination(player.position);
+            pathUpdateTimer = 0f;
         }
         else
         {
-            agent.ResetPath(); 
+            agent.ResetPath();
         }
     }
 
@@ -351,52 +361,41 @@ public class FloatingEye: MonoBehaviour
         Vector3 directionAway = (transform.position - fromPosition).normalized;
         Vector3 target = fromPosition + directionAway * desiredDistance;
 
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(target, out hit, 2f, NavMesh.AllAreas))
-        {
+        if (NavMesh.SamplePosition(target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
             return hit.position;
-        }
 
         for (int i = 0; i < 8; i++)
         {
             float angle = i * 45f * Mathf.Deg2Rad;
-            Vector3 offsetDir = new Vector3(
+            Vector3 offsetDir = new(
                 directionAway.x * Mathf.Cos(angle) - directionAway.z * Mathf.Sin(angle),
                 0f,
                 directionAway.x * Mathf.Sin(angle) + directionAway.z * Mathf.Cos(angle)
             );
-            Vector3 candidate = fromPosition + offsetDir.normalized * desiredDistance;
 
+            Vector3 candidate = fromPosition + offsetDir.normalized * desiredDistance;
             if (NavMesh.SamplePosition(candidate, out hit, 1.5f, NavMesh.AllAreas))
-            {
                 return hit.position;
-            }
         }
+
         return transform.position;
     }
 
-
     private Vector3 GuessPlayerPosition(float dist)
     {
-        Vector3 randomDirection = Random.insideUnitSphere * dist;
-        randomDirection.y = 0f;
-        randomDirection += player.position;
-        
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomDirection, out hit, dist, NavMesh.AllAreas))
-        {
+        Vector3 randomDir = Random.insideUnitSphere * dist;
+        randomDir.y = 0f;
+        randomDir += player.position;
+
+        if (NavMesh.SamplePosition(randomDir, out NavMeshHit hit, dist, NavMesh.AllAreas))
             return hit.position;
-        }
-        else
-        {
-            return transform.position;
-        }
+
+        return transform.position;
     }
 
     private void FlipSpriteBasedOnMovement()
     {
         Vector3 velocity = agent.velocity;
-
         if (Mathf.Abs(velocity.x) > 0.1f)
         {
             Vector3 scale = transform.localScale;
@@ -404,13 +403,14 @@ public class FloatingEye: MonoBehaviour
             transform.localScale = scale;
         }
     }
+
     private void FacePlayer()
     {
-        float xDirection = player.position.x - transform.position.x;
-        if (Mathf.Abs(xDirection) > 0.1f)
+        float xDir = player.position.x - transform.position.x;
+        if (Mathf.Abs(xDir) > 0.1f)
         {
             Vector3 scale = transform.localScale;
-            scale.x = xDirection < 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+            scale.x = xDir < 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
             transform.localScale = scale;
         }
     }

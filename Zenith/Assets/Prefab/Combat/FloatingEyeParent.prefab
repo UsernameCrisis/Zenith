@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2081576064086719019}
   - component: {fileID: 5143051600830710145}
   - component: {fileID: 8916597720525653611}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Sprite_eye
   m_TagString: Enemy
   m_Icon: {fileID: 0}

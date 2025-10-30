@@ -50,15 +50,17 @@ public class CharacterObject : PlacedObject
     public int MaxHp { get; private set; }
     public int Damage { get; private set; }
     public int Defense { get; private set; }
+    public int Team { get; private set; }
     public bool IsPlayer { get; private set; }
 
-    public CharacterObject(string name, int hp, int damage, int defense, bool isPlayer)
+    public CharacterObject(string name, int hp, int damage, int defense, int team, bool isPlayer)
     {
         Name = name;
         HP = hp;
         MaxHp = hp;
         Damage = damage;
         Defense = defense;
+        Team = team;
         IsPlayer = isPlayer;
         ObjectType = ObjectType.Character;
     }

@@ -80,29 +80,44 @@ public class GridSelectSystem : MonoBehaviour
 
         if (selectedChar != null)
         {
-            Vector3Int clickedGrid = grid.WorldToCell(collider.transform.position);
-
-            if (collider.CompareTag("Enemy"))
-            {
-                TileData attackerTile = objectsData.GetTileAt(grid.WorldToCell(selectedChar.transform.position));
-                TileData targetTile = objectsData.GetTileAt(clickedGrid);
-
-                if (attackerTile?.PlacedObject is CharacterObject attacker &&
-                    targetTile?.PlacedObject is CharacterObject target)
-                {
-                    if (attacker.IsPlayer != target.IsPlayer) // Nanti perlu ganti jadi apakah ini tim, sementara placeholder
-                    {
-                        isAttackMode = true;
-                        HandleAttack(clickedGrid);
-                        return;
-                    }
-                }
-            }
+            Vector3Int clickedGrid = grid.WorldToCell(mousePos);
 
             if (collider.CompareTag("Grid"))
             {
-                isAttackMode = false;
-                MoveCharacter();
+                if (movePreview.IsTileReachable(clickedGrid))
+                {
+                    isAttackMode = false;
+                    MoveCharacter();
+                }
+                
+                return;
+            }
+
+            if (collider.CompareTag("Enemy"))
+            {
+                // TileData attackerTile = objectsData.GetTileAt(grid.WorldToCell(selectedChar.transform.position));
+                // TileData targetTile = objectsData.GetTileAt(clickedGrid);
+
+                // if (attackerTile?.PlacedObject is CharacterObject attacker &&
+                //     targetTile?.PlacedObject is CharacterObject target)
+                // {
+                //     if (attacker.IsPlayer != target.IsPlayer) // Nanti perlu ganti jadi apakah ini tim, sementara placeholder
+                //     {
+                //         isAttackMode = true;
+                //         HandleAttack(clickedGrid);
+                //         return;
+                //     }
+                // }
+                if (movePreview.IsTileAttackable(clickedGrid))
+                {
+
+                    HandleAttack(clickedGrid);
+                }
+                else
+                {
+                    Debug.Log("Enemy out of range!");
+                }
+                return;
             }
         }
     }

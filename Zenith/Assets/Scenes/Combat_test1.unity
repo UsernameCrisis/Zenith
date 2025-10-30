@@ -155,6 +155,9 @@ MonoBehaviour:
   selectionLayerMask:
     serializedVersion: 2
     m_Bits: 1024
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4096
 --- !u!4 &281358871
 Transform:
   m_ObjectHideFlags: 0
@@ -843,6 +846,7 @@ MonoBehaviour:
   grid: {fileID: 780557240}
   highlightPrefab: {fileID: 8720225419636420207, guid: 6e7fa750abedbfe42971f5bea14bf16c, type: 3}
   pathPrefab: {fileID: 2472174430814047340, guid: 4b1237f7931e2af49907402ee9fd7ebe, type: 3}
+  enemyHighlightPrefab: {fileID: 8720225419636420207, guid: de91152a6c5d48f42bfd0b594bc6d28c, type: 3}
   maxRange: 3
   populateMap: {fileID: 1118025223}
 --- !u!1 &1118025223

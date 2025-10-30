@@ -72,6 +72,21 @@ public class GridData
         return data;
     }
 
+    public bool IsWithinBounds(Vector3Int pos)
+{
+    // Replace with your actual grid limits if you have them stored
+    return pos.x >= -5 && pos.y >= -5 && pos.x < 5 && pos.y < 5;
+}
+
+    public int GetTeamAt(Vector3Int pos)
+    {
+        TileData tile = GetTileAt(pos);
+    
+        if (tile?.PlacedObject is CharacterObject character)
+            return character.Team;
+        return -1;
+    }
+
     public void RemoveObjectAt(Vector3Int gridPos)
     {
         if (placedObjects.TryGetValue(gridPos, out TileData data))

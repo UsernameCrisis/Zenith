@@ -6,6 +6,7 @@ public class MovementPreview : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private GameObject highlightPrefab;
     [SerializeField] private GameObject pathPrefab;
+    [SerializeField] private GameObject enemyHighlightPrefab;
     [SerializeField] private int maxRange = 3; // Default move range if not specified
     [SerializeField] private GameObject populateMap;
 
@@ -22,7 +23,9 @@ public class MovementPreview : MonoBehaviour
     private readonly List<GameObject> activeHighlights = new();
     private readonly List<GameObject> activePath = new();
     private HashSet<Vector3Int> reachableTiles = new();
-    private Vector3Int startTile;
+    private HashSet<Vector3Int> attackableTiles = new();
+    private Vector3Int startTilePos;
+    private int startTeam = -1;
 
     void Start()
     {
@@ -34,13 +37,20 @@ public class MovementPreview : MonoBehaviour
         if (moveRange <= 0)
             moveRange = maxRange; // Assign default range as move range if move range is below 0
 
-        ClearAll();
 
-        startTile = startPos;
+        startTilePos = startPos;
+
+        TileData startTile = gridData.GetTileAt(startPos);
+        if (startTile?.PlacedObject is CharacterObject sc)
+            startTeam = sc.Team;
+
         reachableTiles = BFSReachable(startPos, moveRange);
 
         foreach (var tile in reachableTiles)
             SpawnHighlight(tile, highlightPrefab);
+
+        foreach (var tile in attackableTiles)
+            SpawnHighlight(tile, enemyHighlightPrefab != null ? enemyHighlightPrefab : highlightPrefab);
     }
 
     public void ShowPathPreview(Vector3Int targetTile)
@@ -50,7 +60,13 @@ public class MovementPreview : MonoBehaviour
         if (!reachableTiles.Contains(targetTile))
             return;
 
-        List<Vector3Int> path = FindPathAStar(startTile, targetTile);
+        List<Vector3Int> path = FindPathAStar(startTilePos, targetTile);
+
+        if (path.Count == 0)
+        {
+            Debug.Log("No path found to target.");
+            return;
+        }
 
         foreach (var step in path)
             SpawnHighlight(step, pathPrefab, activePath);
@@ -61,6 +77,7 @@ public class MovementPreview : MonoBehaviour
         ClearHighlights();
         ClearPath();
         reachableTiles.Clear();
+        attackableTiles.Clear();
     }
 
     private HashSet<Vector3Int> BFSReachable(Vector3Int startPos, int moveRange)
@@ -73,6 +90,11 @@ public class MovementPreview : MonoBehaviour
         visited.Add(startPos);
         distance[startPos] = 0;
 
+        TileData startTile = gridData.GetTileAt(startPos);
+
+        if (startTile?.PlacedObject is CharacterObject startChar)
+            startTeam = startChar.Team;
+        
         while (frontier.Count > 0)
         {
             var current = frontier.Dequeue();
@@ -84,19 +106,35 @@ public class MovementPreview : MonoBehaviour
 
                 if (visited.Contains(next)) continue;
                 if (currentDist + 1 > moveRange) continue;
+                if (!gridData.IsWithinBounds(next)) continue;
+                
+                TileData tile = gridData.GetTileAt(next);
+                PlacedObject placed = tile?.PlacedObject;
 
-                // If the next tile is blocked, skip it
-                if (!gridData.CanPlaceObjectAt(next))
+                if (placed == null)
+                {
+                    frontier.Enqueue(next);
+                    visited.Add(next);
+                    distance[next] = currentDist + 1;
                     continue;
+                }
 
-                // Add it to BFS
-                frontier.Enqueue(next);
-                visited.Add(next);
-                distance[next] = currentDist + 1;
+                if (placed.ObjectType == ObjectType.Static || placed.ObjectType == ObjectType.RandomProp)
+                    continue;
+                
+                if (placed is CharacterObject charObj)
+                {
+                    if (charObj.Team != startTeam)
+                    {
+                        attackableTiles.Add(next);
+                    }
+                    continue;
+                }
             }
         }
 
         visited.Remove(startPos);
+        reachableTiles = visited;
         return visited;
     }
 
@@ -171,6 +209,16 @@ public class MovementPreview : MonoBehaviour
     public bool IsTileReachable(Vector3Int tilePos)
     {
         return reachableTiles.Contains(tilePos);
+    }
+
+    public bool IsTileAttackable(Vector3Int tilePos)
+    {
+        return attackableTiles.Contains(tilePos);
+    }
+
+    public HashSet<Vector3Int> GetReachableTiles()
+    {
+        return reachableTiles;
     }
 
     public void ClearHighlights()

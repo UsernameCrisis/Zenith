@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private Camera sceneCamera;
     [SerializeField] private LayerMask gridLayerMask;
     [SerializeField] private LayerMask selectionLayerMask;
+    [SerializeField] private LayerMask enemyLayerMask;
 
     private Vector3 lastPosition;
     private Collider lastCollider;
@@ -74,7 +75,7 @@ public class InputManager : MonoBehaviour
         Vector2 mouseScreenPos = mouseInputPosition.ReadValue<Vector2>();
         Ray ray = sceneCamera.ScreenPointToRay(mouseScreenPos);
 
-        LayerMask currentMask = selectMode ? selectionLayerMask : gridLayerMask;
+        LayerMask currentMask = selectMode ? selectionLayerMask : (gridLayerMask | enemyLayerMask);
 
         if (Physics.Raycast(ray, out RaycastHit hit, 100, currentMask))
         {

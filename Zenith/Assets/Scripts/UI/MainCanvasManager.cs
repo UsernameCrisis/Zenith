@@ -12,7 +12,7 @@ public class MainCanvasManager : MonoBehaviour
     public GoldUI PlayerGoldUI {get; private set; }
 
    public InventoryRight InventoryRight { get; set; }
-   public Inventory Inventory {get; set; }
+   public Inventory RootInventory {get; set; }
 
 
     void Awake()
@@ -35,18 +35,19 @@ public class MainCanvasManager : MonoBehaviour
         PlayerHealthUI.UpdateUI();
         PlayerHealthUI.hpText.enabled = false;
 
+        RootInventory = GetComponentInChildren<Inventory>(); 
         InventoryRight = GetComponentInChildren<InventoryRight>();
 
         PlayerGoldUI = GetComponentInChildren<GoldUI>();
         PlayerGoldUI.UpdateAmount();
 
-        InventoryRight.GetComponentInParent<Inventory>().ToggleInventory();
+        RootInventory.ToggleInventory();
     }
 
     private void Update() {
         if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
         {
-            InventoryRight.GetComponentInParent<Inventory>().ToggleInventory();
+            RootInventory.ToggleInventory();
         }
     }
 }

@@ -34,9 +34,9 @@ public class MovementPreview : MonoBehaviour
 
     public void ShowMovementRange(Vector3Int startPos, int moveRange = -1)
     {
-        if (moveRange <= 0)
-            moveRange = maxRange; // Assign default range as move range if move range is below 0
-
+        print(moveRange);
+        if (moveRange < 0)
+            moveRange = maxRange;
 
         startTilePos = startPos;
 
@@ -44,15 +44,91 @@ public class MovementPreview : MonoBehaviour
         if (startTile?.PlacedObject is CharacterObject sc)
             startTeam = sc.Team;
 
+
         reachableTiles = BFSReachable(startPos, moveRange);
 
         foreach (var tile in reachableTiles)
             SpawnHighlight(tile, highlightPrefab);
-
-        foreach (var tile in attackableTiles)
-            SpawnHighlight(tile, enemyHighlightPrefab != null ? enemyHighlightPrefab : highlightPrefab);
     }
 
+    public void ShowAttackableEnemies(Vector3Int startPos, int attackRange = 1)
+    {
+        startTilePos = startPos;
+        TileData startTile = gridData.GetTileAt(startPos);
+        if (startTile?.PlacedObject is not CharacterObject sc)
+            return;
+
+        startTeam = sc.Team;
+
+        for (int x = -attackRange; x <= attackRange; x++)
+        {
+            for (int y = -attackRange; y <= attackRange; y++)
+            {
+                if (x == 0 && y == 0) continue;                
+                if (Mathf.Abs(x) + Mathf.Abs(y) > attackRange) continue;   
+
+                Vector3Int tilePos = startPos + new Vector3Int(x, y, 0);
+
+                if (!gridData.IsWithinBounds(tilePos)) continue;
+
+                TileData tile = gridData.GetTileAt(tilePos);
+                if (tile?.PlacedObject is CharacterObject target && target.Team != startTeam)
+                {
+                    if (HasLineOfSight(startPos, tilePos))
+                    {
+                        attackableTiles.Add(tilePos);
+                        SpawnHighlight(tilePos, enemyHighlightPrefab != null ? enemyHighlightPrefab : highlightPrefab);
+                    }
+                }
+            }
+        }
+    }
+
+    private bool HasLineOfSight(Vector3Int start, Vector3Int end)
+    {
+        List<Vector3Int> line = GetLine(start, end);
+
+        for (int i = 1; i < line.Count - 1; i++)
+        {
+            TileData tile = gridData.GetTileAt(line[i]);
+            if (tile == null)
+                continue;
+
+            if (tile.PlacedObject != null)
+                return false;
+        }
+
+        return true;
+    }
+    
+    private List<Vector3Int> GetLine(Vector3Int start, Vector3Int end)
+    {
+        List<Vector3Int> line = new();
+
+        int x0 = start.x;
+        int y0 = start.y;
+        int x1 = end.x;
+        int y1 = end.y;
+
+        int dx = Mathf.Abs(x1 - x0);
+        int dy = Mathf.Abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+        int err = dx - dy;
+
+        while (true)
+        {
+            line.Add(new Vector3Int(x0, y0, 0));
+            if (x0 == x1 && y0 == y1)
+                break;
+            int e2 = 2 * err;
+            if (e2 > -dy) { err -= dy; x0 += sx; }
+            if (e2 < dx) { err += dx; y0 += sy; }
+        }
+
+        return line;
+    }
+    
     public void ShowPathPreview(Vector3Int targetTile)
     {
         ClearPath();
@@ -122,14 +198,7 @@ public class MovementPreview : MonoBehaviour
                 if (placed.ObjectType == ObjectType.Static || placed.ObjectType == ObjectType.RandomProp)
                     continue;
                 
-                if (placed is CharacterObject charObj)
-                {
-                    if (charObj.Team != startTeam)
-                    {
-                        attackableTiles.Add(next);
-                    }
-                    continue;
-                }
+                if (placed is CharacterObject) continue;
             }
         }
 
@@ -178,7 +247,7 @@ public class MovementPreview : MonoBehaviour
     private List<Vector3Int> ReconstructPath(Dictionary<Vector3Int, Vector3Int> cameFrom, Vector3Int start, Vector3Int goal)
     {
         List<Vector3Int> path = new();
-        if (!cameFrom.ContainsKey(goal)) return path; // no path found
+        if (!cameFrom.ContainsKey(goal)) return path;
 
         Vector3Int current = goal;
         while (current != start)

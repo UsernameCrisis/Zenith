@@ -11,13 +11,15 @@ public class GridSelectSystem : MonoBehaviour
     [SerializeField] AudioSource source; // gunakan untuk suara
     [SerializeField] private GameObject populateMap;
     [SerializeField] private MovementPreview movePreview;
+    [SerializeField] private CharacterActionMenu actionMenu;
 
     private Vector3 mousePos;
     private GridData objectsData;
     private Renderer cellIndicatorRenderer;
     private GameObject selectedChar;
     private Color defaultColor;
-    private bool isAttackMode = false;
+    private bool isInActionMode = false;
+    private string currentAction = null;
     
 
     void OnEnable()
@@ -26,6 +28,7 @@ public class GridSelectSystem : MonoBehaviour
         // inputManager.OnHoverExit += HideHover;
         inputManager.OnColliderClicked += ColliderClicked;
         inputManager.OnExit += ExitCharacter;
+        actionMenu.OnActionSelected += HandleMenuAction;
     }
 
     void OnDisable()
@@ -34,13 +37,14 @@ public class GridSelectSystem : MonoBehaviour
         // inputManager.OnHoverExit -= HideHover;
         inputManager.OnColliderClicked -= ColliderClicked;
         inputManager.OnExit -= ExitCharacter;
+        actionMenu.OnActionSelected -= HandleMenuAction;
     }
 
     void Start()
     {
         // ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
         objectsData = populateMap.GetComponent<PopulateMap>().objectsData;
-        cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>(); 
+        cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         defaultColor = cellIndicatorRenderer.material.color;
     }
 
@@ -78,92 +82,118 @@ public class GridSelectSystem : MonoBehaviour
             return;
         }
 
-        if (selectedChar != null)
+        if (isInActionMode)
+            HandleActionClick(collider);
+    }
+
+    private void HandleActionClick(Collider collider)
+    {
+        if (selectedChar == null || currentAction == null) return;
+
+        Vector3Int clickedGrid = grid.WorldToCell(mousePos);
+        Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject charObj = objectsData.GetTileAt(startPos)?.PlacedObject as CharacterObject;
+
+
+        switch (currentAction)
         {
-            Vector3Int clickedGrid = grid.WorldToCell(mousePos);
+            case "Move":
+                if (collider.CompareTag("Grid") && movePreview.IsTileReachable(clickedGrid))
+                    MoveCharacter(clickedGrid);
+                break;
 
-            if (collider.CompareTag("Grid"))
-            {
-                if (movePreview.IsTileReachable(clickedGrid))
-                {
-                    isAttackMode = false;
-                    MoveCharacter();
-                }
-                
-                return;
-            }
-
-            if (collider.CompareTag("Enemy"))
-            {
-                // TileData attackerTile = objectsData.GetTileAt(grid.WorldToCell(selectedChar.transform.position));
-                // TileData targetTile = objectsData.GetTileAt(clickedGrid);
-
-                // if (attackerTile?.PlacedObject is CharacterObject attacker &&
-                //     targetTile?.PlacedObject is CharacterObject target)
-                // {
-                //     if (attacker.IsPlayer != target.IsPlayer) // Nanti perlu ganti jadi apakah ini tim, sementara placeholder
-                //     {
-                //         isAttackMode = true;
-                //         HandleAttack(clickedGrid);
-                //         return;
-                //     }
-                // }
-                if (movePreview.IsTileAttackable(clickedGrid))
-                {
-
+            case "Attack":
+                if (collider.CompareTag("Enemy") && movePreview.IsTileAttackable(clickedGrid) && charObj.canStillAttack())
                     HandleAttack(clickedGrid);
-                }
                 else
-                {
                     Debug.Log("Enemy out of range!");
-                }
-                return;
-            }
+                break;
+
+            default:
+                Debug.Log($"Unhandled action: {currentAction}");
+                break;
         }
     }
     
-    private void HandleAttack(Vector3Int targetGrid)
+    private void HandleMenuAction(string action)
+    {
+        currentAction = action;
+        isInActionMode = true;
+        Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject charObj = objectsData.GetTileAt(startPos)?.PlacedObject as CharacterObject;
+
+        if (action == "Move")
+        {
+            movePreview.ShowMovementRange(startPos, charObj.RemainingMoveRange);
+            gridVisualization.SetActive(true);
+            cellIndicator.SetActive(true);
+        }
+        else if (action == "Attack")
+        {
+            if (charObj.canStillAttack())
+                movePreview.ShowAttackableEnemies(startPos, charObj.AtkRange); 
+            gridVisualization.SetActive(true);
+            cellIndicator.SetActive(true);
+            Debug.Log("Attack mode enabled.");
+        }
+        else if (action == "EndTurn")
+        {
+            EndTurn();
+        }
+        actionMenu.Hide();
+    }
+    
+    private void HandleAttack(Vector3Int targetPos)
     {
         if (objectsData == null) return;
 
-        Vector3Int attackerGrid = grid.WorldToCell(selectedChar.transform.position);
+        Vector3Int attackerPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject charObj = objectsData.GetTileAt(attackerPos)?.PlacedObject as CharacterObject;
 
-        if (attackerGrid == targetGrid)
+        if (attackerPos == targetPos)
             return; // cannot attack self
 
-        objectsData.AttackObject(attackerGrid, targetGrid);
-
-        isAttackMode = false;
-        ExitCharacter();
+        objectsData.AttackObject(attackerPos, targetPos);
+        charObj.DisableAttack();
+        movePreview.ClearAll();
+        EndAction();
     }
 
-    private void MoveCharacter()
+    private void MoveCharacter(Vector3Int targetPos)
     {
-        Vector3Int gridPos = grid.WorldToCell(mousePos);
-
-        if (!movePreview.IsTileReachable(gridPos))
-            return;
+        Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
         
-        if (objectsData.CanPlaceObjectAt(gridPos))
+        if (charObj == null)
+            return;
+
+        int distanceMoved = Mathf.Abs(targetPos.x - currentPos.x) + Mathf.Abs(targetPos.y - currentPos.y);
+
+        if (distanceMoved > charObj.RemainingMoveRange)
         {
-            objectsData.MoveObject(grid.WorldToCell(selectedChar.transform.position), gridPos);
-            selectedChar.transform.position = grid.CellToWorld(gridPos);
-            ExitCharacter();
+            Debug.Log("Not enough movement points!");
+            return;
         }
+
+        if (objectsData.CanPlaceObjectAt(targetPos))
+        {
+            objectsData.MoveObject(currentPos, targetPos);
+            selectedChar.transform.position = grid.CellToWorld(targetPos);
+            charObj.UseMovement(distanceMoved);
+
+        }
+        movePreview.ClearAll();
+        EndAction();
     }
 
     private void SelectCharacter(Collider collider)
     {
         selectedChar = collider.transform.parent.gameObject;
-        gridVisualization.SetActive(true);
-        cellIndicator.SetActive(true);
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
+        actionMenu.Show(screenPos);
 
-        inputManager.SendMessage("SetSelectMode", false);
+        inputManager.SetSelectMode(false);
 
-        Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
-        int moveRange = 3; // can be dynamic based on character stats later
-
-        movePreview.ShowMovementRange(startPos, moveRange);
     }
 
     private void ExitCharacter()
@@ -171,11 +201,36 @@ public class GridSelectSystem : MonoBehaviour
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
         movePreview.ClearAll();
+        actionMenu.Hide();
 
-        inputManager.SendMessage("SetSelectMode", true);
+        selectedChar = null;
+        isInActionMode = false;
+        currentAction = null;
+
+        inputManager.SetSelectMode(true);
 
         if (cellIndicatorRenderer != null)
             cellIndicatorRenderer.material.color = defaultColor;
+    }
+    private void EndTurn()
+    {
+        Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+        charObj.ResetMovement();
+        charObj.EnableAttack();
+        ExitCharacter();
+    }
+
+    private void EndAction()
+    {
+        isInActionMode = false;
+        currentAction = null;
+        
+        gridVisualization.SetActive(false);
+        cellIndicator.SetActive(false);
+
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
+        actionMenu.Show(screenPos);
     }
 
     private void HideHover(Collider collider)

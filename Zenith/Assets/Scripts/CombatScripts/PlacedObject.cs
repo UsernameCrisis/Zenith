@@ -52,8 +52,12 @@ public class CharacterObject : PlacedObject
     public int Defense { get; private set; }
     public int Team { get; private set; }
     public bool IsPlayer { get; private set; }
+    public int MaxMoveRange { get; private set; } = 3;
+    public int RemainingMoveRange { get; private set; }
+    public int AtkRange { get; private set; }
+    private bool canAttack = true;
 
-    public CharacterObject(string name, int hp, int damage, int defense, int team, bool isPlayer)
+    public CharacterObject(string name, int hp, int damage, int defense, int team, int atkRange, bool isPlayer)
     {
         Name = name;
         HP = hp;
@@ -63,6 +67,34 @@ public class CharacterObject : PlacedObject
         Team = team;
         IsPlayer = isPlayer;
         ObjectType = ObjectType.Character;
+        RemainingMoveRange = MaxMoveRange;
+        AtkRange = atkRange;
+    }
+
+    // Call at the start of each turn
+    public void ResetMovement()
+    {
+        RemainingMoveRange = MaxMoveRange;
+    }
+
+    public void UseMovement(int distance)
+    {
+        RemainingMoveRange = Mathf.Max(0, RemainingMoveRange - distance);
+    }
+
+    public bool CanStillMove => RemainingMoveRange > 0;
+
+    public void EnableAttack()
+    {
+        canAttack = true;
+    }
+    public void DisableAttack()
+    {
+        canAttack = false;
+    }
+    public bool canStillAttack()
+    {
+        return canAttack;
     }
 
     public void TakeDamage(int amount)

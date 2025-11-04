@@ -13,7 +13,7 @@ public class InputManager : MonoBehaviour
     private Vector3 lastPosition;
     private Collider lastCollider;
     private InputAction mouseInputPosition, mouseInputLeftClick, escapeKeyAction;
-    public event Action Onclicked, OnExit;
+    public event Action Onclicked, OnExit, OnPauseMenu;
     public event Action<Collider> OnHoverEnter, OnHoverExit, OnColliderClicked;
     private bool selectMode = true;
 
@@ -46,7 +46,7 @@ public class InputManager : MonoBehaviour
             }
         }
             
-        if (escapeKeyAction.ReadValue<float>() == 1)
+        if (escapeKeyAction.triggered)
             OnExit?.Invoke();
     }
 

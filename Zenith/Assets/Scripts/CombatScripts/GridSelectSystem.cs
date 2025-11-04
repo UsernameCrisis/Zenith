@@ -27,7 +27,7 @@ public class GridSelectSystem : MonoBehaviour
         // inputManager.OnHoverEnter += ShowHover;
         // inputManager.OnHoverExit += HideHover;
         inputManager.OnColliderClicked += ColliderClicked;
-        inputManager.OnExit += ExitCharacter;
+        inputManager.OnExit += HandleEscapePressed;
         actionMenu.OnActionSelected += HandleMenuAction;
     }
 
@@ -36,7 +36,7 @@ public class GridSelectSystem : MonoBehaviour
         // inputManager.OnHoverEnter -= ShowHover;
         // inputManager.OnHoverExit -= HideHover;
         inputManager.OnColliderClicked -= ColliderClicked;
-        inputManager.OnExit -= ExitCharacter;
+        inputManager.OnExit -= HandleEscapePressed;
         actionMenu.OnActionSelected -= HandleMenuAction;
     }
 
@@ -114,7 +114,7 @@ public class GridSelectSystem : MonoBehaviour
                 break;
         }
     }
-    
+
     private void HandleMenuAction(string action)
     {
         currentAction = action;
@@ -131,7 +131,7 @@ public class GridSelectSystem : MonoBehaviour
         else if (action == "Attack")
         {
             if (charObj.canStillAttack())
-                movePreview.ShowAttackableEnemies(startPos, charObj.AtkRange); 
+                movePreview.ShowAttackableEnemies(startPos, charObj.AtkRange);
             gridVisualization.SetActive(true);
             cellIndicator.SetActive(true);
             Debug.Log("Attack mode enabled.");
@@ -141,6 +141,28 @@ public class GridSelectSystem : MonoBehaviour
             EndTurn();
         }
         actionMenu.Hide();
+    }
+
+    private void HandleEscapePressed()
+    {
+        if (selectedChar != null)
+        {
+            // If a character is currently selected, just exit selection mode
+            ExitCharacter();
+        }
+        else
+        {
+            // Otherwise, open pause menu
+            OpenPauseMenu();
+        }
+    }
+    
+    private void OpenPauseMenu()
+    {
+        // You can call your UI or game manager here
+        Debug.Log("Pause Menu Opened");
+        // Example if you have a PauseMenuManager:
+        // PauseMenuManager.Instance.TogglePause();
     }
     
     private void HandleAttack(Vector3Int targetPos)

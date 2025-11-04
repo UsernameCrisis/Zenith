@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -72,16 +73,21 @@ public class GridData
         return data;
     }
 
+    public Dictionary<Vector3Int, TileData> GetAllTiles()
+    {
+       return placedObjects;
+    }
+
     public bool IsWithinBounds(Vector3Int pos)
-{
-    // Replace with your actual grid limits if you have them stored
-    return pos.x >= -5 && pos.y >= -5 && pos.x < 5 && pos.y < 5;
-}
+    {
+        // Replace with your actual grid limits if you have them stored
+        return pos.x >= -5 && pos.y >= -5 && pos.x < 5 && pos.y < 5;
+    }
 
     public int GetTeamAt(Vector3Int pos)
     {
         TileData tile = GetTileAt(pos);
-    
+
         if (tile?.PlacedObject is CharacterObject character)
             return character.Team;
         return -1;
@@ -95,6 +101,105 @@ public class GridData
             placedObjects.Remove(gridPos);
         }
     }
+
+    public GridSaveData ToSaveData()
+    {
+        GridSaveData saveData = new GridSaveData();
+
+        foreach (var kvp in placedObjects)
+        {
+            Vector3Int pos = kvp.Key;
+            TileData tile = kvp.Value;
+            PlacedObject obj = tile.PlacedObject;
+            if (obj == null) continue;
+
+            // Example: assuming your PlacedObject has fields like ID, Team, HP
+            TileSaveData tileSave = new TileSaveData
+            {
+                x = pos.x,
+                y = pos.y,
+                z = pos.z,
+                name = obj.Name,
+                type = obj.ObjectType
+            };
+
+            if (obj is CharacterObject character)
+            {
+                tileSave.hp = character.HP;
+                tileSave.maxHp = character.MaxHp;
+                tileSave.damage = character.Damage;
+                tileSave.defense = character.Defense;
+                tileSave.team = character.Team;
+                tileSave.isPlayer = character.IsPlayer;
+                tileSave.atkRange = character.AtkRange;
+            }
+
+            saveData.tiles.Add(tileSave);
+        }
+        return saveData;
+    }
+
+    public static GridData FromSaveData(GridSaveData saveData, ObjectDatabaseSO database)
+    {
+        GridData grid = new GridData();
+
+        foreach (TileSaveData tileSave in saveData.tiles)
+        {
+            Vector3Int pos = new Vector3Int(tileSave.x, tileSave.y, tileSave.z);
+            PlacedObject placedObject = null;
+
+            switch (tileSave.type)
+            {
+                case ObjectType.Static:
+                    placedObject = new StaticObject(tileSave.name);
+                    break;
+
+                case ObjectType.RandomProp:
+                    placedObject = new RandomObject(tileSave.name);
+                    break;
+
+                case ObjectType.Character:
+                    placedObject = new CharacterObject(
+                        tileSave.name,
+                        tileSave.hp,
+                        tileSave.damage,
+                        tileSave.defense,
+                        tileSave.team,
+                        tileSave.atkRange,
+                        tileSave.isPlayer
+                    );
+                    break;
+            }
+
+            if (placedObject != null)
+            {
+                grid.AddObjectAt(pos, placedObject, 0);
+            }
+        }
+
+        return grid;
+    }
+}
+
+[System.Serializable]
+public class GridSaveData
+{
+    public List<TileSaveData> tiles = new();
+}
+
+[System.Serializable]
+public class TileSaveData
+{
+    public int x, y, z;
+    public string name;
+    public ObjectType type;
+    public int hp;
+    public int maxHp;
+    public int damage;
+    public int defense;
+    public int team;
+    public bool isPlayer;
+    public int atkRange;
 }
 
 public class TileData

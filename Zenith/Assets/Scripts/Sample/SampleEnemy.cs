@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -134,8 +135,10 @@ public class SampleEnemy: MonoBehaviour
 
         Vector3 offset = new(0f, 0.375f, 0f);
         Vector3 targetPosition = currentTarget.transform.position + offset;
-        Vector3 direction = facingRight ? (currentTarget.transform.position - firePoint.position).normalized :
-        (firePoint.position - currentTarget.transform.position).normalized;
+        // Vector3 direction = facingRight ? (firePoint.position - currentTarget.transform.position).normalized :
+        // (currentTarget.transform.position - firePoint.position).normalized;
+
+        Vector3 direction = (currentTarget.transform.position - firePoint.position).normalized;
 
         direction.y = 0;
 
@@ -161,7 +164,7 @@ public class SampleEnemy: MonoBehaviour
         //     return;
         // }
 
-        if (enemyVision.visibleTargets != null && currentTarget == null)
+        if (currentTarget == null)
         {
             Debug.Log("See player, moving to alert");
             ChangeState(EnemyState.Alert);

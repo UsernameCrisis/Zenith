@@ -91,11 +91,10 @@ public class EnemyVision : MonoBehaviour
 
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                 {
-                    objectsInRange.Add(target.gameObject);
-                    // if (!visibleTargets.Contains(target.gameObject) && (target.gameObject != this.gameObject))
-                    // {
-                    //     visibleTargets.Add(target.gameObject);
-                    // }
+                    if (target.gameObject != this.gameObject)
+                    {
+                        objectsInRange.Add(target.gameObject);
+                    }
                 }
             }
         }
@@ -107,14 +106,19 @@ public class EnemyVision : MonoBehaviour
         }
 
         // Debug.Log("GameObject: " + gameObject.GetInstanceID() + " " + "Target :" + visibleTargets.Count);
+        if (!visibleTargets.Contains(Target)) Target = null;
 
-        if (Target == null && visibleTargets.Count > 0)
+        if (Target == null)
         {
-            Target = visibleTargets[0].gameObject;
-            canSeeTarget = true;
-        }
-        else if (visibleTargets.Count == 0)  {
-            canSeeTarget = true;
+            if (visibleTargets.Count > 0)
+            {
+                Target = visibleTargets[0].gameObject;
+                canSeeTarget = true;
+            }
+            else if (visibleTargets.Count == 0)
+            {
+                canSeeTarget = false;
+            }
         }
     }
 }

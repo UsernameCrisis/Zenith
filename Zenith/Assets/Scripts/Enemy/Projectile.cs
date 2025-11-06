@@ -21,6 +21,7 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other == shooterCollider) return;
+        if (other.gameObject.layer == LayerMask.NameToLayer("Projectile")) return;
 
         if (other.CompareTag("Player"))
         {

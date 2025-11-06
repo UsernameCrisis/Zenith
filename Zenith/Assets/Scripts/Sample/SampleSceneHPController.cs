@@ -6,6 +6,6 @@ public class SampleSceneHPController : MonoBehaviour
     public Image hpbar;
     void Update()
     {
-        hpbar.fillAmount = GetComponentInParent<Sample_Character>().GetHPPercentage();
+        hpbar.fillAmount = GetComponentInParent<SampleEnemy>().GetHPPercentage();
     }
 }

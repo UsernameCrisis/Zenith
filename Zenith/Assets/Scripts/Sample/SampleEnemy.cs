@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -52,20 +53,38 @@ public class SampleEnemy: MonoBehaviour
 
     private bool isReloading = false;
 
+    public EnemyVision enemyVision;
+    [HideInInspector] public GameObject currentTarget;
+    [HideInInspector] public bool facingRight = false;
+    
+    [SerializeField] private float maxhp;
+    [SerializeField] private float hp;
+    public int projectileDamage = 0;
+
     private void Start()
     {
         ammo = maxAmmo;
         originalSpeed = agent.speed;
-        PickRandomDestination();
-        ChangeState(EnemyState.Idle);
+        // PickRandomDestination();
+        // ChangeState(EnemyState.Idle);
+    }
+
+    void FixedUpdate()
+    {
+        currentTarget = enemyVision.Target;
+
+        if (hp == 0) Destroy(gameObject);
     }
 
     public virtual void Update()
     {
+        // Debug.Log(seePlayer + " " + gameObject.GetInstanceID());
         // lock rotation
         transform.rotation = Quaternion.identity;
+        SeePlayerCheck();
 
-        if (currentState == EnemyState.Attack)
+        // if (currentState == EnemyState.Attack)
+        if (seePlayer)
             FacePlayer();
         else
             FlipSpriteBasedOnMovement();
@@ -111,10 +130,14 @@ public class SampleEnemy: MonoBehaviour
         attackCooldownTimer = attackCooldown;
 
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        proj.GetComponent<Projectile>().attackPower = projectileDamage;
 
         Vector3 offset = new(0f, 0.375f, 0f);
-        Vector3 targetPosition = player.position + offset;
-        Vector3 direction = (targetPosition - firePoint.position).normalized;
+        Vector3 targetPosition = currentTarget.transform.position + offset;
+        Vector3 direction = facingRight ? (currentTarget.transform.position - firePoint.position).normalized :
+        (firePoint.position - currentTarget.transform.position).normalized;
+
+        direction.y = 0;
 
         Projectile projectile = proj.GetComponent<Projectile>();
         projectile.Initialize(direction);
@@ -131,7 +154,14 @@ public class SampleEnemy: MonoBehaviour
             SeePlayerCheck();
         }
 
-        if (seePlayer)
+        // if (seePlayer)
+        // {
+        //     Debug.Log("See player, moving to alert");
+        //     ChangeState(EnemyState.Alert);
+        //     return;
+        // }
+
+        if (enemyVision.visibleTargets != null && currentTarget == null)
         {
             Debug.Log("See player, moving to alert");
             ChangeState(EnemyState.Alert);
@@ -153,7 +183,7 @@ public class SampleEnemy: MonoBehaviour
         if (!isWaiting && agent.remainingDistance <= minDistToDest && !agent.pathPending)
         {
             isWaiting = true;
-            idleWaitDuration = Random.Range(minWait, maxWait);
+            idleWaitDuration = UnityEngine.Random.Range(minWait, maxWait);
             idleWaitTimer = 0f;
         }
         //wait timer
@@ -182,12 +212,12 @@ public class SampleEnemy: MonoBehaviour
         if (seePlayer)
         {
             aggroTimer = 0f;
-            if (Vector3.Distance(transform.position, player.position) <= attackRange)
+            if (Vector3.Distance(transform.position, currentTarget.transform.position) <= attackRange)
             {
                 ChangeState(EnemyState.Attack);
                 return;
             }
-            agent.SetDestination(player.position);
+            agent.SetDestination(currentTarget.transform.position);
             return;
         }
 
@@ -248,7 +278,7 @@ public class SampleEnemy: MonoBehaviour
 
     private void PickRandomDestination()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * desRadius;
+        Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * desRadius;
         randomDirection += transform.position;
 
         NavMeshHit hit;
@@ -267,30 +297,32 @@ public class SampleEnemy: MonoBehaviour
 
     public virtual void SeePlayerCheck()
     {
-        player = GameManager.Instance.Player.transform;
-        Vector3 directionToPlayer = (player.position - transform.position).normalized;
-        float fovAngle = 95f;
+        seePlayer = enemyVision.canSeeTarget;
+        // player = GameManager.Instance.Player.transform;
+        // if (currentTarget == null) return;
+        // Vector3 directionToPlayer = (currentTarget.transform.position - transform.position).normalized;
+        // float fovAngle = 95f;
 
-        Vector3 origin = transform.position;
-        Vector3 facingDirection = transform.localScale.x < 0 ? Vector3.left : Vector3.right;
+        // Vector3 origin = transform.position;
+        // Vector3 facingDirection = transform.localScale.x < 0 ? Vector3.left : Vector3.right;
 
-        float angleToPlayer = Vector3.Angle(facingDirection, directionToPlayer);
-        if (angleToPlayer > fovAngle)
-        {
-            seePlayer = false;
-            return;
-        }
+        // float angleToPlayer = Vector3.Angle(facingDirection, directionToPlayer);
+        // if (angleToPlayer > fovAngle)
+        // {
+        //     seePlayer = false;
+        //     return;
+        // }
 
-        if (Physics.Raycast(origin, directionToPlayer, out RaycastHit hit, visionRange))
-        {
-            if (hit.transform == player)
-            {
-                seePlayer = true;
-                lastKnownPlayerPosition = player.position;
-                return;
-            }
-        }
-        seePlayer = false;
+        // if (Physics.Raycast(origin, directionToPlayer, out RaycastHit hit, visionRange))
+        // {
+        //     if (hit.transform == currentTarget.transform)
+        //     {
+        //         seePlayer = true;
+        //         lastKnownPlayerPosition = currentTarget.transform.position;
+        //         return;
+        //     }
+        // }
+        // seePlayer = false;
     }
 
     private IEnumerator LookAroundRoutine()
@@ -313,11 +345,11 @@ public class SampleEnemy: MonoBehaviour
 
     private void MaintainAttackDistance()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, currentTarget.transform.position);
 
         if (distanceToPlayer < attackRange - 0.5f)
         {
-            Vector3 retreatPosition = FindRetreatPosition(player.position, attackRange);
+            Vector3 retreatPosition = FindRetreatPosition(currentTarget.transform.position, attackRange);
             if (retreatPosition != Vector3.zero)
             {
                 agent.SetDestination(retreatPosition);
@@ -331,11 +363,11 @@ public class SampleEnemy: MonoBehaviour
 
     private void MaintainReloadDistance()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, currentTarget.transform.position);
 
         if (distanceToPlayer < visionRange - 0.5f)
         {
-            Vector3 retreatPosition = FindRetreatPosition(player.position, visionRange);
+            Vector3 retreatPosition = FindRetreatPosition(currentTarget.transform.position, visionRange);
             if (retreatPosition != Vector3.zero)
             {
                 agent.SetDestination(retreatPosition);
@@ -379,9 +411,9 @@ public class SampleEnemy: MonoBehaviour
 
     private Vector3 GuessPlayerPosition(float dist)
     {
-        Vector3 randomDirection = Random.insideUnitSphere * dist;
+        Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * dist;
         randomDirection.y = 0f;
-        randomDirection += player.position;
+        if (currentTarget != null) randomDirection += currentTarget.transform.position;
         
         NavMeshHit hit;
         if (NavMesh.SamplePosition(randomDirection, out hit, dist, NavMesh.AllAreas))
@@ -401,18 +433,63 @@ public class SampleEnemy: MonoBehaviour
         if (Mathf.Abs(velocity.x) > 0.1f)
         {
             Vector3 scale = transform.localScale;
-            scale.x = velocity.x < 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+            if (velocity.x < 0)
+            {
+                scale.x = -Mathf.Abs(scale.x);
+                enemyVision.rotation = -90;
+                facingRight = false;
+            }
+            else
+            {
+                scale.x = Mathf.Abs(scale.x);
+                enemyVision.rotation = 90;
+                facingRight = true;
+            }
             transform.localScale = scale;
+
+            enemyVision.rotation = velocity.x < 0 ? -90 : 90;
         }
     }
     private void FacePlayer()
     {
-        float xDirection = player.position.x - transform.position.x;
+        if (currentTarget == null) return;
+        
+        float xDirection = currentTarget.transform.position.x - transform.position.x;
         if (Mathf.Abs(xDirection) > 0.1f)
         {
             Vector3 scale = transform.localScale;
+            if (xDirection < 0)
+            {
+                scale.x = -Mathf.Abs(scale.x);
+                enemyVision.rotation = -90;
+                facingRight = false;
+            }
+            else
+            {
+                scale.x = Mathf.Abs(scale.x);
+                enemyVision.rotation = 90;
+                facingRight = true;
+            }
             scale.x = xDirection < 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
             transform.localScale = scale;
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Projectile"))
+        {
+            TakeDamage(other.gameObject.GetComponent<Projectile>().attackPower);
+        }
+    }
+    
+    public void TakeDamage(int damage)
+    {
+        hp = MathF.Max(0, hp - damage);
+    }
+
+    public float GetHPPercentage()
+    {
+        return hp / maxhp;
     }
 }

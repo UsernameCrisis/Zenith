@@ -10,11 +10,9 @@ public class FieldOfViewEditor : Editor
     {
         EnemyVision fov = (EnemyVision)target;
 
-        // Draw FOV radius
         Handles.color = Color.white;
         Handles.DrawWireArc(fov.transform.position, Vector3.up, Vector3.forward, 360, fov.radius);
 
-        // Draw vision cone edges
         Vector3 viewAngle1 = DirectionFromAngle(fov.transform.eulerAngles.y, -fov.angle / 2, ref fov);
         Vector3 viewAngle2 = DirectionFromAngle(fov.transform.eulerAngles.y, fov.angle / 2, ref fov);
 
@@ -22,7 +20,6 @@ public class FieldOfViewEditor : Editor
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngle1 * fov.radius);
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngle2 * fov.radius);
 
-        // ✅ Draw a green line to every visible target
         if (fov.visibleTargets != null && fov.visibleTargets.Count > 0)
         {
             Handles.color = Color.green;

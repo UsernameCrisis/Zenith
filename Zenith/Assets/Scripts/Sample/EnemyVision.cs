@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager.UI;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class EnemyVision : MonoBehaviour
@@ -15,8 +17,9 @@ public class EnemyVision : MonoBehaviour
 
     public LayerMask targetMask;
     public LayerMask obstructionMask;
-    public bool canSeeTarget;
-    public float rotation;
+    [HideInInspector] public bool canSeeTarget;
+    [HideInInspector] public float rotation;
+    [HideInInspector] public GameObject Target;
 
     void Start()
     {
@@ -69,24 +72,11 @@ public class EnemyVision : MonoBehaviour
 
     public void FieldOfViewCheck()
     {
+        // Debug.Log(canSeeTarget + " " + gameObject.GetInstanceID());
         //sphere
         Collider[] rangeChecks = Physics.OverlapSphere(transform.position, radius, targetMask);
 
         HashSet<GameObject> objectsInRange = new HashSet<GameObject>();
-        foreach (Collider col in rangeChecks)
-        {
-            objectsInRange.Add(col.gameObject);
-        }
-        
-        for (int i = 0; i < visibleTargets.Count; i++)
-        {
-            GameObject current = visibleTargets[i];
-
-            if (!objectsInRange.Contains(current))
-            {
-                visibleTargets.RemoveAt(i);
-            }
-        }
 
         //check cone
         foreach (Collider targetCollider in rangeChecks)
@@ -101,14 +91,30 @@ public class EnemyVision : MonoBehaviour
 
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                 {
-                    if (!visibleTargets.Contains(target.gameObject) && (target.gameObject != this.gameObject))
-                    {
-                        visibleTargets.Add(target.gameObject);
-                    }
+                    objectsInRange.Add(target.gameObject);
+                    // if (!visibleTargets.Contains(target.gameObject) && (target.gameObject != this.gameObject))
+                    // {
+                    //     visibleTargets.Add(target.gameObject);
+                    // }
                 }
             }
         }
 
-        Debug.Log("GameObject: " + gameObject.GetInstanceID() + " " + "Target :" + visibleTargets.Count);
+        visibleTargets.Clear();
+        foreach (GameObject target in objectsInRange)
+        {
+            visibleTargets.Add(target);
+        }
+
+        // Debug.Log("GameObject: " + gameObject.GetInstanceID() + " " + "Target :" + visibleTargets.Count);
+
+        if (Target == null && visibleTargets.Count > 0)
+        {
+            Target = visibleTargets[0].gameObject;
+            canSeeTarget = true;
+        }
+        else if (visibleTargets.Count == 0)  {
+            canSeeTarget = true;
+        }
     }
 }

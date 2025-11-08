@@ -2,11 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class PlayerHealthUI : MonoBehaviour
 {
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
+    [SerializeField] private TextMeshProUGUI goldtext;
     [SerializeField] private PlayerOverworldAttributes playerOverworldAttributes;
 
     [Header("Visual Feedback")]
@@ -14,6 +16,7 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Image fillImage;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
+    private Inventory inventory;
 
 
     void Awake()
@@ -27,7 +30,19 @@ public class PlayerHealthUI : MonoBehaviour
     void Start()
     {
         hpText.enabled = false;
+        goldtext.enabled = false;
         UpdateUI(playerOverworldAttributes.currentHP, playerOverworldAttributes.maxHP);
+
+        inventory = GetComponentInChildren<Inventory>();
+        inventory.ToggleInventory();
+    }
+
+    void Update()
+    {
+        if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
+        {
+            inventory.ToggleInventory();
+        }       
     }
 
     void UpdateUI(int current, int max)
@@ -49,12 +64,14 @@ public class PlayerHealthUI : MonoBehaviour
     {
         Debug.Log("Showing");
         hpText.enabled = true;
+        goldtext.enabled = true;
     }
 
     public void HideHPText()
     {
         Debug.Log("Not Showing");
         hpText.enabled = false;
+        goldtext.enabled = false;
     }
 
 

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.InputSystem;
+using UnityEngine.Analytics;
 
 public class PlayerHealthUI : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
     private Inventory inventory;
+    public GameObject interactUI;
+    private GameObject currentInteractableObject;
 
 
     void Awake()
@@ -42,7 +45,15 @@ public class PlayerHealthUI : MonoBehaviour
         if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
         {
             inventory.ToggleInventory();
-        }       
+        }
+
+        if (InteractUIIsActive())
+        {
+            if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
+            {
+                if (currentInteractableObject != null) currentInteractableObject.GetComponent<Interactable>().OnInteract();
+            }   
+        }    
     }
 
     void UpdateUI(int current, int max)
@@ -109,4 +120,23 @@ public class PlayerHealthUI : MonoBehaviour
         yield return new WaitForSeconds(duration);
         fillImage.color = normalColor;
     }
+
+    public void ToggleInteractUI(GameObject Interactible)
+    {
+        //kalo ada yang bisa di interact muncul imagenya
+        //terus dilock ke interactible lain sampe ontriggerexit ditrigger ini function lagi
+
+        if (currentInteractableObject == null)
+        {
+            currentInteractableObject = Interactible;
+            interactUI.SetActive(!interactUI.active);
+            return;
+        }
+        if (currentInteractableObject == Interactible)
+        {
+            interactUI.SetActive(!interactUI.active);
+            currentInteractableObject = null;
+        }
+    }
+    public bool InteractUIIsActive() { return interactUI.active; }
 }

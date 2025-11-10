@@ -12,7 +12,6 @@ public class InventoryRight : MonoBehaviour
         //new row
         if (!rows[rows.Count - 1].GetComponent<InventoryRow>().RowIsEmpty())
         {
-            Debug.Log("AddRow");
             GameObject newRow = Instantiate(_rowPrefab);
             rows.Add(newRow);
             newRow.transform.SetParent(gameObject.transform);

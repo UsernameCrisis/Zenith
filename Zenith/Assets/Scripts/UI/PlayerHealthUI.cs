@@ -149,4 +149,5 @@ public class PlayerHealthUI : MonoBehaviour
         }
     }
     public bool InteractUIIsActive() { return interactUI.active; }
+    public void EmptyCurrentInteractable() { currentInteractableObject = null; }
 }

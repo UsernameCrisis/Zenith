@@ -32,6 +32,9 @@ public class InputManager : MonoBehaviour
 
     private void HandleClickInputs()
     {
+        if (escapeKeyAction.triggered)
+            OnExit?.Invoke();
+            
         if (EventSystem.current != null && IsPointerOverUI())
             return;
 
@@ -46,8 +49,7 @@ public class InputManager : MonoBehaviour
             }
         }
             
-        if (escapeKeyAction.triggered)
-            OnExit?.Invoke();
+        
     }
 
     private void HandleHoverDetection()
@@ -94,6 +96,11 @@ public class InputManager : MonoBehaviour
     public void SetSelectMode(bool value)
     {
         selectMode = value;
+    }
+
+    public bool getSelectMode()
+    {
+        return selectMode;
     }
 
     // public Collider GetHoveredCollider()

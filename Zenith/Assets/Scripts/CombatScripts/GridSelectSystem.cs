@@ -12,6 +12,8 @@ public class GridSelectSystem : MonoBehaviour
     [SerializeField] private GameObject populateMap;
     [SerializeField] private MovementPreview movePreview;
     [SerializeField] private CharacterActionMenu actionMenu;
+    [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private CombatCameraMovement cameraMovement;
 
     private Vector3 mousePos;
     private GridData objectsData;
@@ -20,6 +22,7 @@ public class GridSelectSystem : MonoBehaviour
     private Color defaultColor;
     private bool isInActionMode = false;
     private string currentAction = null;
+    private bool isPaused = false;
     
 
     void OnEnable()
@@ -28,7 +31,8 @@ public class GridSelectSystem : MonoBehaviour
         // inputManager.OnHoverExit += HideHover;
         inputManager.OnColliderClicked += ColliderClicked;
         inputManager.OnExit += HandleEscapePressed;
-        actionMenu.OnActionSelected += HandleMenuAction;
+        actionMenu.OnActionSelected += HandleActionMenu;
+        pauseMenu.OnButtonSelected += HandlePauseMenu;
     }
 
     void OnDisable()
@@ -37,7 +41,8 @@ public class GridSelectSystem : MonoBehaviour
         // inputManager.OnHoverExit -= HideHover;
         inputManager.OnColliderClicked -= ColliderClicked;
         inputManager.OnExit -= HandleEscapePressed;
-        actionMenu.OnActionSelected -= HandleMenuAction;
+        actionMenu.OnActionSelected -= HandleActionMenu;
+        pauseMenu.OnButtonSelected -= HandlePauseMenu;
     }
 
     void Start()
@@ -115,13 +120,12 @@ public class GridSelectSystem : MonoBehaviour
         }
     }
 
-    private void HandleMenuAction(string action)
+    private void HandleActionMenu(string action)
     {
         currentAction = action;
         isInActionMode = true;
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
         CharacterObject charObj = objectsData.GetTileAt(startPos)?.PlacedObject as CharacterObject;
-
         if (action == "Move")
         {
             movePreview.ShowMovementRange(startPos, charObj.RemainingMoveRange);
@@ -143,26 +147,51 @@ public class GridSelectSystem : MonoBehaviour
         actionMenu.Hide();
     }
 
+    private void HandlePauseMenu(string button)
+    {
+        if (button == "Resume")
+        {
+            Resume();
+        }
+        else if (button == "Settings")
+        {
+            print("Settings pressed");
+        }
+        else if (button == "Exit")
+        {
+            print("Exit pressed");
+        }
+    }
+
     private void HandleEscapePressed()
     {
-        if (selectedChar != null)
+        if (isPaused)
         {
-            // If a character is currently selected, just exit selection mode
+            print("tes");
+            Resume();
+        }
+        else if (selectedChar != null)
+        {
             ExitCharacter();
         }
         else
         {
-            // Otherwise, open pause menu
             OpenPauseMenu();
         }
     }
     
+    private void Resume()
+    {
+        Time.timeScale = 1;
+        isPaused = false;
+        pauseMenu.Hide();
+    }
+    
     private void OpenPauseMenu()
     {
-        // You can call your UI or game manager here
-        Debug.Log("Pause Menu Opened");
-        // Example if you have a PauseMenuManager:
-        // PauseMenuManager.Instance.TogglePause();
+        pauseMenu.Show();
+        isPaused = true;
+        Time.timeScale = 0;
     }
     
     private void HandleAttack(Vector3Int targetPos)
@@ -213,6 +242,8 @@ public class GridSelectSystem : MonoBehaviour
         selectedChar = collider.transform.parent.gameObject;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
         actionMenu.Show(screenPos);
+
+        cameraMovement.FocusOnCharacter(selectedChar.transform); 
 
         inputManager.SetSelectMode(false);
 

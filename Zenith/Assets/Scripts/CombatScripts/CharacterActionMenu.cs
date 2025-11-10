@@ -6,7 +6,7 @@ public class CharacterActionMenu : MonoBehaviour
 {
     public Button attackButton;
     public Button moveButton;
-    public Button skillButton;
+    // public Button skillButton;
     public Button itemButton;
     public Button endButton;
 
@@ -16,7 +16,7 @@ public class CharacterActionMenu : MonoBehaviour
     {
         attackButton.onClick.AddListener(() => OnActionSelected?.Invoke("Attack"));
         moveButton.onClick.AddListener(() => OnActionSelected?.Invoke("Move"));
-        skillButton.onClick.AddListener(() => OnActionSelected?.Invoke("Skill"));
+        // skillButton.onClick.AddListener(() => OnActionSelected?.Invoke("Skill"));
         itemButton.onClick.AddListener(() => OnActionSelected?.Invoke("Item"));
         endButton.onClick.AddListener(() => OnActionSelected?.Invoke("EndTurn"));
         gameObject.SetActive(false);
@@ -24,12 +24,14 @@ public class CharacterActionMenu : MonoBehaviour
 
     public void Show(Vector3 worldPos)
     {
-        transform.position = Camera.main.WorldToScreenPoint(worldPos);
         gameObject.SetActive(true);
+        transform.position = worldPos;
+        print("show action");
     }
 
     public void Hide()
     {
+        print("action hide");
         gameObject.SetActive(false);
     }
 }

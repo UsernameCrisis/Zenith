@@ -52,8 +52,13 @@ public class PlayerHealthUI : MonoBehaviour
             if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
             {
                 if (currentInteractableObject != null) currentInteractableObject.GetComponent<Interactable>().OnInteract();
-            }   
-        }    
+            }
+        } 
+
+        if (inventory.gameObject.active)
+        {
+            
+        }   
     }
 
     void UpdateUI(int current, int max)

@@ -8,6 +8,7 @@ public class InventoryRight : MonoBehaviour
 
     public void CheckIfNeededNewRow()
     {
+        if (!transform.parent.GetComponent<Inventory>().expandable) return;
         //new row
         if (!rows[rows.Count - 1].GetComponent<InventoryRow>().RowIsEmpty())
         {

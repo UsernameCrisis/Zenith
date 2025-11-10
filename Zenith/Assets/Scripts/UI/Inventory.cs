@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Inventory : MonoBehaviour
 {
@@ -16,5 +17,14 @@ public class Inventory : MonoBehaviour
     public void AddItem(Item item)
     {
         GetComponentInChildren<InventoryRight>().AddItem(item);
+    }
+
+    void Update()
+    {
+        if (InputSystem.actions.FindAction("ExitSelect").WasPressedThisFrame())
+        {
+            if (gameObject.active) gameObject.SetActive(false);
+            if (transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active) transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
+        }
     }
 }

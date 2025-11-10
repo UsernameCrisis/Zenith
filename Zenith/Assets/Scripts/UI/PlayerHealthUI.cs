@@ -44,6 +44,7 @@ public class PlayerHealthUI : MonoBehaviour
     {
         if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
         {
+            Debug.Log("hit 1");
             inventory.ToggleInventory();
         }
 
@@ -55,10 +56,14 @@ public class PlayerHealthUI : MonoBehaviour
             }
         } 
 
-        if (inventory.gameObject.active)
-        {
-            
-        }   
+        // if (inventory.gameObject.active)
+        // {
+        //     if (InputSystem.actions.FindAction("ExitSelect").WasPressedThisFrame());
+        //     {
+        //         Debug.Log("hit 2");
+        //         inventory.ToggleInventory();
+        //     }
+        // }   
     }
 
     void UpdateUI(int current, int max)

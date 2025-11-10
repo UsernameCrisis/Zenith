@@ -15,4 +15,28 @@ public class InventoryRow : MonoBehaviour
         }
         return true;
     }
+
+    public bool RowHasEmptySlot()
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (!slots[i].ContainsItem())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void AddItemToNextEmptySlot(Item item)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (!slots[i].ContainsItem())
+            {
+                slots[i].SetItem(item);
+                return;
+            }
+        }
+    }
 }

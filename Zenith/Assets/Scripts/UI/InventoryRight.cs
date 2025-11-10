@@ -29,4 +29,18 @@ public class InventoryRight : MonoBehaviour
             }
         }
     }
+
+    public void AddItem(Item item)
+    {
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (rows[i].GetComponent<InventoryRow>().RowHasEmptySlot())
+            {
+                rows[i].GetComponent<InventoryRow>().AddItemToNextEmptySlot(item);
+                CheckIfNeededNewRow();
+                return;
+            }
+        }
+
+    }
 }

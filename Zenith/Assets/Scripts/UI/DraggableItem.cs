@@ -6,6 +6,12 @@ using UnityEngine.UI;
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [HideInInspector] public Transform _parentAfterDrag;
+    public Item item;
+
+    public void Initialize()
+    {
+        GetComponent<SpriteRenderer>().sprite = item.sprite;
+    }
     public void OnBeginDrag(PointerEventData eventData)
     {
         _parentAfterDrag = transform.parent;

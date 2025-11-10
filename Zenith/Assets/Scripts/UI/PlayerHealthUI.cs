@@ -17,7 +17,7 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Image fillImage;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
-    private Inventory inventory;
+    [HideInInspector] public Inventory inventory;
     public GameObject interactUI;
     private GameObject currentInteractableObject;
 

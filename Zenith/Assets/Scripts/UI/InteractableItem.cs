@@ -4,7 +4,7 @@ using UnityEngine;
 public class InteractableItem : MonoBehaviour, Interactable
 {
 
-    public DraggableItem item;
+    public Item item;
     public GameObject Object
     {
         get { return gameObject; }
@@ -12,7 +12,8 @@ public class InteractableItem : MonoBehaviour, Interactable
 
     public void OnInteract()
     {
-        Debug.Log("Interacted");
+        transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.AddItem(item);
+        Destroy(this.gameObject);
     }
 
     void OnTriggerEnter(Collider other)

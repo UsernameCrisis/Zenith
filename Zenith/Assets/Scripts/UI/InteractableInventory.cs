@@ -28,5 +28,14 @@ public class InteractableInventory : MonoBehaviour, Interactable
         {
             transform.parent.GetComponentInParent<SceneRoot>().MainUI.ToggleInteractUI(this.gameObject);
         }
+        if (other.CompareTag("Player") && transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.gameObject.active)
+        {
+            transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.ToggleInventory();
+        }
+        
+        if (other.CompareTag("Player") && transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active)
+        {
+            transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
+        }
     }
 }

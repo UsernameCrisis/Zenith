@@ -44,14 +44,22 @@ public class PlayerHealthUI : MonoBehaviour
     {
         if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
         {
-            Debug.Log("hit 1");
             inventory.ToggleInventory();
+            inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
+            
         }
 
         if (InteractUIIsActive())
         {
             if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
             {
+                if (inventory.gameObject.active)
+                {
+                    transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
+                    inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
+                    inventory.SetActive(false);
+                    return;
+                }
                 if (currentInteractableObject != null) currentInteractableObject.GetComponent<Interactable>().OnInteract();
             }
         } 

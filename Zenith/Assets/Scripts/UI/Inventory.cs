@@ -24,7 +24,7 @@ public class Inventory : MonoBehaviour
         if (InputSystem.actions.FindAction("ExitSelect").WasPressedThisFrame())
         {
             if (gameObject.active) gameObject.SetActive(false);
-            if (transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active) transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
+            // if (transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active) transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
         }
     }
 }

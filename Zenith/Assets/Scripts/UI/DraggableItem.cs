@@ -16,7 +16,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         _parentAfterDrag = transform.parent;
-        transform.SetParent(transform.root);
+        transform.SetParent(FindAnyObjectByType<Canvas>().transform, true);
         transform.SetAsLastSibling();
         this.GetComponent<Image>().raycastTarget = false;
     }

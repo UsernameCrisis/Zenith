@@ -12,6 +12,7 @@ public class InteractableInventory : MonoBehaviour, Interactable
     {
         transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.SetActive(true);
         transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(true);
+        transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.GetComponentInChildren<InventoryLeft>().SetInteractableInventoryActive();
     }
 
     void OnTriggerEnter(Collider other)

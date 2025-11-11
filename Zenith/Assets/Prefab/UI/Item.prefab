@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   _parentAfterDrag: {fileID: 0}
-  item: {fileID: 0}
+  item: {fileID: 11400000, guid: 8120c7383b6719e498764b37d8b5a59f, type: 2}
 --- !u!212 &6101187524971506964
 SpriteRenderer:
   m_ObjectHideFlags: 0

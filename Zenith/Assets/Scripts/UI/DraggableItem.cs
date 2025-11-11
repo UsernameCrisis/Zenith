@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -30,6 +31,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         transform.SetParent(_parentAfterDrag);
         this.GetComponent<Image>().raycastTarget = true;
 
-        _parentAfterDrag.GetComponentInParent<InventoryRight>().CheckIfNeededNewRow();
+        try
+        {
+            _parentAfterDrag.GetComponentInParent<InventoryRight>().CheckIfNeededNewRow();
+        }
+        catch (Exception ex)
+        {
+            //nda perlu handle harusnya
+        }
     }
 }

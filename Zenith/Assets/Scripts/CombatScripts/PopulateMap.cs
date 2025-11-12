@@ -55,7 +55,7 @@ public class PopulateMap : MonoBehaviour
             placedGameObjects.Add(obj);
         }
 
-        Debug.Log("✅ Map populated from save file.");
+        Debug.Log("Map populated from save file.");
     }
 
     private void PlaceObject(Vector3Int gridPos, int ID, int placedObjectIndex)

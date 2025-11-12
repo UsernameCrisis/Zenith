@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class CombatCameraMovement : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class CombatCameraMovement : MonoBehaviour
     [SerializeField] private float defaultMoveSpeed = 70f;
     [SerializeField] private float speedMultiplier = 2f;
     [SerializeField] private LayerMask obstacleLayerMask;
+    [SerializeField] private float defaultX = 0f, defaultY = 3.251f, defaultZ = -5f;
     void Awake()
     {
         moveSpeed = defaultMoveSpeed;
@@ -110,7 +112,35 @@ public class CombatCameraMovement : MonoBehaviour
 
         prevFaded = shouldFade;
     }
-    
+
+    public void FocusOnCharacter(Transform target)
+    {
+        if (target == null) return;
+
+        Vector3 targetPos = target.position + new Vector3(defaultX+0.5f, defaultY, defaultZ+0.5f);
+
+        transform.DOMove(targetPos, 0.7f)
+            .SetEase(Ease.OutQuint);
+        // StopAllCoroutines();
+        // StartCoroutine(SmoothFocus(target.position + new Vector3(defaultX, defaultY, defaultZ), target));
+    }
+
+    private IEnumerator SmoothFocus(Vector3 targetPosition, Transform lookTarget)
+    {
+        float duration = 0.5f;
+        float elapsed = 0f;
+        Vector3 startPos = transform.position;
+
+        while (elapsed < duration)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPosition, elapsed / duration);
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPosition;
+    }
+     
     private void RefreshCharacterList()
     {
         characters.Clear();

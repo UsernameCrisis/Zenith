@@ -55,7 +55,7 @@ public class PlayerHealthUI : MonoBehaviour
             {
                 if (inventory.gameObject.active)
                 {
-                    transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
+                    FindAnyObjectByType<SceneRoot>().ChestUI.gameObject.SetActive(false);
                     inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
                     inventory.SetActive(false);
                     return;

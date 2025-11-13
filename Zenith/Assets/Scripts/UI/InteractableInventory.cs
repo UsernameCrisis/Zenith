@@ -25,18 +25,6 @@ public class InteractableInventory : MonoBehaviour, Interactable
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player") && transform.parent.GetComponentInParent<SceneRoot>().MainUI.InteractUIIsActive())
-        {
-            transform.parent.GetComponentInParent<SceneRoot>().MainUI.ToggleInteractUI(this.gameObject);
-        }
-        if (other.CompareTag("Player") && transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.gameObject.active)
-        {
-            transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.ToggleInventory();
-        }
-        
-        if (other.CompareTag("Player") && transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active)
-        {
-            transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
-        }
+        if (other.CompareTag("Player")) FindAnyObjectByType<PlayerHealthUI>().ToggleInteractUI(this.gameObject);
     }
 }

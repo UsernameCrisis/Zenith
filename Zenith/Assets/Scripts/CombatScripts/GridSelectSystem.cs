@@ -13,6 +13,7 @@ public class GridSelectSystem : MonoBehaviour
     [SerializeField] private MovementPreview movePreview;
     [SerializeField] private CharacterActionMenu actionMenu;
     [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
 
     private Vector3 mousePos;
@@ -22,7 +23,7 @@ public class GridSelectSystem : MonoBehaviour
     private Color defaultColor;
     private bool isInActionMode = false;
     private string currentAction = null;
-    private bool isPaused = false;
+    private bool isPaused = false, isInsideOption = false;
     
 
     void OnEnable()
@@ -33,6 +34,7 @@ public class GridSelectSystem : MonoBehaviour
         inputManager.OnExit += HandleEscapePressed;
         actionMenu.OnActionSelected += HandleActionMenu;
         pauseMenu.OnButtonSelected += HandlePauseMenu;
+        optionMenu.OnButtonSelected += HandleOptionMenu;
     }
 
     void OnDisable()
@@ -43,6 +45,7 @@ public class GridSelectSystem : MonoBehaviour
         inputManager.OnExit -= HandleEscapePressed;
         actionMenu.OnActionSelected -= HandleActionMenu;
         pauseMenu.OnButtonSelected -= HandlePauseMenu;
+        optionMenu.OnButtonSelected -= HandleOptionMenu;
     }
 
     void Start()
@@ -155,7 +158,10 @@ public class GridSelectSystem : MonoBehaviour
         }
         else if (button == "Settings")
         {
-            print("Settings pressed");
+            pauseMenu.Hide();
+            optionMenu.Show();
+            isInsideOption = true;
+
         }
         else if (button == "Exit")
         {
@@ -163,9 +169,18 @@ public class GridSelectSystem : MonoBehaviour
         }
     }
 
+    private void HandleOptionMenu(string button)
+    {
+        if (button == "Back")
+        {
+            optionMenu.Back();
+            isInsideOption = false;
+        }
+    }
+
     private void HandleEscapePressed()
     {
-        if (isPaused)
+        if (isPaused && !isInsideOption)
         {
             print("tes");
             Resume();
@@ -173,6 +188,11 @@ public class GridSelectSystem : MonoBehaviour
         else if (selectedChar != null)
         {
             ExitCharacter();
+        }
+        else if (isInsideOption)
+        {
+            optionMenu.Back();
+            isInsideOption = false;
         }
         else
         {

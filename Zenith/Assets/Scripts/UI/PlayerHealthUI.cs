@@ -53,7 +53,7 @@ public class PlayerHealthUI : MonoBehaviour
         {
             if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
             {
-                if (inventory.gameObject.active)
+                if (inventory.gameObject.activeInHierarchy)
                 {
                     FindAnyObjectByType<SceneRoot>().ChestUI.gameObject.SetActive(false);
                     inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
@@ -147,15 +147,15 @@ public class PlayerHealthUI : MonoBehaviour
         if (currentInteractableObject == null)
         {
             currentInteractableObject = Interactible;
-            interactUI.SetActive(!interactUI.active);
+            interactUI.SetActive(!interactUI.activeInHierarchy);
             return;
         }
         if (currentInteractableObject == Interactible)
         {
-            interactUI.SetActive(!interactUI.active);
+            interactUI.SetActive(!interactUI.activeInHierarchy);
             currentInteractableObject = null;
         }
     }
-    public bool InteractUIIsActive() { return interactUI.active; }
+    public bool InteractUIIsActive() { return interactUI.activeInHierarchy; }
     public void EmptyCurrentInteractable() { currentInteractableObject = null; }
 }

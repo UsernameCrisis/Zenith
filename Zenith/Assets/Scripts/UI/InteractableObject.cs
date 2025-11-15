@@ -8,13 +8,4 @@ public abstract class InteractableObject : MonoBehaviour, Interactable
     {
         throw new System.NotImplementedException();
     }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player")) FindAnyObjectByType<OverworldUI>().ToggleInteractUI(this.gameObject);
-    }
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player")) FindAnyObjectByType<OverworldUI>().ToggleInteractUI(this.gameObject);
-    }
 }

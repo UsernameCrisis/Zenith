@@ -21,8 +21,6 @@ public class OverworldUI : MonoBehaviour
     public Inventory inventory;
     public GameObject interactUI;
 
-    private GameObject currentInteractableObject;
-
 
     void Awake()
     {
@@ -47,31 +45,7 @@ public class OverworldUI : MonoBehaviour
         {
             inventory.ToggleInventory();
             inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
-        }
-
-        if (InteractUIIsActive())
-        {
-            if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
-            {
-                if (inventory.gameObject.activeInHierarchy)
-                {
-                    FindAnyObjectByType<SceneRoot>().ChestUI.gameObject.SetActive(false);
-                    inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
-                    inventory.SetActive(false);
-                    return;
-                }
-                if (currentInteractableObject != null) currentInteractableObject.GetComponent<Interactable>().OnInteract();
-            }
         } 
-
-        // if (inventory.gameObject.active)
-        // {
-        //     if (InputSystem.actions.FindAction("ExitSelect").WasPressedThisFrame());
-        //     {
-        //         Debug.Log("hit 2");
-        //         inventory.ToggleInventory();
-        //     }
-        // }   
     }
 
     void UpdateUI(int current, int max)
@@ -138,24 +112,4 @@ public class OverworldUI : MonoBehaviour
         yield return new WaitForSeconds(duration);
         fillImage.color = normalColor;
     }
-
-    public void ToggleInteractUI(GameObject Interactible)
-    {
-        //kalo ada yang bisa di interact muncul imagenya
-        //terus dilock ke interactible lain sampe ontriggerexit ditrigger ini function lagi
-
-        if (currentInteractableObject == null)
-        {
-            currentInteractableObject = Interactible;
-            interactUI.SetActive(!interactUI.activeInHierarchy);
-            return;
-        }
-        if (currentInteractableObject == Interactible)
-        {
-            interactUI.SetActive(!interactUI.activeInHierarchy);
-            currentInteractableObject = null;
-        }
-    }
-    public bool InteractUIIsActive() { return interactUI.activeInHierarchy; }
-    public void EmptyCurrentInteractable() { currentInteractableObject = null; }
 }

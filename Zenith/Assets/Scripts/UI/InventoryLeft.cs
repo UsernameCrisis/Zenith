@@ -10,17 +10,17 @@ public class InventoryLeft : MonoBehaviour
 
     public Panels CurrentPanel = Panels.Gear;
     public GameObject GearPanel;
-    public GameObject ChestItemsUI;
+    // public GameObject ChestItemsUI;
 
     public void SetGearActive()
     {
-        ChestItemsUI.SetActive(false);
+        // ChestItemsUI.SetActive(false);
         GearPanel.SetActive(true);
     }
     
     public void SetInteractableInventoryActive()
     {
         GearPanel.SetActive(false);
-        ChestItemsUI.SetActive(true);
+        // ChestItemsUI.SetActive(true);
     }
 }

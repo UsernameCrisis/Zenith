@@ -10,21 +10,8 @@ public class InteractableInventory : MonoBehaviour, Interactable
 
     public void OnInteract()
     {
-        transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.SetActive(true);
-        transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(true);
-        transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.GetComponentInChildren<InventoryLeft>().SetInteractableInventoryActive();
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player") && !transform.parent.GetComponentInParent<SceneRoot>().MainUI.InteractUIIsActive())
-        {
-            transform.parent.GetComponentInParent<SceneRoot>().MainUI.ToggleInteractUI(this.gameObject);
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player")) FindAnyObjectByType<OverworldUI>().ToggleInteractUI(this.gameObject);
+        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.SetActive(true);
+        // transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(true);
+        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.GetComponentInChildren<InventoryLeft>().SetInteractableInventoryActive();
     }
 }

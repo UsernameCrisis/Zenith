@@ -10,6 +10,7 @@ TagManager:
   - Character
   - Enemy
   - Audio
+  - Interactable
   layers:
   - Default
   - TransparentFX

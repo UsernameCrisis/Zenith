@@ -11,10 +11,10 @@ public abstract class InteractableObject : MonoBehaviour, Interactable
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) FindAnyObjectByType<PlayerHealthUI>().ToggleInteractUI(this.gameObject);
+        if (other.CompareTag("Player")) FindAnyObjectByType<OverworldUI>().ToggleInteractUI(this.gameObject);
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) FindAnyObjectByType<PlayerHealthUI>().ToggleInteractUI(this.gameObject);
+        if (other.CompareTag("Player")) FindAnyObjectByType<OverworldUI>().ToggleInteractUI(this.gameObject);
     }
 }

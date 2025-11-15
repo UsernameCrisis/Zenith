@@ -5,11 +5,11 @@ using System.Collections;
 using UnityEngine.InputSystem;
 using UnityEngine.Analytics;
 
-public class PlayerHealthUI : MonoBehaviour
+public class OverworldUI : MonoBehaviour
 {
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private TextMeshProUGUI goldtext;
+    [SerializeField] private GameObject Gold;
     [SerializeField] private PlayerOverworldAttributes playerOverworldAttributes;
 
     [Header("Visual Feedback")]
@@ -17,8 +17,10 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Image fillImage;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private Color normalColor = Color.red;
-    [HideInInspector] public Inventory inventory;
+    [Header("OtherUI")]
+    public Inventory inventory;
     public GameObject interactUI;
+
     private GameObject currentInteractableObject;
 
 
@@ -33,11 +35,10 @@ public class PlayerHealthUI : MonoBehaviour
     void Start()
     {
         hpText.enabled = false;
-        goldtext.enabled = false;
+        Gold.SetActive(false);
         UpdateUI(playerOverworldAttributes.currentHP, playerOverworldAttributes.maxHP);
-
-        inventory = GetComponentInChildren<Inventory>();
         inventory.ToggleInventory();
+        interactUI.SetActive(false);
     }
 
     void Update()
@@ -46,7 +47,6 @@ public class PlayerHealthUI : MonoBehaviour
         {
             inventory.ToggleInventory();
             inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
-            
         }
 
         if (InteractUIIsActive())
@@ -93,14 +93,14 @@ public class PlayerHealthUI : MonoBehaviour
     {
         Debug.Log("Showing");
         hpText.enabled = true;
-        goldtext.enabled = true;
+        Gold.SetActive(true);
     }
 
     public void HideHPText()
     {
         Debug.Log("Not Showing");
         hpText.enabled = false;
-        goldtext.enabled = false;
+        Gold.SetActive(false);
     }
 
 

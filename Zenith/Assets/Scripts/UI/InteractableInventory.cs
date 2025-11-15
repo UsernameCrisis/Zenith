@@ -25,6 +25,6 @@ public class InteractableInventory : MonoBehaviour, Interactable
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) FindAnyObjectByType<PlayerHealthUI>().ToggleInteractUI(this.gameObject);
+        if (other.CompareTag("Player")) FindAnyObjectByType<OverworldUI>().ToggleInteractUI(this.gameObject);
     }
 }

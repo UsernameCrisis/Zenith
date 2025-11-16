@@ -65,7 +65,7 @@ public class PopulateMap : MonoBehaviour
         newObject.transform.position = grid.CellToWorld(gridPos);
         placedGameObjects.Add(newObject);
         PlacedObject placedObj = CreatePlacedObjectFromData(data);
-        objectsData.AddObjectAt(gridPos, placedObj, placedObjectIndex);
+        objectsData.AddObjectAt(gridPos, placedObj, placedObjectIndex, newObject);
     }
     
     private PlacedObject CreatePlacedObjectFromData(ObjectData data)

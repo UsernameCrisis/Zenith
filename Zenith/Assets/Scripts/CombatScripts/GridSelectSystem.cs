@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class GridSelectSystem : MonoBehaviour
+public class GridSelectSystem : MonoBehaviour, ITurnActor
 {
     [SerializeField] GameObject mouseIndicator, cellIndicator;
     [SerializeField] private InputManager inputManager;
@@ -24,7 +24,8 @@ public class GridSelectSystem : MonoBehaviour
     private bool isInActionMode = false;
     private string currentAction = null;
     private bool isPaused = false, isInsideOption = false;
-    
+
+    public bool IsPlayer => true;
 
     void OnEnable()
     {
@@ -51,7 +52,7 @@ public class GridSelectSystem : MonoBehaviour
     void Start()
     {
         // ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
-        objectsData = populateMap.GetComponent<PopulateMap>().objectsData;
+        // objectsData = populateMap.GetComponent<PopulateMap>().objectsData;
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         defaultColor = cellIndicatorRenderer.material.color;
     }
@@ -182,7 +183,6 @@ public class GridSelectSystem : MonoBehaviour
     {
         if (isPaused && !isInsideOption)
         {
-            print("tes");
             Resume();
         }
         else if (selectedChar != null)
@@ -285,13 +285,14 @@ public class GridSelectSystem : MonoBehaviour
         if (cellIndicatorRenderer != null)
             cellIndicatorRenderer.material.color = defaultColor;
     }
-    private void EndTurn()
+    public void EndTurn()
     {
         Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
         CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
         charObj.ResetMovement();
         charObj.EnableAttack();
         ExitCharacter();
+        TurnManager.Instance.EndTurn();
     }
 
     private void EndAction()
@@ -314,5 +315,11 @@ public class GridSelectSystem : MonoBehaviour
     private void ShowHover(Collider collider)
     {
         throw new NotImplementedException();
+    }
+
+    public void BeginTurn(Vector3Int pos, GridData gridData)
+    {
+        objectsData = gridData;
+        print("inside select");
     }
 }

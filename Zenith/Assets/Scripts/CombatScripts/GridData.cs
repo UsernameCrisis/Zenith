@@ -7,11 +7,12 @@ public class GridData
 {
     Dictionary<Vector3Int, TileData> placedObjects = new();
 
-    public void AddObjectAt(Vector3Int gridPos, PlacedObject placedObject, int placedObjectIndex)
+    public void AddObjectAt(Vector3Int gridPos, PlacedObject placedObject, int placedObjectIndex, GameObject obj = null)
     {
         if (placedObjects.ContainsKey(gridPos))
             throw new Exception($"{gridPos} already occupied");
         TileData data = new TileData(gridPos, placedObject, placedObjectIndex);
+        data.PlacedGameObject = obj;
         placedObjects[gridPos] = data;
     }
 
@@ -29,10 +30,13 @@ public class GridData
         if (CanPlaceObjectAt(End))
         {
             TileData tempData = placedObjects[Start];
-            tempData.occupiedPos = End;
+            tempData.occupiedPos = End; // Update position in the actual grid data
             placedObjects[End] = tempData;
-            placedObjects.Remove(Start);
+            RemoveObjectAt(Start);
             tempData.PlacedObject.OnPlaced(End); // Update position for the placed object
+
+            if (tempData.PlacedGameObject != null)
+                tempData.PlacedGameObject.transform.position = new Vector3(End.x, 0, End.y);
         }
     }
 
@@ -73,9 +77,86 @@ public class GridData
         return data;
     }
 
+    public GameObject GetObjectAt(Vector3Int pos)
+    {
+        var tile = GetTileAt(pos);
+        return tile?.PlacedGameObject;
+    }
+    
+    public Vector3Int? GetPositionOf(CharacterObject character)
+    {
+        foreach (var kvp in placedObjects)
+        {
+            TileData tile = kvp.Value;
+
+            if (tile.PlacedObject == character)
+            {
+                return kvp.Key;
+            }
+        }
+
+        return null; // Character not found on the grid
+    }
+
     public Dictionary<Vector3Int, TileData> GetAllTiles()
     {
        return placedObjects;
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetAllUnits()
+    {
+        var result = new List<(Vector3Int, CharacterObject)>();
+        result.AddRange(GetAllPlayers());
+        result.AddRange(GetAllEnemies());
+        return result;
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetAllPlayers()
+    {
+        List<(Vector3Int, CharacterObject)> list = new();
+
+        foreach (var kvp in placedObjects)
+        {
+            TileData tile = kvp.Value;
+            if (tile.PlacedObject is CharacterObject c && c.IsPlayer)
+            {
+                list.Add((kvp.Key, c));
+            }
+        }
+
+        return list;
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetTeamNPC()
+    {
+        List<(Vector3Int, CharacterObject)> list = new();
+
+        foreach (var kvp in placedObjects)
+        {
+            TileData tile = kvp.Value;
+            if (tile.PlacedObject is CharacterObject c && c.Team == 1 && !c.IsPlayer)
+            {
+                list.Add((kvp.Key, c));
+            }
+        }
+
+        return list;
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetAllEnemies()
+    {
+        List<(Vector3Int, CharacterObject)> list = new();
+
+        foreach (var kvp in placedObjects)
+        {
+            TileData tile = kvp.Value;
+            if (tile.PlacedObject is CharacterObject c && c.Team == 2 && !c.IsPlayer)
+            {
+                list.Add((kvp.Key, c));
+            }
+        }
+
+        return list;
     }
 
     public bool IsWithinBounds(Vector3Int pos)
@@ -207,6 +288,7 @@ public class TileData
     public Vector3Int occupiedPos;
     public PlacedObject PlacedObject { get; private set; }
     public int PlacedObjectsIndex { get; private set; }
+    public GameObject PlacedGameObject { get; set; }
 
     public TileData(Vector3Int occupiedPos, PlacedObject placedObject, int placedObjectsIndex)
     {

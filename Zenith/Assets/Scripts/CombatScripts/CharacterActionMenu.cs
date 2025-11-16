@@ -26,12 +26,12 @@ public class CharacterActionMenu : MonoBehaviour
     {
         gameObject.SetActive(true);
         transform.position = worldPos;
-        print("show action");
+        // print("show action");
     }
 
     public void Hide()
     {
-        print("action hide");
+        // print("action hide");
         gameObject.SetActive(false);
     }
 }

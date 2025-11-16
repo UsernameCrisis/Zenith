@@ -34,7 +34,7 @@ public class MovementPreview : MonoBehaviour
 
     public void ShowMovementRange(Vector3Int startPos, int moveRange = -1)
     {
-        print(moveRange);
+        // print(moveRange);
         if (moveRange < 0)
             moveRange = maxRange;
 

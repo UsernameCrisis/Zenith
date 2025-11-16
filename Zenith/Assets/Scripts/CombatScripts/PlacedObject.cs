@@ -4,11 +4,8 @@ public abstract class PlacedObject
 {
     public string Name { get; protected set; }
     public Vector3Int Position { get; set; }
-
-    // Optional: what type of object this is (for filtering)
     public ObjectType ObjectType { get; protected set; }
 
-    // Common behavior
     public virtual void OnPlaced(Vector3Int pos)
     {
         Position = pos;

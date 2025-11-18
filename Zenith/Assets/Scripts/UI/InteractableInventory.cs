@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InteractableInventory : MonoBehaviour, Interactable
 {
+    public Inventory inventory;
+    public GameObject ChestUI;
     public GameObject Object
     {
         get { return gameObject; }
@@ -10,8 +12,7 @@ public class InteractableInventory : MonoBehaviour, Interactable
 
     public void OnInteract()
     {
-        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.SetActive(true);
-        // transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(true);
-        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.GetComponentInChildren<InventoryLeft>().SetInteractableInventoryActive();
+        inventory.SetActive(true);
+        inventory.GetComponentInChildren<InventoryLeft>().SetInteractableInventoryActive();
     }
 }

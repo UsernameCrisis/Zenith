@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 3599738466431753349}
   - component: {fileID: 8061054681360231996}
   m_Layer: 5
-  m_Name: InventoryText
+  m_Name: EquipmentText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,11 +146,11 @@ RectTransform:
   m_LocalScale: {x: 8.5, y: 10.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6476386131801285601}
+  m_Father: {fileID: 606255981866745572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -420, y: -50}
+  m_AnchoredPosition: {x: 190, y: -540}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8223677276998404250
@@ -492,8 +492,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 606255981866745572}
-  - {fileID: 5890517229809145493}
-  - {fileID: 2797550998672175158}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -515,7 +513,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventoryLeft
   CurrentPanel: 1
   GearPanel: {fileID: 6900747911815759512}
-  ChestItemsUI: {fileID: 0}
 --- !u!1 &6596123105678398949
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,6 +664,8 @@ RectTransform:
   - {fileID: 1993856347069639049}
   - {fileID: 526104528055643445}
   - {fileID: 7573986592580803580}
+  - {fileID: 5890517229809145493}
+  - {fileID: 2797550998672175158}
   m_Father: {fileID: 6476386131801285601}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -948,7 +947,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 6476386131801285601}
+    m_TransformParent: {fileID: 606255981866745572}
     m_Modifications:
     - target: {fileID: 5509405944102596804, guid: cade56397e3a7f94cae4f059a81bf602, type: 3}
       propertyPath: m_Name
@@ -1004,19 +1003,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8349461104604131622, guid: cade56397e3a7f94cae4f059a81bf602, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8349461104604131622, guid: cade56397e3a7f94cae4f059a81bf602, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8349461104604131622, guid: cade56397e3a7f94cae4f059a81bf602, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8349461104604131622, guid: cade56397e3a7f94cae4f059a81bf602, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -660
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: 8349461104604131622, guid: cade56397e3a7f94cae4f059a81bf602, type: 3}
       propertyPath: m_AnchoredPosition.y

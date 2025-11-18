@@ -102,17 +102,4 @@ public class InputManager : MonoBehaviour
     {
         return selectMode;
     }
-
-    // public Collider GetHoveredCollider()
-    // {
-    //     Vector3 mousePos = new Vector3(mouseInputPosition.ReadValue<Vector2>().x, mouseInputPosition.ReadValue<Vector2>().y, 0);
-    //     mousePos.z = sceneCamera.nearClipPlane;
-    //     Ray ray = sceneCamera.ScreenPointToRay(mousePos);
-    //     RaycastHit hit;
-    //     if (Physics.Raycast(ray, out hit, 100, gridLayerMask))
-    //     {
-    //         lastCollider = hit.collider;
-    //     }
-    //     return lastCollider;
-    // }
 }

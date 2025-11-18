@@ -114,6 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59f8646cd0cadb4cb7e6f09f7b2267f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  AcceptedType: 0
   draggableItemPrefab: {fileID: 5169311068721616055, guid: 99269f1f9de59b748a9d225a24c80ed0, type: 3}
 --- !u!1001 &6643653357137049269
 PrefabInstance:

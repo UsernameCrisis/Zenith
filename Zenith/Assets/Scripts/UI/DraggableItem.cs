@@ -9,10 +9,15 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [HideInInspector] public Transform _parentAfterDrag;
     public Item item;
 
+    void Start()
+    {
+        Debug.Log(this.GetComponent<Image>().raycastTarget);
+    }
+
     public void Initialize()
     {
-        GetComponent<SpriteRenderer>().sprite = item.sprite;
     }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         _parentAfterDrag = transform.parent;
@@ -24,20 +29,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnDrag(PointerEventData eventData)
     {
         transform.position = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
+        // transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         transform.SetParent(_parentAfterDrag);
         this.GetComponent<Image>().raycastTarget = true;
-
-        try
-        {
-            _parentAfterDrag.GetComponentInParent<InventoryRight>().CheckIfNeededNewRow();
-        }
-        catch (Exception ex)
-        {
-            //nda perlu handle harusnya
-        }
     }
 }

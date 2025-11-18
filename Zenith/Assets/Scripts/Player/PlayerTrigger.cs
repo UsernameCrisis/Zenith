@@ -1,16 +1,18 @@
+using System.Data.Common;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerTrigger : MonoBehaviour
 {
     public GameObject InteractUI;
-    private int CurrentInteractableID = 0;
+    private GameObject CurrentInteractable;
     
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Interactable") && CurrentInteractableID == 0)
+        if (other.CompareTag("Interactable") && CurrentInteractable == null)
         {
             InteractUI.SetActive(true);
-            CurrentInteractableID = other.gameObject.GetInstanceID();
+            CurrentInteractable = other.gameObject;
         }       
     }
     void OnTriggerExit(Collider other)
@@ -18,7 +20,22 @@ public class PlayerTrigger : MonoBehaviour
         if (other.CompareTag("Interactable"))
         {
             InteractUI.SetActive(false);
-            CurrentInteractableID = 0;
+            CurrentInteractable = null;
         }  
+    }
+
+    public void TurnOff() 
+    {
+        InteractUI.SetActive(false);
+        CurrentInteractable = null;
+    }
+
+    void Update()
+    {
+        if (CurrentInteractable == null) return;
+        if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
+        {
+            CurrentInteractable.GetComponent<Interactable>().OnInteract();
+        }
     }
 }

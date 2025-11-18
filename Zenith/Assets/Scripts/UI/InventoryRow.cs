@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class InventoryRow : MonoBehaviour
@@ -37,6 +39,26 @@ public class InventoryRow : MonoBehaviour
                 slots[i].SetItem(item);
                 return;
             }
+        }
+    }
+
+    public List<Item> GetAsList()
+    {
+        List<Item> list = new List<Item>();
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            list.Add(slots[i].GetSlotItem());
+        }
+
+        return list;
+    }
+
+    public void UnloadList(List<Item> item )
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            slots[i].UnloadItem(item[i]);
         }
     }
 }

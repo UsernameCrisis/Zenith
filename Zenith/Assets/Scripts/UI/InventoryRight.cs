@@ -41,6 +41,23 @@ public class InventoryRight : MonoBehaviour
                 return;
             }
         }
+    }
 
+    public List<List<Item>> GetItems()
+    {
+        List<List<Item>> list = new List<List<Item>>();
+        for (int i = 0; i < rows.Count; i++)
+        {
+            list.Add(rows[i].GetComponent<InventoryRow>().GetAsList());
+        }
+        return list;
+    }
+
+    public void UnloadItems(List<List<Item>> list)
+    {
+        for (int i = 0; i < rows.Count; i++)
+        {
+            rows[i].GetComponent<InventoryRow>().UnloadList(list[i]);
+        }
     }
 }

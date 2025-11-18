@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class Inventory : MonoBehaviour
@@ -26,5 +28,16 @@ public class Inventory : MonoBehaviour
             if (gameObject.active) gameObject.SetActive(false);
             // if (transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active) transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
         }
+    }
+
+    public List<List<Item>> GetInventoryIn2DList()
+    {
+        List<List<Item>> list = GetComponentInChildren<InventoryRight>().GetItems();
+        return list;
+    }
+
+    public void LoadInventoryFrom2DList(List<List<Item>> list)
+    {
+        GetComponentInChildren<InventoryRight>().UnloadItems(list);
     }
 }

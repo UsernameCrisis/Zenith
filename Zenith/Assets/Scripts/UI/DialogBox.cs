@@ -2,16 +2,21 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class DialogBox : MonoBehaviour
 {
     public TMP_Text text;
-    private List<String> _currentDialog;
+    private List<string> _currentDialog;
     private int index = 0;
-
+    void Start()
+    {
+        gameObject.SetActive(false);
+    }
     void Update()
     {
+        if (_currentDialog == null) return;
         if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
         {
             if (_currentDialog.Count == index){
@@ -24,11 +29,11 @@ public class DialogBox : MonoBehaviour
         }
     }
     
-    public void PlayDialog(List<String> dialog)
+    public void PlayDialog(Dialog dialog)
     {
-        Debug.Log("2");
-        _currentDialog = dialog;
-        text.text = dialog[index];
+        if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
+        _currentDialog = dialog.dialog;
+        text.text = dialog.dialog[index];
         index++;
     }
 }

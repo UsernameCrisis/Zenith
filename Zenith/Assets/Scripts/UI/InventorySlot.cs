@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,6 +18,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     public DraggableItem draggableItemPrefab;
     public virtual void OnDrop(PointerEventData eventData)
     {
+        Debug.Log("ASD");
         GameObject dropped = eventData.pointerDrag;
 
         if (AcceptedType != Item_Type.Any)
@@ -43,4 +45,18 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     }
     
     public bool ContainsItem() {return transform.childCount > 0;}
+    public Item GetSlotItem()
+    {
+        if (!ContainsItem()) return null;
+
+        return GetComponentInChildren<DraggableItem>().item;
+    }
+
+    public void UnloadItem(Item item)
+    {
+        if (!ContainsItem())
+        {
+            SetItem(item);
+        }
+    }
 }

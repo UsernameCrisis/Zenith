@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour, IDropHandler
+public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    public GameObject _hoverIndicator;
     public enum Item_Type
     {
         Any,
@@ -57,5 +59,19 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         {
             SetItem(item);
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Color c = _hoverIndicator.GetComponent<Image>().color;
+        c.a = 0.6f;
+        _hoverIndicator.GetComponent<Image>().color = c;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        Color c = _hoverIndicator.GetComponent<Image>().color;
+        c.a = 0f;
+        _hoverIndicator.GetComponent<Image>().color = c;
     }
 }

@@ -12,13 +12,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         Chestplate,
         Legs,
         Boots,
-        Weapon
+        Weapon,
     }
     public Item_Type AcceptedType = Item_Type.Any;
     public DraggableItem draggableItemPrefab;
     public virtual void OnDrop(PointerEventData eventData)
     {
-        Debug.Log("ASD");
         GameObject dropped = eventData.pointerDrag;
 
         if (AcceptedType != Item_Type.Any)

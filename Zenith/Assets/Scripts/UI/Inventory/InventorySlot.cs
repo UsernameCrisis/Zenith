@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
@@ -30,10 +31,10 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             }
         }
 
-        if (transform.childCount == 0)
+        if (transform.childCount == 1)
         {
             DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
-            draggableItem._parentAfterDrag = transform;
+            draggableItem._parentAfterDrag = transform.GetChild(0);
         }
     }
 
@@ -45,7 +46,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         newDraggableItem.transform.SetParent(transform, false);
     }
     
-    public bool ContainsItem() {return transform.childCount > 0;}
+    public bool ContainsItem() {return transform.childCount > 1;}
     public Item GetSlotItem()
     {
         if (!ContainsItem()) return null;
@@ -64,7 +65,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     public void OnPointerEnter(PointerEventData eventData)
     {
         Color c = _hoverIndicator.GetComponent<Image>().color;
-        c.a = 0.6f;
+        c.a = 1f;
         _hoverIndicator.GetComponent<Image>().color = c;
     }
 

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Item1
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
-  name: Test
+  name: Potion_test
   stackable: 0
   stackable_limit: 0
+  value: 5
+  type: 0

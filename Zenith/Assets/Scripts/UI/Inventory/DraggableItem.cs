@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -8,6 +9,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 {
     [HideInInspector] public Transform _parentAfterDrag;
     public Item item;
+    private bool _isHovering = false;
+    public ItemDescription _itemDescription;
 
     void Start()
     {
@@ -40,11 +43,21 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.SetActive(true);
+        _isHovering = true;
+        _itemDescription.SetData(item.name, item.value);
+        StartCoroutine(ShowDescription());
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _isHovering = false;
         FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.SetActive(false);
+    }
+
+    private IEnumerator ShowDescription()
+    {
+        yield return new WaitForSeconds(0.3f);
+        if (_isHovering)
+            FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.SetActive(true);
     }
 }

@@ -49,7 +49,6 @@ public class OverworldUI : MonoBehaviour
             inventory.GetComponentInChildren<InventoryLeft>().SetGearActive();
         } 
         if (latestMousePos != InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>()) {
-            Debug.Log("moving");
             latestMousePos = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
             ItemDescriptionObject.transform.position = latestMousePos - new Vector2(0, 180) + ((latestMousePos.x <= 960)? new Vector2(120, 0) : new Vector2(-120, 0));
         }

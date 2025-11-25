@@ -3060,6 +3060,9 @@ MonoBehaviour:
   - name: ButtonHover
     clip: {fileID: 8300000, guid: 5839723a21f812d4cac6f017cd5b933f, type: 3}
     volume: 1
+  - name: ButtonClicked
+    clip: {fileID: 8300000, guid: aee51acef947db045b120423882551a6, type: 3}
+    volume: 1
 --- !u!4 &1258146893
 Transform:
   m_ObjectHideFlags: 0

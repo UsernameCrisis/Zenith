@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class GridSelectSystem : MonoBehaviour, ITurnActor
+public class PlayerSystem : MonoBehaviour, ITurnActor
 {
     [SerializeField] GameObject mouseIndicator, cellIndicator;
     [SerializeField] private InputManager inputManager;
@@ -31,7 +33,6 @@ public class GridSelectSystem : MonoBehaviour, ITurnActor
     {
         // inputManager.OnHoverEnter += ShowHover;
         // inputManager.OnHoverExit += HideHover;
-        inputManager.OnColliderClicked += ColliderClicked;
         inputManager.OnExit += HandleEscapePressed;
         actionMenu.OnActionSelected += HandleActionMenu;
         pauseMenu.OnButtonSelected += HandlePauseMenu;
@@ -42,11 +43,17 @@ public class GridSelectSystem : MonoBehaviour, ITurnActor
     {
         // inputManager.OnHoverEnter -= ShowHover;
         // inputManager.OnHoverExit -= HideHover;
-        inputManager.OnColliderClicked -= ColliderClicked;
         inputManager.OnExit -= HandleEscapePressed;
         actionMenu.OnActionSelected -= HandleActionMenu;
         pauseMenu.OnButtonSelected -= HandlePauseMenu;
         optionMenu.OnButtonSelected -= HandleOptionMenu;
+    }
+    
+    public void BeginTurn(Vector3Int pos, GridData gridData)
+    {
+        objectsData = gridData;
+        print("inside select");
+        inputManager.OnColliderClicked += ColliderClicked;
     }
 
     void Start()
@@ -238,7 +245,8 @@ public class GridSelectSystem : MonoBehaviour, ITurnActor
         if (charObj == null)
             return;
 
-        int distanceMoved = Mathf.Abs(targetPos.x - currentPos.x) + Mathf.Abs(targetPos.y - currentPos.y);
+        List<Vector3Int> path = movePreview.FindPathAStar(currentPos, targetPos);
+        int distanceMoved = path.Count;
 
         if (distanceMoved > charObj.RemainingMoveRange)
         {
@@ -248,11 +256,39 @@ public class GridSelectSystem : MonoBehaviour, ITurnActor
 
         if (objectsData.CanPlaceObjectAt(targetPos))
         {
-            objectsData.MoveObject(currentPos, targetPos);
-            selectedChar.transform.position = grid.CellToWorld(targetPos);
-            charObj.UseMovement(distanceMoved);
+            // objectsData.MoveObject(currentPos, targetPos);
+            
+            StartCoroutine(WalkPath(path, currentPos, charObj));
+            // charObj.UseMovement(distanceMoved);
 
         }
+        movePreview.ClearAll();
+        EndAction();
+    }
+
+    private IEnumerator WalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject charObj)
+    {
+        for (int i = 0; i < path.Count; i++)
+        {
+            Vector3 start = selectedChar.transform.position;
+            Vector3 end = grid.CellToWorld(path[i]);
+            
+            float t = 0f;
+            float speed = 2f;
+    
+            while (t < 1f)
+            {
+                t += Time.deltaTime * speed;
+                selectedChar.transform.position = Vector3.Lerp(start, end, t);
+                yield return null;
+            }
+        }
+        Vector3Int finalPos = path[path.Count - 1];
+        objectsData.MoveObject(currPos, finalPos);
+    
+        int distanceMoved = path.Count;
+        charObj.UseMovement(distanceMoved);
+    
         movePreview.ClearAll();
         EndAction();
     }
@@ -292,6 +328,7 @@ public class GridSelectSystem : MonoBehaviour, ITurnActor
         charObj.ResetMovement();
         charObj.EnableAttack();
         ExitCharacter();
+        inputManager.OnColliderClicked -= ColliderClicked;
         TurnManager.Instance.EndTurn();
     }
 
@@ -315,11 +352,5 @@ public class GridSelectSystem : MonoBehaviour, ITurnActor
     private void ShowHover(Collider collider)
     {
         throw new NotImplementedException();
-    }
-
-    public void BeginTurn(Vector3Int pos, GridData gridData)
-    {
-        objectsData = gridData;
-        print("inside select");
     }
 }

@@ -5,17 +5,25 @@ using System.Collections;
 public class EnemyAIController_1 : MonoBehaviour, ITurnActor
 {
     private GridData gridData;
+    private Vector3Int latestPos;
+    [SerializeField] private Grid grid;
     [SerializeField] private MovementPreview previewSystem;
 
     public bool IsPlayer => false;
 
 
-    public void ExecuteEnemyTurn(Vector3Int enemyPos)
+    public IEnumerator ExecuteEnemyTurn(Vector3Int enemyPos)
     {
         var players = gridData.GetAllPlayers();
 
         CharacterObject enemyChar = gridData.GetTileAt(enemyPos)?.PlacedObject as CharacterObject;
-        if (enemyChar == null) return;
+        if (enemyChar == null)
+        {
+            yield return new WaitForSeconds(0.1f);
+            EndTurn();
+            yield break;
+        }
+
 
         Vector3Int targetPos = FindClosestPlayer(enemyPos, players);
 
@@ -24,17 +32,20 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
         {
             print("dalam attack pertama");
             gridData.AttackObject(enemyPos, targetPos);
+            yield return new WaitForSeconds(1f);
             EndTurn();
-            return;
+            yield break;
         }
 
         previewSystem.ShowMovementRange(enemyPos, enemyChar.RemainingMoveRange);
         HashSet<Vector3Int> reachable = previewSystem.GetReachableTiles();
 
         Vector3Int bestMove = FindMoveToward(enemyPos, targetPos, reachable);
+        List<Vector3Int> path = previewSystem.FindPathAStar(enemyPos, bestMove);
+        previewSystem.ClearAll();
         if (bestMove != enemyPos)
         {
-            gridData.MoveObject(enemyPos, bestMove);
+            yield return StartCoroutine(EnemyWalkPath(path, enemyPos, enemyChar));
         }
         print("setelah show move range ai");
         // Check again if can attack
@@ -42,8 +53,37 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
         {
             gridData.AttackObject(bestMove, targetPos);
         }
-        previewSystem.ClearAll();
+        
+        yield return new WaitForSeconds(1f);
         EndTurn();
+    }
+
+    private IEnumerator EnemyWalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject enemyChar)
+    {
+        Transform enemyTransform = gridData.GetTileAt(currPos).PlacedGameObject.transform;
+    
+        for (int i = 0; i < path.Count; i++)
+        {
+            Vector3 start = enemyTransform.position;
+            Vector3 end = grid.CellToWorld(path[i]);
+    
+            float t = 0f;
+            float speed = 2f;
+    
+            while (t < 1f)
+            {
+                t += Time.deltaTime * speed;
+                enemyTransform.position = Vector3.Lerp(start, end, t);
+                yield return null;
+            }
+        }
+    
+        Vector3Int finalPos = path[path.Count - 1];
+        latestPos = finalPos;
+        gridData.MoveObject(currPos, finalPos);
+    
+        int distanceMoved = path.Count;
+        enemyChar.UseMovement(distanceMoved);
     }
 
     private Vector3Int FindClosestPlayer(Vector3Int enemyPos, List<(Vector3Int pos, CharacterObject)> players)
@@ -89,11 +129,13 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
     public void BeginTurn(Vector3Int pos, GridData gridData)
     {
         this.gridData = gridData;
-        ExecuteEnemyTurn(pos);
+        StartCoroutine(ExecuteEnemyTurn(pos));
     }
 
     public void EndTurn()
     {
+        CharacterObject enemyChar = gridData.GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+        enemyChar.ResetMovement();
         TurnManager.Instance.EndTurn();
     }
 }

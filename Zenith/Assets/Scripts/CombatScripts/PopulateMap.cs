@@ -30,7 +30,8 @@ public class PopulateMap : MonoBehaviour
     {
         PlaceObject(new Vector3Int(1, 1, 0), 0, placedGameObjects.Count - 1);
         PlaceObject(new Vector3Int(-1, -1, 0), 1, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(0, 0, 0), 2, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-1, -2, 0), 2, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(0, 0, 0), 3, placedGameObjects.Count - 1);
     }
     
     private void LoadFromSave()

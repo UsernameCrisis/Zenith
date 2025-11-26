@@ -9,7 +9,7 @@ public class TurnManager : MonoBehaviour
     public static TurnManager Instance;
     private GridData gridData;
     [SerializeField] private PopulateMap mapPopulator;
-    [SerializeField] private GridSelectSystem gridSelect;
+    [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private EnemyAIController_1 enemyAI;
     
     private TurnQueue turnQueue;

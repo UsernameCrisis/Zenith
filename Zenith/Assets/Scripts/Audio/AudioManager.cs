@@ -106,7 +106,7 @@ public class AudioManager : MonoBehaviour
         src.volume = volume;
         src.outputAudioMixerGroup = soundFXSource.outputAudioMixerGroup;
         src.Play();
-        Destroy(src.gameObject, clip.length);
+        Destroy(src.gameObject, clip.length + 0.05f);
     }
 }
 

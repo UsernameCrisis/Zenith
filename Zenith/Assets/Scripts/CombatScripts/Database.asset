@@ -31,8 +31,17 @@ MonoBehaviour:
     <Team>k__BackingField: 2
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
-  - <Name>k__BackingField: Wall Obstacle
+  - <Name>k__BackingField: Enemy2
     <ID>k__BackingField: 2
+    <Damage>k__BackingField: 20
+    <Defense>k__BackingField: 5
+    <Type>k__BackingField: 2
+    <IsPlayer>k__BackingField: 0
+    <Team>k__BackingField: 2
+    <AtkRange>k__BackingField: 1
+    <Prefab>k__BackingField: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
+  - <Name>k__BackingField: Wall Obstacle
+    <ID>k__BackingField: 3
     <Damage>k__BackingField: 0
     <Defense>k__BackingField: 0
     <Type>k__BackingField: 0

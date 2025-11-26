@@ -207,7 +207,7 @@ public class MovementPreview : MonoBehaviour
         return visited;
     }
 
-    private List<Vector3Int> FindPathAStar(Vector3Int start, Vector3Int goal)
+    public List<Vector3Int> FindPathAStar(Vector3Int start, Vector3Int goal)
     {
         PriorityQueue<Vector3Int> openSet = new();
         openSet.Enqueue(start, 0);

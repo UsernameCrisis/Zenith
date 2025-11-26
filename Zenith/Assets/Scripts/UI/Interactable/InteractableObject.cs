@@ -2,10 +2,10 @@ using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour, Interactable
 {
-    public GameObject Object => throw new System.NotImplementedException();
+    public string InteractText;
 
-    public void OnInteract()
+    public virtual void OnInteract()
     {
-        throw new System.NotImplementedException();
+        FindAnyObjectByType<PlayerTrigger>().TurnOff();
     }
 }

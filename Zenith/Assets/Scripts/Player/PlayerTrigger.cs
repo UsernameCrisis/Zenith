@@ -1,4 +1,5 @@
 using System.Data.Common;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ public class PlayerTrigger : MonoBehaviour
 {
     public GameObject InteractUI;
     private GameObject CurrentInteractable;
+    public TMP_Text _interactText;
     
     void OnTriggerEnter(Collider other)
     {
@@ -13,6 +15,7 @@ public class PlayerTrigger : MonoBehaviour
         {
             InteractUI.SetActive(true);
             CurrentInteractable = other.gameObject;
+            _interactText.text = CurrentInteractable.GetComponent<InteractableObject>().InteractText;
         }       
     }
     void OnTriggerExit(Collider other)

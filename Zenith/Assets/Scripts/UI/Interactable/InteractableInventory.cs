@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class InteractableInventory : MonoBehaviour, Interactable
+public class InteractableInventory : InteractableObject, Interactable
 {
     public Inventory inventory;
     public GameObject ChestUI;
@@ -10,9 +10,10 @@ public class InteractableInventory : MonoBehaviour, Interactable
         get { return gameObject; }
     }
 
-    public void OnInteract()
+    public override void OnInteract()
     {
         inventory.SetActive(true);
         inventory.GetComponentInChildren<InventoryLeft>().SetInteractableInventoryActive();
+        base.OnInteract();
     }
 }

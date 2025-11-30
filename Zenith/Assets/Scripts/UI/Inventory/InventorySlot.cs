@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -36,6 +37,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
             draggableItem._parentAfterDrag = transform.GetChild(0);
         }
+        // FindAnyObjectByType<PlayerOverworldAttributes>().UpdateStats();
     }
 
     public void SetItem(Item item)
@@ -43,7 +45,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         DraggableItem newDraggableItem = Instantiate(draggableItemPrefab);
         newDraggableItem.item = item;
         newDraggableItem.Initialize();
-        newDraggableItem.transform.SetParent(transform, false);
+        newDraggableItem.transform.SetParent(transform.GetChild(0), false);
     }
     
     public bool ContainsItem() {return transform.childCount > 1;}

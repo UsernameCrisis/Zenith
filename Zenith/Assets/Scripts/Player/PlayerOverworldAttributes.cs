@@ -16,6 +16,9 @@ public class PlayerOverworldAttributes : MonoBehaviour
     [SerializeField] private float invincibilityDuration = 0.4f;
     [SerializeField] private Volume deathVolume;
     private Vignette vignette;
+    public int Atk;
+    public int Def;
+    public Inventory inventory;
 
     public event Action<int, int> HealthChanged;
 
@@ -32,6 +35,8 @@ public class PlayerOverworldAttributes : MonoBehaviour
             currentHP = GameManager.Instance.playerHP;
             maxHP = GameManager.Instance.playerMaxHP;
             gold = GameManager.Instance.gold;
+
+            UpdateStats();
         }
 
         if (currentHP == 0)
@@ -83,5 +88,15 @@ public class PlayerOverworldAttributes : MonoBehaviour
 
         vignette.intensity.value = targetIntensity;
     }
+    //TODO remove
+    void Update()
+    {
+        UpdateStats();
+    }
 
+    public void UpdateStats()
+    {
+        Def = inventory.GetArmor();
+        Atk = inventory.GetATK();
+    }
 }

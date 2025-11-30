@@ -14,7 +14,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     void Start()
     {
-        Debug.Log(this.GetComponent<Image>().raycastTarget);
+        item.Initialize();
     }
 
     public void Initialize()
@@ -44,7 +44,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnPointerEnter(PointerEventData eventData)
     {
         _isHovering = true;
-        _itemDescription.SetData(item.name, item.value);
+        Debug.Log(item.GetValue() == null);
+        _itemDescription.SetData(item.name, item.GetValue());
         StartCoroutine(ShowDescription());
     }
 

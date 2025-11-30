@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
+  m_Name: Helmet
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  sprite: {fileID: 1438579582, guid: a2bbcd52dd287b54e90673c0336941c0, type: 3}
+  name: Helmet
+  stackable: 0
+  stackable_limit: 0
+  value_min: 50
+  value_max: 100
+  stat_value: 3
+  type: 2

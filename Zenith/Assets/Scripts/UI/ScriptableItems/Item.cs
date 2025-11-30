@@ -8,7 +8,10 @@ public class Item : ScriptableObject
     public string name;
     public bool stackable;
     public int stackable_limit;
-    public int value;
+    public int value_min;
+    public int value_max;
+    public int stat_value; 
+    private int value;
     public enum Item_Type
     {
         Consumable,
@@ -19,4 +22,9 @@ public class Item : ScriptableObject
         Boots
     }
     public Item_Type type;
+    public void Initialize()
+    {
+        value = Random.Range(value_min, value_max);
+    }
+    public int GetValue() {return value;}
 }

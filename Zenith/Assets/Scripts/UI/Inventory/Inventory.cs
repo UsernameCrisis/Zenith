@@ -42,4 +42,12 @@ public class Inventory : MonoBehaviour
     {
         GetComponentInChildren<InventoryRight>().UnloadItems(list);
     }
+    public int GetArmor()
+    {
+        return GetComponentInChildren<InventoryLeft>().GetArmor();
+    }
+    public int GetATK()
+    {
+        return GetComponentInChildren<InventoryLeft>().GetAtk();
+    }
 }

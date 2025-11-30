@@ -37,7 +37,7 @@ public class InventoryRight : MonoBehaviour
             if (rows[i].GetComponent<InventoryRow>().RowHasEmptySlot())
             {
                 rows[i].GetComponent<InventoryRow>().AddItemToNextEmptySlot(item);
-                CheckIfNeededNewRow();
+                // CheckIfNeededNewRow();
                 return;
             }
         }

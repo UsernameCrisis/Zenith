@@ -614,7 +614,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: TER2
+  linkedDoor: {fileID: 5602488}
   exitPosition: {fileID: 1590389696}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -4427,26 +4429,8 @@ Transform:
   - {fileID: 416154874}
   - {fileID: 389122374}
   - {fileID: 656106801}
-  - {fileID: 112045491}
-  - {fileID: 1377551461}
-  - {fileID: 773091248}
-  - {fileID: 1719707494}
-  - {fileID: 560898453}
   - {fileID: 396197333}
   - {fileID: 221628308}
-  - {fileID: 1118121122}
-  - {fileID: 1936255139}
-  - {fileID: 1405922495}
-  - {fileID: 1901676267}
-  - {fileID: 840614032}
-  - {fileID: 977964975}
-  - {fileID: 211035260}
-  - {fileID: 1882450085}
-  - {fileID: 1827761128}
-  - {fileID: 1899559446}
-  - {fileID: 1888590145}
-  - {fileID: 1830692894}
-  - {fileID: 1552427919}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &58749942
@@ -10928,7 +10912,7 @@ GameObject:
   - component: {fileID: 111032864}
   - component: {fileID: 111032863}
   m_Layer: 0
-  m_Name: Enter_Door (1)
+  m_Name: Enter_Door
   m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10988,7 +10972,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: SR3
+  linkedDoor: {fileID: 111032864}
   exitPosition: {fileID: 767540530}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -11042,11 +11028,11 @@ Transform:
   m_GameObject: {fileID: 112045490}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.6, y: -2.74, z: 20.313}
+  m_LocalPosition: {x: 4.2366905, y: 0.094249964, z: 9.944336}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &112045493
 MeshRenderer:
@@ -13162,7 +13148,7 @@ Transform:
   m_GameObject: {fileID: 131378978}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.527, y: -0.33333334, z: 0}
+  m_LocalPosition: {x: 0.5859905, y: -0.66827, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16680,6 +16666,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
+  doorType: 2
+  roomID: 0
   linkedDoor: {fileID: 2076508264}
   exitPosition: {fileID: 110545162}
   cooldownDuration: 4
@@ -17387,11 +17375,11 @@ Transform:
   m_GameObject: {fileID: 194175732}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.55, y: -1.699, z: 20.333}
+  m_LocalPosition: {x: 2.1866894, y: 1.1352501, z: 9.964344}
   m_LocalScale: {x: 6.5, y: 0.049999997, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &194175734
 MeshRenderer:
@@ -18144,7 +18132,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: TER6
+  linkedDoor: {fileID: 202010696}
   exitPosition: {fileID: 961468630}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -19188,12 +19178,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 211035259}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 8.139, y: -4.187, z: 6.263}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 2.77569, y: -1.3527498, z: -4.1056595}
   m_LocalScale: {x: 0.05, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &211035261
 MeshRenderer:
@@ -20327,8 +20317,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1007010835}
   - {fileID: 1632468641}
+  - {fileID: 1007010835}
   m_Father: {fileID: 58742019}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &223510011
@@ -22526,12 +22516,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 245582153}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 8.139, y: -4.187, z: 6.263}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 2.77569, y: -1.3527498, z: -4.1056633}
   m_LocalScale: {x: 0.05, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &245582155
 MeshRenderer:
@@ -24790,7 +24780,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 2076508264}
+  doorType: 1
+  roomID: TER6
+  linkedDoor: {fileID: 266232491}
   exitPosition: {fileID: 188589626}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -28307,7 +28299,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: NER1
+  linkedDoor: {fileID: 295795456}
   exitPosition: {fileID: 1586910929}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -29248,7 +29242,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: NER3
+  linkedDoor: {fileID: 300427584}
   exitPosition: {fileID: 1608931256}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -35765,11 +35761,11 @@ Transform:
   m_GameObject: {fileID: 377728833}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: 10.418, y: -1.683, z: 8.734}
+  m_LocalPosition: {x: 5.0546894, y: 1.1512499, z: -1.6346626}
   m_LocalScale: {x: 0.05, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!23 &377728835
 MeshRenderer:
@@ -36822,11 +36818,11 @@ Transform:
   m_GameObject: {fileID: 386079415}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: 10.418, y: -1.6989999, z: 17.086}
+  m_LocalPosition: {x: 5.0546894, y: 1.1352501, z: 6.7173424}
   m_LocalScale: {x: 6.5, y: 0.049999997, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!23 &386079417
 MeshRenderer:
@@ -37436,7 +37432,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: SR4
+  linkedDoor: {fileID: 389965625}
   exitPosition: {fileID: 131378979}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -39100,7 +39098,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: TER5
+  linkedDoor: {fileID: 406743905}
   exitPosition: {fileID: 1895094191}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -45095,7 +45095,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: NER6
+  linkedDoor: {fileID: 461552005}
   exitPosition: {fileID: 2117417275}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -48685,9 +48687,11 @@ GameObject:
   - component: {fileID: 496775393}
   - component: {fileID: 496775394}
   - component: {fileID: 496775395}
+  - component: {fileID: 496775396}
+  - component: {fileID: 496775397}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48706,6 +48710,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1904942827}
+  - {fileID: 2105202304}
   m_Father: {fileID: 1428406681}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &496775394
@@ -48786,6 +48791,48 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.64, y: 0.64, z: 0.2}
+  m_Center: {x: 0, y: 0.00000008940697, z: 0}
+--- !u!114 &496775396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496775392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ced762378d74c1b43bc0c0f4887c6b0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
+  InteractText: Enter
+  doorType: 2
+  roomID: 0
+  linkedDoor: {fileID: 496775396}
+  exitPosition: {fileID: 2105202304}
+  cooldownDuration: 4
+  fadeOverlay: {fileID: 80336247}
+  fadeOutDuration: 0.3
+  fadeInDuration: 0.8
+--- !u!135 &496775397
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496775392}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.32
   m_Center: {x: 0, y: 0.00000008940697, z: 0}
 --- !u!1 &497889812
 GameObject:
@@ -53518,7 +53565,7 @@ GameObject:
   - component: {fileID: 543269186}
   - component: {fileID: 543269185}
   m_Layer: 0
-  m_Name: Enter_Door (1)
+  m_Name: Enter_Door
   m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53578,7 +53625,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: SR6
+  linkedDoor: {fileID: 543269186}
   exitPosition: {fileID: 1800511220}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -53889,7 +53938,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: SR1
+  linkedDoor: {fileID: 550193165}
   exitPosition: {fileID: 1894213777}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -55032,11 +55083,11 @@ Transform:
   m_GameObject: {fileID: 560898452}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14.42, y: -2.74, z: 20.313}
+  m_LocalPosition: {x: 9.05669, y: 0.094249964, z: 9.944336}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &560898455
 MeshRenderer:
@@ -64359,7 +64410,7 @@ Transform:
   m_GameObject: {fileID: 639844418}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.527, y: -0.33333334, z: 0}
+  m_LocalPosition: {x: -1.1630101, y: -0.33333334, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -64722,7 +64773,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: SR1
+  linkedDoor: {fileID: 642976801}
   exitPosition: {fileID: 1971315609}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -65730,7 +65783,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: TER6
+  linkedDoor: {fileID: 648202662}
   exitPosition: {fileID: 1571138709}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -66183,12 +66238,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 649549652}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 7.591, y: -4.187, z: 19.151}
-  m_LocalScale: {x: 0.05, y: 2.5, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 2.2276897, y: -1.3527498, z: 8.782337}
+  m_LocalScale: {x: 0.05, y: 2.4999998, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &649549654
 MeshRenderer:
@@ -67177,6 +67232,24 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 112045491}
+  - {fileID: 1377551461}
+  - {fileID: 773091248}
+  - {fileID: 1719707494}
+  - {fileID: 560898453}
+  - {fileID: 977964975}
+  - {fileID: 211035260}
+  - {fileID: 1882450085}
+  - {fileID: 1827761128}
+  - {fileID: 1899559446}
+  - {fileID: 1888590145}
+  - {fileID: 1830692894}
+  - {fileID: 1552427919}
+  - {fileID: 1118121122}
+  - {fileID: 1936255139}
+  - {fileID: 1405922495}
+  - {fileID: 1901676267}
+  - {fileID: 840614032}
   - {fileID: 964709358}
   - {fileID: 1199768667}
   - {fileID: 356739054}
@@ -74458,7 +74531,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 2076508264}
+  doorType: 1
+  roomID: TER5
+  linkedDoor: {fileID: 731890355}
   exitPosition: {fileID: 64186559}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -76063,6 +76138,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2366958667666406652, guid: af624e6c21ce598459a214f0bf741b3d, type: 3}
   m_PrefabInstance: {fileID: 1647315513}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &747778362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 747778364}
+  - component: {fileID: 747778363}
+  m_Layer: 0
+  m_Name: Door_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &747778363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747778362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa15dbc02595b1489928527cb930e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DoorManager
+  spawnDoorConsecutiveDestroy: 20
+  exitDoorDestroy: 7.5
+--- !u!4 &747778364
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747778362}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -254.32478, y: 0, z: 92.38615}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &750091245
 GameObject:
   m_ObjectHideFlags: 0
@@ -78838,11 +78959,11 @@ Transform:
   m_GameObject: {fileID: 773091247}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.19, y: -2.74, z: 20.313}
+  m_LocalPosition: {x: 6.826689, y: 0.094249964, z: 9.944336}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &773091250
 MeshRenderer:
@@ -81690,6 +81811,17 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 194175733}
+  - {fileID: 386079416}
+  - {fileID: 1365292784}
+  - {fileID: 245582154}
+  - {fileID: 649549653}
+  - {fileID: 939404136}
+  - {fileID: 1007448577}
+  - {fileID: 1456459374}
+  - {fileID: 1808749295}
+  - {fileID: 377728834}
+  - {fileID: 1754289980}
   - {fileID: 1939518868}
   - {fileID: 1179620481}
   - {fileID: 1256804736}
@@ -86077,12 +86209,12 @@ Transform:
   m_GameObject: {fileID: 840614031}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.18, y: -1.15, z: 20.296}
+  m_LocalPosition: {x: 6.8166904, y: 1.6842499, z: 9.927338}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1568892244}
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &840614033
 SpriteRenderer:
@@ -87623,7 +87755,7 @@ GameObject:
   - component: {fileID: 857972277}
   - component: {fileID: 857972276}
   m_Layer: 0
-  m_Name: Door (2)
+  m_Name: Door
   m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87680,7 +87812,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 0}
+  doorType: 1
+  roomID: SR2
+  linkedDoor: {fileID: 857972277}
   exitPosition: {fileID: 1716166304}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -94944,7 +95078,7 @@ GameObject:
   - component: {fileID: 917963805}
   - component: {fileID: 917963804}
   m_Layer: 0
-  m_Name: Door (2)
+  m_Name: Door
   m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95001,7 +95135,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 0}
+  doorType: 1
+  roomID: SR5
+  linkedDoor: {fileID: 917963805}
   exitPosition: {fileID: 1554883973}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -97525,12 +97661,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 939404135}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 6.12, y: -4.187, z: 3.78}
-  m_LocalScale: {x: 4, y: 0.05, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.7566891, y: -1.3527498, z: -6.5886574}
+  m_LocalScale: {x: 4, y: 0.050000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &939404137
 MeshRenderer:
@@ -100324,12 +100460,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 977964974}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 4.1, y: -4.187, z: 9.42}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -1.2633114, y: -1.3527498, z: -0.9486618}
   m_LocalScale: {x: 0.05, y: 17, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &977964976
 MeshRenderer:
@@ -103971,12 +104107,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1007448576}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 5.872, y: -4.187, z: 17.885}
-  m_LocalScale: {x: 3.5, y: 0.05, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.5086918, y: -1.3527498, z: 7.5163383}
+  m_LocalScale: {x: 3.5, y: 0.050000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1007448578
 MeshRenderer:
@@ -108475,7 +108611,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: TER3
+  linkedDoor: {fileID: 1055010583}
   exitPosition: {fileID: 573071762}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -109434,7 +109572,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: SR4
+  linkedDoor: {fileID: 1066981637}
   exitPosition: {fileID: 639844419}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -113928,12 +114068,12 @@ Transform:
   m_GameObject: {fileID: 1118121121}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.735, y: -2.62, z: 9.822}
+  m_LocalPosition: {x: -3.6283092, y: 0.21425009, z: -0.5466614}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1958402005}
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1118121123
 SpriteRenderer:
@@ -116242,7 +116382,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: TER5
+  linkedDoor: {fileID: 1142742366}
   exitPosition: {fileID: 1662825785}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -119841,7 +119983,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: NER2
+  linkedDoor: {fileID: 1180104559}
   exitPosition: {fileID: 1843257942}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -123979,7 +124123,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: SR6
+  linkedDoor: {fileID: 1215279277}
   exitPosition: {fileID: 58842426}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -125433,7 +125579,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 2076508264}
+  doorType: 1
+  roomID: TER1
+  linkedDoor: {fileID: 1227781242}
   exitPosition: {fileID: 1571851840}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -136945,7 +137093,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 2076508264}
+  doorType: 1
+  roomID: TER3
+  linkedDoor: {fileID: 1348238060}
   exitPosition: {fileID: 977476956}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -139267,12 +139417,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365292783}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 4.1, y: -4.187, z: 9.42}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -1.2633114, y: -1.3527498, z: -0.948658}
   m_LocalScale: {x: 0.05, y: 17, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1365292785
 MeshRenderer:
@@ -140570,11 +140720,11 @@ Transform:
   m_GameObject: {fileID: 1377551460}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.819, y: -2.74, z: 20.313}
+  m_LocalPosition: {x: 5.4556904, y: 0.094249964, z: 9.944336}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1377551463
 MeshRenderer:
@@ -141731,7 +141881,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 2076508264}
+  doorType: 1
+  roomID: TER4
+  linkedDoor: {fileID: 1388205355}
   exitPosition: {fileID: 776105729}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -143435,13 +143587,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405922494}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 10.08, y: -2.62, z: 9.822}
+  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
+  m_LocalPosition: {x: 4.71669, y: 0.21425009, z: -0.5466614}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 926289008}
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!212 &1405922496
 SpriteRenderer:
@@ -147407,6 +147559,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 657109553904239667, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657109553904239667, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657109553904239667, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657109553904239667, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657109553904239667, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657109553904239667, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 665377148639088665, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -147531,6 +147707,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1383206783146319787, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1383206783146319787, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1383206783146319787, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1383206783146319787, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1383206783146319787, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1383206783146319787, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1605279330214348392, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -147552,6 +147752,30 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1605279330214348392, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1646620677797828281, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1646620677797828281, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1646620677797828281, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1646620677797828281, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1646620677797828281, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1646620677797828281, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -147672,6 +147896,30 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1945907174198092928, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1994086394365404549, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1994086394365404549, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1994086394365404549, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1994086394365404549, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1994086394365404549, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1994086394365404549, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -148104,6 +148352,30 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3409145902714092964, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3493863098954174183, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3493863098954174183, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3493863098954174183, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3493863098954174183, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3493863098954174183, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3493863098954174183, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -149127,6 +149399,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6311630915974046216, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311630915974046216, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311630915974046216, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311630915974046216, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311630915974046216, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311630915974046216, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6529848838674627119, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -149543,6 +149839,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7995400835921717468, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7995400835921717468, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7995400835921717468, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7995400835921717468, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7995400835921717468, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7995400835921717468, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8023624697074193098, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -149636,6 +149956,54 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8145145644594488754, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156621263275571798, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156621263275571798, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156621263275571798, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156621263275571798, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156621263275571798, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156621263275571798, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420033825393554244, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420033825393554244, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420033825393554244, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420033825393554244, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420033825393554244, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8420033825393554244, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -149828,6 +150196,30 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8897318311337902290, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955320002057406826, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955320002057406826, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955320002057406826, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955320002057406826, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955320002057406826, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8955320002057406826, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -149906,7 +150298,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1309234431367595390, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a7304e832723af14880c15ff57e892a2, type: 3}
 --- !u!1 &1437518397 stripped
 GameObject:
@@ -152746,12 +153141,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1456459373}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 9.625, y: -4.187, z: 8.728}
-  m_LocalScale: {x: 3, y: 0.05, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 4.26169, y: -1.3527498, z: -1.6406593}
+  m_LocalScale: {x: 3, y: 0.050000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1456459375
 MeshRenderer:
@@ -153714,7 +154109,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: TER4
+  linkedDoor: {fileID: 1459946691}
   exitPosition: {fileID: 52511686}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -156693,7 +157090,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: TER4
+  linkedDoor: {fileID: 1491348051}
   exitPosition: {fileID: 1600406718}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -163588,11 +163987,11 @@ Transform:
   m_GameObject: {fileID: 1552427918}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.599, y: -1.67, z: 20.333}
+  m_LocalPosition: {x: 2.2356892, y: 1.1642499, z: 9.96434}
   m_LocalScale: {x: 0.05, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1552427920
 MeshRenderer:
@@ -164726,7 +165125,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: NER5
+  linkedDoor: {fileID: 1561376798}
   exitPosition: {fileID: 1334411657}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -172591,7 +172992,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: SR5
+  linkedDoor: {fileID: 1632468643}
   exitPosition: {fileID: 467814428}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -175501,7 +175904,7 @@ Transform:
   m_GameObject: {fileID: 1662825784}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.743, y: -0.59, z: 0}
+  m_LocalPosition: {x: 0.678, y: -0.59, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -176119,7 +176522,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: SR3
+  linkedDoor: {fileID: 1666209361}
   exitPosition: {fileID: 1726026209}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -181936,11 +182341,11 @@ Transform:
   m_GameObject: {fileID: 1719707493}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 13.2, y: -2.74, z: 20.313}
+  m_LocalPosition: {x: 7.836691, y: 0.094249964, z: 9.944336}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1719707496
 MeshRenderer:
@@ -186154,11 +186559,11 @@ Transform:
   m_GameObject: {fileID: 1754289979}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.313, y: -0.203, z: 20.333}
+  m_LocalPosition: {x: -1.0503101, y: 2.63125, z: 9.964344}
   m_LocalScale: {x: 0.05, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1754289981
 MeshRenderer:
@@ -190612,17 +191017,6 @@ Transform:
   - {fileID: 794998853}
   - {fileID: 937886524}
   - {fileID: 2050868142}
-  - {fileID: 194175733}
-  - {fileID: 386079416}
-  - {fileID: 1365292784}
-  - {fileID: 245582154}
-  - {fileID: 649549653}
-  - {fileID: 939404136}
-  - {fileID: 1007448577}
-  - {fileID: 1456459374}
-  - {fileID: 1808749295}
-  - {fileID: 377728834}
-  - {fileID: 1754289980}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1791133136
@@ -192008,11 +192402,11 @@ Transform:
   m_GameObject: {fileID: 1808749294}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: 10.418, y: -0.676, z: 13.867}
+  m_LocalPosition: {x: 5.0546894, y: 2.1582499, z: 3.4983406}
   m_LocalScale: {x: 0.05, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1790739357}
+  m_Father: {fileID: 794998853}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!23 &1808749296
 MeshRenderer:
@@ -193610,12 +194004,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1827761127}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 6.12, y: -4.187, z: 3.78}
-  m_LocalScale: {x: 4, y: 0.05, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.7566891, y: -1.3527498, z: -6.588661}
+  m_LocalScale: {x: 4, y: 0.050000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1827761129
 MeshRenderer:
@@ -193922,11 +194316,11 @@ Transform:
   m_GameObject: {fileID: 1830692893}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: 10.418, y: -1.683, z: 8.734}
+  m_LocalPosition: {x: 5.0546894, y: 1.1512499, z: -1.6346588}
   m_LocalScale: {x: 0.05, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!23 &1830692895
 MeshRenderer:
@@ -194895,7 +195289,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: SR2
+  linkedDoor: {fileID: 1840434042}
   exitPosition: {fileID: 1095129448}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -198252,12 +198648,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1882450084}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 7.591, y: -4.187, z: 19.151}
-  m_LocalScale: {x: 0.05, y: 2.5, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 2.2276897, y: -1.3527498, z: 8.782341}
+  m_LocalScale: {x: 0.05, y: 2.4999998, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1882450086
 MeshRenderer:
@@ -199033,12 +199429,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888590144}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 9.625, y: -4.187, z: 8.728}
-  m_LocalScale: {x: 3, y: 0.05, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 4.26169, y: -1.3527498, z: -1.6406631}
+  m_LocalScale: {x: 3, y: 0.050000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1888590146
 MeshRenderer:
@@ -200525,12 +200921,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1899559445}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 5.872, y: -4.187, z: 17.885}
-  m_LocalScale: {x: 3.5, y: 0.05, z: 1}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.5086918, y: -1.3527498, z: 7.516342}
+  m_LocalScale: {x: 3.5, y: 0.050000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!23 &1899559447
 MeshRenderer:
@@ -200883,13 +201279,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901676266}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 20.097, y: -1.33, z: 14.711}
+  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
+  m_LocalPosition: {x: 14.73369, y: 1.50425, z: 4.3423386}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 528518476}
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!212 &1901676268
 SpriteRenderer:
@@ -202017,7 +202413,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: TER3
+  linkedDoor: {fileID: 1910709144}
   exitPosition: {fileID: 136184283}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -204319,12 +204717,12 @@ Transform:
   m_GameObject: {fileID: 1936255138}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.735, y: -2.62, z: 9.822}
+  m_LocalPosition: {x: -3.6283092, y: 0.21425009, z: -0.5466614}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1211992410}
-  m_Father: {fileID: 58742019}
+  m_Father: {fileID: 656106801}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1936255140
 SpriteRenderer:
@@ -211129,7 +211527,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: TER1
+  linkedDoor: {fileID: 2000673514}
   exitPosition: {fileID: 530011581}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -212252,7 +212652,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 0
+  roomID: NER4
+  linkedDoor: {fileID: 2009767202}
   exitPosition: {fileID: 1705027332}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -213123,7 +213525,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 2076508264}
+  doorType: 1
+  roomID: TER2
+  linkedDoor: {fileID: 2018008853}
   exitPosition: {fileID: 134193089}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -217276,8 +217680,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1211171411}
   - {fileID: 1840434040}
+  - {fileID: 1211171411}
   m_Father: {fileID: 1790739357}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2050917049
@@ -219660,7 +220064,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 2
+  roomID: 0
+  linkedDoor: {fileID: 2076508264}
   exitPosition: {fileID: 1718660285}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -222314,6 +222720,37 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &2105202303
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2105202304}
+  m_Layer: 0
+  m_Name: Exit Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2105202304
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105202303}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.026667237, y: -0.33333334, z: -0.7093401}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 496775393}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2105439034
 GameObject:
   m_ObjectHideFlags: 0
@@ -224204,7 +224641,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: TER2
+  linkedDoor: {fileID: 2119685445}
   exitPosition: {fileID: 1359408217}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -226068,7 +226507,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableDoor
   InteractText: Enter
-  linkedDoor: {fileID: 187000681}
+  doorType: 1
+  roomID: TER1
+  linkedDoor: {fileID: 2135273846}
   exitPosition: {fileID: 1663488328}
   cooldownDuration: 4
   fadeOverlay: {fileID: 80336247}
@@ -227311,3 +227752,4 @@ SceneRoots:
   - {fileID: 1332164304}
   - {fileID: 1639771898}
   - {fileID: 1600705202}
+  - {fileID: 747778364}

@@ -1,4 +1,5 @@
 using Microsoft.Unity.VisualStudio.Editor;
+using Mono.Cecil.Cil;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]
@@ -11,7 +12,6 @@ public class Item : ScriptableObject
     public int value_min;
     public int value_max;
     public int stat_value; 
-    private int value;
     public enum Item_Type
     {
         Consumable,
@@ -22,9 +22,4 @@ public class Item : ScriptableObject
         Boots
     }
     public Item_Type type;
-    public void Initialize()
-    {
-        value = Random.Range(value_min, value_max);
-    }
-    public int GetValue() {return value;}
 }

@@ -19,4 +19,5 @@ MonoBehaviour:
   value_min: 70
   value_max: 150
   stat_value: 4
+  quantity: 1
   type: 4

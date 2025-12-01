@@ -19,4 +19,5 @@ MonoBehaviour:
   value_min: 80
   value_max: 200
   stat_value: 5
+  quantity: 1
   type: 3

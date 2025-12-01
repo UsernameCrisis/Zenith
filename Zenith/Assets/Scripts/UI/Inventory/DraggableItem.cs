@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -11,15 +12,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Item item;
     private bool _isHovering = false;
     public ItemDescription _itemDescription;
+    public int value;
+    public int quantity = 1;
 
     void Start()
     {
-        _itemDescription = FindAnyObjectByType<ItemDescription>();
-        item.Initialize();
-    }
-
-    public void Initialize()
-    {
+        if (value != 0) return;
+        value = UnityEngine.Random.Range(item.value_min, item.value_max);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -44,13 +43,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
         _isHovering = true;
-        Debug.Log(_itemDescription == null);
-        _itemDescription.SetData(item.name, item.GetValue());
+        _itemDescription.SetData(item.name, value, quantity);
         StartCoroutine(ShowDescription());
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnPointerExit(PointerEventData eventData) 
     {
         _isHovering = false;
         FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.SetActive(false);

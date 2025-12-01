@@ -30,7 +30,7 @@ public class InventoryRow : MonoBehaviour
         return false;
     }
 
-    public void AddItemToNextEmptySlot(Item item)
+    public void AddItem(DraggableItem item)
     {
         for (int i = 0; i < slots.Length; i++)
         {
@@ -42,9 +42,9 @@ public class InventoryRow : MonoBehaviour
         }
     }
 
-    public List<Item> GetAsList()
+    public List<DraggableItem> GetAsList()
     {
-        List<Item> list = new List<Item>();
+        List<DraggableItem> list = new List<DraggableItem>();
 
         for (int i = 0; i < slots.Length; i++)
         {
@@ -54,11 +54,33 @@ public class InventoryRow : MonoBehaviour
         return list;
     }
 
-    public void UnloadList(List<Item> item )
+    public void UnloadList(List<DraggableItem> item )
     {
         for (int i = 0; i < slots.Length; i++)
         {
             slots[i].UnloadItem(item[i]);
+        }
+    }
+
+    public bool HasThisItem(DraggableItem item)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].HasThisItem(item))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public void AddExistingItem(DraggableItem item)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].HasThisItem(item))
+            {
+                slots[i].AddExistingItem(item);
+            }
         }
     }
 }

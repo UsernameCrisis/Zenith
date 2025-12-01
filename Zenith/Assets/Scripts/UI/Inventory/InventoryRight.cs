@@ -30,22 +30,31 @@ public class InventoryRight : MonoBehaviour
         }
     }
 
-    public void AddItem(Item item)
+    public void AddItem(DraggableItem item)
     {
+        //matching item
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (rows[i].GetComponent<InventoryRow>().HasThisItem(item))
+            {
+                rows[i].GetComponent<InventoryRow>().AddExistingItem(item);
+                return;
+            }
+        }
+        //no matching item
         for (int i = 0; i < rows.Count; i++)
         {
             if (rows[i].GetComponent<InventoryRow>().RowHasEmptySlot())
             {
-                rows[i].GetComponent<InventoryRow>().AddItemToNextEmptySlot(item);
-                // CheckIfNeededNewRow();
+                rows[i].GetComponent<InventoryRow>().AddItem(item);
                 return;
             }
         }
     }
 
-    public List<List<Item>> GetItems()
+    public List<List<DraggableItem>> GetItems()
     {
-        List<List<Item>> list = new List<List<Item>>();
+        List<List<DraggableItem>> list = new List<List<DraggableItem>>();
         for (int i = 0; i < rows.Count; i++)
         {
             list.Add(rows[i].GetComponent<InventoryRow>().GetAsList());
@@ -53,7 +62,7 @@ public class InventoryRight : MonoBehaviour
         return list;
     }
 
-    public void UnloadItems(List<List<Item>> list)
+    public void UnloadItems(List<List<DraggableItem>> list)
     {
         for (int i = 0; i < rows.Count; i++)
         {

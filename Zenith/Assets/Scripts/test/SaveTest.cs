@@ -8,7 +8,7 @@ public class SaveTest : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            List<List<Item>> items = inventory.GetInventoryIn2DList();
+            List<List<DraggableItem>> items = inventory.GetInventoryIn2DList();
             for (int i = 0; i < items.Count; i++)
             {
                 for (int j = 0; j < items[i].Count; j++)

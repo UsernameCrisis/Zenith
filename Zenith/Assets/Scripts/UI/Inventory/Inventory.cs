@@ -15,7 +15,7 @@ public class Inventory : MonoBehaviour
     {
         gameObject.SetActive(!gameObject.active);
     }
-    public void AddItem(Item item)
+    public void AddItem(DraggableItem item)
     {
         GetComponentInChildren<InventoryRight>().AddItem(item);
     }
@@ -30,13 +30,13 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public List<List<Item>> GetInventoryIn2DList()
+    public List<List<DraggableItem>> GetInventoryIn2DList()
     {
-        List<List<Item>> list = GetComponentInChildren<InventoryRight>().GetItems();
+        List<List<DraggableItem>> list = GetComponentInChildren<InventoryRight>().GetItems();
         return list;
     }
 
-    public void LoadInventoryFrom2DList(List<List<Item>> list)
+    public void LoadInventoryFrom2DList(List<List<DraggableItem>> list)
     {
         GetComponentInChildren<InventoryRight>().UnloadItems(list);
     }

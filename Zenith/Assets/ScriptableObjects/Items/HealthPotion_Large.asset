@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
-  m_Name: Sword
+  m_Name: HealthPotion_Large
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 0}
-  name: Sword
-  stackable: 0
-  stackable_limit: 0
-  value_min: 200
-  value_max: 300
-  stat_value: 5
-  quantity: 1
-  type: 1
+  sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  name: Large Health Potion
+  stackable: 1
+  stackable_limit: 999
+  value_min: 50
+  value_max: 50
+  stat_value: 35
+  description: Consumable +35 HP
+  type: 0

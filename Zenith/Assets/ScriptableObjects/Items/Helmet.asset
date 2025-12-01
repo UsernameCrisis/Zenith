@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
-  m_Name: CardboardLeggings
+  m_Name: Helmet
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 0}
-  name: Cardboard Leggings
+  sprite: {fileID: 1438579582, guid: a2bbcd52dd287b54e90673c0336941c0, type: 3}
+  name: Helmet
   stackable: 0
   stackable_limit: 0
-  value_min: 1
-  value_max: 1
-  stat_value: 1
-  type: 4
+  value_min: 50
+  value_max: 100
+  stat_value: 3
+  description: An iron helmet
+  type: 2

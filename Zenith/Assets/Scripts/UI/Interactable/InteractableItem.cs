@@ -7,7 +7,7 @@ public class InteractableItem : InteractableObject, Interactable
     public Item item;
     public DraggableItem DraggableItemPrefab;
     public GameObject Object;
-    public Inventory inventory;
+    private Inventory inventory;
 
     private void Start() {
         inventory = FindAnyObjectByType<OverworldUI>().inventory;

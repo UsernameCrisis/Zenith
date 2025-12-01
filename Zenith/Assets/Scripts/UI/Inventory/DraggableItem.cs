@@ -45,7 +45,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
         _isHovering = true;
-        _itemDescription.SetData(item.name, value, quantity);
+        _itemDescription.SetData(item.name, value, quantity, item.description);
         StartCoroutine(ShowDescription());
     }
 

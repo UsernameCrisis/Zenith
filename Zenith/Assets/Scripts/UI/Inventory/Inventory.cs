@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class Inventory : MonoBehaviour
 {
     public bool expandable = false;
-    private bool active = true;
     public GameObject ItemDescription;
     public void SetActive(bool b)
     {
@@ -14,8 +13,7 @@ public class Inventory : MonoBehaviour
     }
     public void ToggleInventory()
     {
-        active = !active;
-        gameObject.SetActive(active);
+        gameObject.SetActive(!gameObject.active);
     }
     public void AddItem(Item item)
     {

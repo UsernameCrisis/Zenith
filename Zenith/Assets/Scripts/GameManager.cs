@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     public int playerHP = 90;
     public int playerMaxHP = 100;
     public int gold = 0;
+    //
+    public int playerAtk;
+    public int playerDef;
 
     private void Awake()
     {

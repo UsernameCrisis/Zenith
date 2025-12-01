@@ -14,6 +14,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     void Start()
     {
+        _itemDescription = FindAnyObjectByType<ItemDescription>();
         item.Initialize();
     }
 
@@ -44,7 +45,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnPointerEnter(PointerEventData eventData)
     {
         _isHovering = true;
-        Debug.Log(item.GetValue() == null);
+        Debug.Log(_itemDescription == null);
         _itemDescription.SetData(item.name, item.GetValue());
         StartCoroutine(ShowDescription());
     }

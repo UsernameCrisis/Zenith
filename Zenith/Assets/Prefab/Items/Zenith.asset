@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Zenith
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 0}
-  name: Sword
+  name: Zenith
   stackable: 0
   stackable_limit: 0
-  value_min: 200
-  value_max: 300
-  stat_value: 5
+  value_min: 9999
+  value_max: 9999
+  stat_value: 500
   type: 1

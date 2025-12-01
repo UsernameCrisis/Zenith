@@ -3,7 +3,11 @@ using System.Collections;
 
 public class InteractableDoor : InteractableObject, Interactable
 {
+    public enum DoorType { Entry, Exit, Spawn }
+
     [Header("Door Setup")]
+    public DoorType doorType;
+    public string roomID;
     public InteractableDoor linkedDoor;
     public Transform exitPosition;
 

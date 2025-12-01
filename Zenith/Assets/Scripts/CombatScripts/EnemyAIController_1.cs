@@ -1,15 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using BehaviourTrees;
 
 public class EnemyAIController_1 : MonoBehaviour, ITurnActor
 {
     private GridData gridData;
     private Vector3Int latestPos;
+    private Vector3Int targetPos;
+    private BehaviourTree tree;
     [SerializeField] private Grid grid;
     [SerializeField] private MovementPreview previewSystem;
 
     public bool IsPlayer => false;
+    public bool isMoving;
 
 
     public IEnumerator ExecuteEnemyTurn(Vector3Int enemyPos)
@@ -58,9 +62,10 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
         EndTurn();
     }
 
-    private IEnumerator EnemyWalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject enemyChar)
+    public IEnumerator EnemyWalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject enemyChar)
     {
         Transform enemyTransform = gridData.GetTileAt(currPos).PlacedGameObject.transform;
+        isMoving = true;
     
         for (int i = 0; i < path.Count; i++)
         {
@@ -84,9 +89,10 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
     
         int distanceMoved = path.Count;
         enemyChar.UseMovement(distanceMoved);
+        isMoving = false;
     }
 
-    private Vector3Int FindClosestPlayer(Vector3Int enemyPos, List<(Vector3Int pos, CharacterObject)> players)
+    public Vector3Int FindClosestPlayer(Vector3Int enemyPos, List<(Vector3Int pos, CharacterObject)> players)
     {
         Vector3Int best = enemyPos;
         int bestDist = 999;
@@ -103,12 +109,12 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
         return best;
     }
 
-    private bool IsInRange(Vector3Int a, Vector3Int b, int range)
+    public bool IsInRange(Vector3Int a, Vector3Int b, int range)
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) <= range;
     }
 
-    private Vector3Int FindMoveToward(Vector3Int enemyPos, Vector3Int targetPos, HashSet<Vector3Int> reachable)
+    public Vector3Int FindMoveToward(Vector3Int enemyPos, Vector3Int targetPos, HashSet<Vector3Int> reachable)
     {
         Vector3Int best = enemyPos;
         int bestDist = 999;
@@ -126,10 +132,52 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
         return best;
     }
 
+    private IEnumerator RunTree()
+    {
+        var status = tree.Process();
+
+        while (status == Node.Status.Running)
+        {
+            yield return null;
+            status = tree.Process();
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        EndTurn();
+    }
+    
     public void BeginTurn(Vector3Int pos, GridData gridData)
     {
         this.gridData = gridData;
-        StartCoroutine(ExecuteEnemyTurn(pos));
+        latestPos = pos;
+
+        tree = new BehaviourTree("Enemy");
+
+        Sequence root = new Sequence("Root");
+        Sequence preAction = new Sequence("PreAction");
+        preAction.AddChild(new Leaf("CheckExists", new CheckEnemyExists(this)));
+        preAction.AddChild(new Leaf("FindClosest", new FindClosestPlayer(this)));
+        root.AddChild(preAction);
+        
+        Selector attack1 = new Selector("Attack1");
+        Sequence tryAttack = new Sequence("TryAttack");
+        tryAttack.AddChild(new Leaf("IsInRange1", new IsInRange(this)));
+        tryAttack.AddChild(new Leaf("DoAttack1", new Attack(this)));
+        attack1.AddChild(tryAttack);
+
+        attack1.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardPlayer(this)));
+
+        root.AddChild(attack1);
+
+        Sequence attack2 = new Sequence("Attack2");
+        attack2.AddChild(new Leaf("IsInRange2", new IsInRange(this)));
+        attack2.AddChild(new Leaf("DoAttack2", new Attack(this)));
+        root.AddChild(attack2);
+
+        tree.AddChild(root);
+        StartCoroutine(RunTree());
+
+        // StartCoroutine(ExecuteEnemyTurn(pos));
     }
 
     public void EndTurn()
@@ -138,4 +186,12 @@ public class EnemyAIController_1 : MonoBehaviour, ITurnActor
         enemyChar.ResetMovement();
         TurnManager.Instance.EndTurn();
     }
+
+    public GridData getGridData() {return gridData;}
+    public void setTargetPos(Vector3Int pos) {targetPos = pos;}
+    public Vector3Int getTargetPos() {return targetPos;}
+    public MovementPreview getPreview() {return previewSystem;}
+    public Vector3Int getLatestPos() {return latestPos;}
+    public void setLatestPos(Vector3Int pos) {latestPos = pos;}
 }
+

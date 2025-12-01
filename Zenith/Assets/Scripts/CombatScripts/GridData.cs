@@ -107,7 +107,16 @@ public class GridData
     {
         var result = new List<(Vector3Int, CharacterObject)>();
         result.AddRange(GetAllPlayers());
+        result.AddRange(GetTeamNPC());
         result.AddRange(GetAllEnemies());
+        return result;
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetAllFriendlies()
+    {
+        var result = new List<(Vector3Int, CharacterObject)>();
+        result.AddRange(GetAllPlayers());
+        result.AddRange(GetTeamNPC());
         return result;
     }
 

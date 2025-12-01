@@ -121,25 +121,8 @@ public class CombatCameraMovement : MonoBehaviour
 
         transform.DOMove(targetPos, 0.7f)
             .SetEase(Ease.OutQuint);
-        // StopAllCoroutines();
-        // StartCoroutine(SmoothFocus(target.position + new Vector3(defaultX, defaultY, defaultZ), target));
     }
 
-    private IEnumerator SmoothFocus(Vector3 targetPosition, Transform lookTarget)
-    {
-        float duration = 0.5f;
-        float elapsed = 0f;
-        Vector3 startPos = transform.position;
-
-        while (elapsed < duration)
-        {
-            transform.position = Vector3.Lerp(startPos, targetPosition, elapsed / duration);
-            elapsed += Time.unscaledDeltaTime;
-            yield return null;
-        }
-
-        transform.position = targetPosition;
-    }
      
     private void RefreshCharacterList()
     {

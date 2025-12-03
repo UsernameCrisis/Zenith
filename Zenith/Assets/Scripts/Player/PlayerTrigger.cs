@@ -6,9 +6,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerTrigger : MonoBehaviour
 {
-    public GameObject InteractUI;
+    [HideInInspector] public GameObject InteractUI;
     private GameObject CurrentInteractable;
-    public TMP_Text _interactText;
+    [HideInInspector] public TMP_Text _interactText;
 
     void OnTriggerEnter(Collider other)
     {

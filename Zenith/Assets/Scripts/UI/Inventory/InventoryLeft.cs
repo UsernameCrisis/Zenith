@@ -30,6 +30,11 @@ public class InventoryLeft : MonoBehaviour
         GearPanel.SetActive(false);
         ChestItemsUI.SetActive(true);
     }
+    public void SetNoneActive()
+    {
+        GearPanel.SetActive(false);
+        ChestItemsUI.SetActive(false);
+    }
 
     public int GetArmor()
     {

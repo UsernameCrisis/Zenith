@@ -26,12 +26,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     public int tier = 1;
     public float range_distance = 0.5f;
-    public Rarity rarity = Rarity.Commmon;
+    public Rarity rarity;
     private float[] rarity_multiplier = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     private int rarity_num;
 
     void Start()
     {
+        try {rarity = item.rarity;} catch (Exception e) {rarity = Rarity.Commmon;}
         switch (rarity)
         {
             case Rarity.Commmon:
@@ -90,7 +91,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
         _isHovering = true;
-        _itemDescription.SetData(item.name, value, quantity, item.description);
+        _itemDescription.SetData(item.name, value, quantity, item.description, rarity, this);
         StartCoroutine(ShowDescription());
     }
 

@@ -20,7 +20,7 @@ public class InteractableItem : InteractableObject, Interactable
         newDraggableItem.InitializeItemValues();
         if (!inventory.CanInsertToInventory(newDraggableItem)) {Destroy(newDraggableItem); return;}
         inventory.AddItem(newDraggableItem);
-        // Destroy(this.gameObject);
-        // base.OnInteract();
+        Destroy(this.gameObject);
+        base.OnInteract();
     }
 }

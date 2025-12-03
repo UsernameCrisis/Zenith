@@ -23,4 +23,5 @@ public class Item : ScriptableObject
         Boots
     }
     public Item_Type type;
+    public DraggableItem.Rarity rarity;
 }

@@ -30,7 +30,7 @@ public class PlayerOverworldAttributes : MonoBehaviour
     void Awake()
     {
         movement = GetComponent<PlayerMovement>();
-        if (GameManager.Instance != null)
+        if (GameManager.Instance != null && !GameManager.Instance.hasData)
         {
             currentHP = GameManager.Instance.playerHP;
             maxHP = GameManager.Instance.playerMaxHP;

@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 35
   description: Consumable +35 HP
   type: 0
+  rarity: 1

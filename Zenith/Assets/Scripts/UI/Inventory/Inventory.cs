@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,6 +8,7 @@ public class Inventory : MonoBehaviour
 {
     public bool expandable = false;
     public GameObject ItemDescription;
+    public DraggableItem DraggableItemPrefab;
     public void SetActive(bool b)
     {
         gameObject.SetActive(b);
@@ -30,15 +32,52 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public List<List<DraggableItem>> GetInventoryIn2DList()
+    public List<List<DraggableItem>> SaveInventoryIn2DList()
     {
-        List<List<DraggableItem>> list = GetComponentInChildren<InventoryRight>().GetItems();
-        return list;
+        return GetComponentInChildren<InventoryRight>().GetItems();
     }
 
-    public void LoadInventoryFrom2DList(List<List<DraggableItem>> list)
+    public List<DraggableItem> GetEquipmentAsList()
     {
-        GetComponentInChildren<InventoryRight>().UnloadItems(list);
+        return GetComponentInChildren<InventoryLeft>().GetItems();
+    }
+
+    public void LoadInventory(List<List<ItemData>> inventory, List<ItemData> equipment)
+    {
+        List<List<DraggableItem>> _inventory = new List<List<DraggableItem>>();
+        List<DraggableItem> _equipment = new List<DraggableItem>();
+
+        for (int i = 0; i < inventory.Count; i++)
+        {
+            _inventory.Add(new List<DraggableItem>());
+            for (int j = 0; j < inventory[i].Count; j++)
+            {
+                if (inventory[i][j] == null)
+                {
+                    _inventory[i].Add(null);
+                    continue;
+                }
+                DraggableItem newDraggableItem = Instantiate(DraggableItemPrefab);
+                newDraggableItem.SetData(inventory[i][j]);
+                _inventory[i].Add(newDraggableItem);
+            }
+        }
+
+        for (int i = 0; i < equipment.Count; i++)
+        {
+            if (equipment[i] == null)
+            {
+                _equipment.Add(null);
+                continue;
+            }
+            DraggableItem newDraggableItem = Instantiate(DraggableItemPrefab);
+            newDraggableItem.SetData(equipment[i]);
+            _equipment.Add(newDraggableItem);
+        }
+
+
+        GetComponentInChildren<InventoryRight>().UnloadItems(_inventory);
+        GetComponentInChildren<InventoryLeft>().UnloadEquipment(_equipment);
     }
     public int GetArmor()
     {

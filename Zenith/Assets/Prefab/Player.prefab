@@ -125,6 +125,7 @@ GameObject:
   - component: {fileID: 5234813713430550328}
   - component: {fileID: 7169127402685213013}
   - component: {fileID: 7613042265651345359}
+  - component: {fileID: 1248949727071076179}
   - component: {fileID: 2835819776977226559}
   - component: {fileID: 4117339652108580568}
   m_Layer: 0
@@ -219,6 +220,23 @@ MonoBehaviour:
   gold: 0
   invincibilityDuration: 0.4
   deathVolume: {fileID: 0}
+  Atk: 0
+  Def: 0
+  inventory: {fileID: 0}
+--- !u!114 &1248949727071076179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4366758908039255003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a39ff4a042b42143960ab34fe84e8cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  InteractUI: {fileID: 0}
+  _interactText: {fileID: 0}
 --- !u!65 &2835819776977226559
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 5
   description: An iron chestplate
   type: 3
+  rarity: 1

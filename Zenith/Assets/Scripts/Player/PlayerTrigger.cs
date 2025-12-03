@@ -1,3 +1,4 @@
+using System;
 using System.Data.Common;
 using TMPro;
 using UnityEngine;
@@ -8,9 +9,10 @@ public class PlayerTrigger : MonoBehaviour
     public GameObject InteractUI;
     private GameObject CurrentInteractable;
     public TMP_Text _interactText;
-    
+
     void OnTriggerEnter(Collider other)
     {
+        if (InteractUI == null && _interactText == null) FindMissingComponents();
         if (other.CompareTag("Interactable") && CurrentInteractable == null)
         {
             InteractUI.SetActive(true);
@@ -39,6 +41,18 @@ public class PlayerTrigger : MonoBehaviour
         if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
         {
             CurrentInteractable.GetComponent<Interactable>().OnInteract();
+        }
+    }
+
+    private void FindMissingComponents()
+    {
+        try
+        {
+            InteractUI = FindAnyObjectByType<InteractUI>().gameObject;
+            _interactText = InteractUI.transform.GetChild(1).GetComponent<TMP_Text>();
+        }
+        catch (Exception ex)
+        {
         }
     }
 }

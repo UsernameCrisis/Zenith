@@ -75,7 +75,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     {
         if (!ContainsItem()) return null;
 
-        return GetComponentInChildren<DraggableItem>();
+        return Instantiate(GetComponentInChildren<DraggableItem>());
     }
 
     public void UnloadItem(DraggableItem item)

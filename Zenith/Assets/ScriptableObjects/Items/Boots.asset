@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 2
   description: An iron helmet
   type: 5
+  rarity: 1

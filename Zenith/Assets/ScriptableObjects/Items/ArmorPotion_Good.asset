@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 15
   description: Increases Def by +15
   type: 0
+  rarity: 1

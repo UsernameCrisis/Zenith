@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 999
   description: Recovers all HP
   type: 0
+  rarity: 4

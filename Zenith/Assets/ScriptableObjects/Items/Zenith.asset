@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 500
   description: brrrrr
   type: 1
+  rarity: 4

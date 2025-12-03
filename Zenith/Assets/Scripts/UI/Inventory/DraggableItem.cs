@@ -29,6 +29,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Rarity rarity;
     private float[] rarity_multiplier = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     private int rarity_num;
+    private ItemData data;
 
     void Start()
     {
@@ -106,5 +107,38 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         yield return new WaitForSeconds(0.3f);
         if (_isHovering)
             FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.SetActive(true);
+    }
+    public ItemData GetData()
+    {
+        return new ItemData(value, stat_value, quantity, tier, rarity, item);
+    }
+    public void SetData(ItemData data)
+    {
+        value = data.value;
+        stat_value = data.stat_value;
+        quantity = data.quantity;
+        tier = data.tier;
+        rarity = data.rarity;
+        item = data.item;
+    }
+}
+
+public class ItemData
+{
+    public int value;
+    public int stat_value;
+    public int quantity;
+    public int tier;
+    public DraggableItem.Rarity rarity;
+    public Item item;
+
+    public ItemData(int v, int sv, int q, int t, DraggableItem.Rarity r, Item i)
+    {
+        value = v;
+        stat_value = sv;
+        quantity = q;
+        tier = t;
+        rarity = r;
+        item = i;
     }
 }

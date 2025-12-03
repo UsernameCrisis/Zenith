@@ -20,3 +20,4 @@ MonoBehaviour:
   base_stat_value: 4
   description: An iron leggings
   type: 4
+  rarity: 1

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryLeft : MonoBehaviour
@@ -52,5 +53,25 @@ public class InventoryLeft : MonoBehaviour
         try {return (WeaponSlot.transform.GetChild(0).GetComponentInChildren<DraggableItem>().stat_value == 0 ? 
         (int) WeaponSlot.transform.GetChild(0).GetComponentInChildren<DraggableItem>().item.base_stat_value : 
         (int) WeaponSlot.transform.GetChild(0).GetComponentInChildren<DraggableItem>().stat_value);} catch (Exception ex) {return 1;} 
+    }
+
+    public List<DraggableItem> GetItems()
+    {
+        List<DraggableItem> items = new List<DraggableItem>();
+        try {items.Add(Instantiate(ArmorSlot1.transform.GetChild(0).GetComponentInChildren<DraggableItem>()));} catch (Exception ex) {items.Add(null);}
+        try {items.Add(Instantiate(ArmorSlot2.transform.GetChild(0).GetComponentInChildren<DraggableItem>()));} catch (Exception ex) {items.Add(null);}
+        try {items.Add(Instantiate(ArmorSlot3.transform.GetChild(0).GetComponentInChildren<DraggableItem>()));} catch (Exception ex) {items.Add(null);}
+        try {items.Add(Instantiate(ArmorSlot4.transform.GetChild(0).GetComponentInChildren<DraggableItem>()));} catch (Exception ex) {items.Add(null);}
+        try {items.Add(Instantiate(WeaponSlot.transform.GetChild(0).GetComponentInChildren<DraggableItem>()));} catch (Exception ex) {items.Add(null);}
+        return items;
+    }
+
+    public void UnloadEquipment(List<DraggableItem> list)
+    {
+        try {ArmorSlot1.GetComponent<InventorySlot>().SetItem(list[0]);} catch (Exception ex) {}
+        try {ArmorSlot2.GetComponent<InventorySlot>().SetItem(list[1]);} catch (Exception ex) {}
+        try {ArmorSlot3.GetComponent<InventorySlot>().SetItem(list[2]);} catch (Exception ex) {}
+        try {ArmorSlot4.GetComponent<InventorySlot>().SetItem(list[3]);} catch (Exception ex) {}
+        try {WeaponSlot.GetComponent<InventorySlot>().SetItem(list[4]);} catch (Exception ex) {}
     }
 }

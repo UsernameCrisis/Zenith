@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
   m_Name: HealthPotion_Huge
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Huge Health Potion
   stackable: 1
   stackable_limit: 999
   value_min: 150
   value_max: 150
-  stat_value: 80
+  base_stat_value: 80
   description: Consumable +80 HP
   type: 0

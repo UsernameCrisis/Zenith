@@ -29,6 +29,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     {
         GameObject dropped = eventData.pointerDrag;
 
+        //type check
         if (AcceptedType != Item_Type.Any)
         {
             if (eventData.pointerDrag.GetComponent<DraggableItem>().item.type.ToString() != AcceptedType.ToString())
@@ -37,7 +38,18 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             }
         }
 
-        if (transform.childCount == 1)
+        //combine same item
+        if (ContainsItem())
+        {
+            if (GetItem().item == dropped.GetComponent<DraggableItem>().item)
+            {
+                GetItem().quantity += dropped.GetComponent<DraggableItem>().quantity;
+                UpdateQuantity();
+                Destroy(dropped);
+            }
+        }
+        //move item
+        else
         {
             DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
             draggableItem._parentAfterDrag = transform.GetChild(0);

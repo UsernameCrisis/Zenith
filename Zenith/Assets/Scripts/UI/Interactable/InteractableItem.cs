@@ -15,13 +15,12 @@ public class InteractableItem : InteractableObject, Interactable
 
     public override void OnInteract()
     {
-        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.inventory.AddItem(item);
-        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.interactUI.SetActive(false);
-        // transform.parent.GetComponentInParent<SceneRoot>().MainUI.EmptyCurrentInteractable();
         DraggableItem newDraggableItem = Instantiate(DraggableItemPrefab);
         newDraggableItem.item = item;
+        newDraggableItem.InitializeItemValues();
+        if (!inventory.CanInsertToInventory(newDraggableItem)) {Destroy(newDraggableItem); return;}
         inventory.AddItem(newDraggableItem);
-        Destroy(this.gameObject);
-        base.OnInteract();
+        // Destroy(this.gameObject);
+        // base.OnInteract();
     }
 }

@@ -17,6 +17,6 @@ MonoBehaviour:
   stackable_limit: 999
   value_min: 10
   value_max: 10
-  stat_value: 10
+  base_stat_value: 10
   description: ' Increases ATK by +10'
   type: 0

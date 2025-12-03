@@ -48,4 +48,9 @@ public class Inventory : MonoBehaviour
     {
         return GetComponentInChildren<InventoryLeft>().GetAtk();
     }
+
+    public bool CanInsertToInventory(DraggableItem item)
+    {
+        return GetComponentInChildren<InventoryRight>().CanInsertItem(item);
+    }
 }

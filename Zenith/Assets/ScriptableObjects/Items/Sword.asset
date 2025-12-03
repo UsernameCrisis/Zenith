@@ -17,6 +17,6 @@ MonoBehaviour:
   stackable_limit: 0
   value_min: 200
   value_max: 300
-  stat_value: 5
+  base_stat_value: 13
   description: An iron sword
   type: 1

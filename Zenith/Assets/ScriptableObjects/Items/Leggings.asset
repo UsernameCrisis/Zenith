@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
   m_Name: Leggings
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 1438579582, guid: a2bbcd52dd287b54e90673c0336941c0, type: 3}
   name: Leggings
   stackable: 0
   stackable_limit: 1
   value_min: 70
   value_max: 150
-  stat_value: 4
+  base_stat_value: 4
   description: An iron leggings
   type: 4

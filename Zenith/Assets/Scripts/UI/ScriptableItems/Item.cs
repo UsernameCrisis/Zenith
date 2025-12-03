@@ -11,7 +11,7 @@ public class Item : ScriptableObject
     public int stackable_limit;
     public int value_min;
     public int value_max;
-    public int stat_value; 
+    public float base_stat_value; 
     public string description;
     public enum Item_Type
     {

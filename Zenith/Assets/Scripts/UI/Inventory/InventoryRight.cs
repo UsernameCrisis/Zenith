@@ -69,4 +69,25 @@ public class InventoryRight : MonoBehaviour
             rows[i].GetComponent<InventoryRow>().UnloadList(list[i]);
         }
     }
+
+    public bool CanInsertItem(DraggableItem item)
+    {
+        //matching item
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (rows[i].GetComponent<InventoryRow>().HasThisItem(item))
+            {
+                return true;
+            }
+        }
+        //no matching item
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (rows[i].GetComponent<InventoryRow>().RowHasEmptySlot())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

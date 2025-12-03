@@ -17,6 +17,6 @@ MonoBehaviour:
   stackable_limit: 0
   value_min: 9999
   value_max: 9999
-  stat_value: 500
+  base_stat_value: 500
   description: brrrrr
   type: 1

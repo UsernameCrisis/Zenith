@@ -9,6 +9,7 @@ public class Inventory : MonoBehaviour
     public bool expandable = false;
     public GameObject ItemDescription;
     public DraggableItem DraggableItemPrefab;
+    public bool isSelling = false;
     public void SetActive(bool b)
     {
         gameObject.SetActive(b);
@@ -28,6 +29,7 @@ public class Inventory : MonoBehaviour
         {
             if (gameObject.active) gameObject.SetActive(false);
             if (ItemDescription.active) ItemDescription.SetActive(false);
+            isSelling = false;
             // if (transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.active) transform.parent.GetComponentInParent<SceneRoot>().ChestUI.gameObject.SetActive(false);
         }
     }

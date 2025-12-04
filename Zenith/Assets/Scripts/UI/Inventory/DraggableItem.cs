@@ -13,6 +13,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Item item;
     private bool _isHovering = false;
     public ItemDescription _itemDescription;
+    public ItemActionMenu _itemActionmenu;
     public int value;
     public int quantity = 1;
     public int stat_value;
@@ -33,6 +34,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     void Start()
     {
+        _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
+        _itemActionmenu = FindAnyObjectByType<OverworldUI>().itemActionMenu.GetComponent<ItemActionMenu>();
         try {rarity = item.rarity;} catch (Exception e) {rarity = Rarity.Commmon;}
         switch (rarity)
         {
@@ -68,6 +71,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         stat_value = (int)Mathf.Round(item.base_stat_value * UnityEngine.Random.Range(tier_multiplier_floor, tier_multiplier_ceiling) * UnityEngine.Random.Range(rarity_multiplier_floor, rarity_multiplier_ceiling));
     }
 
+    private void Update() {
+        if (!_isHovering) return;
+
+        if (InputSystem.actions.FindAction("RightClick").WasPressedThisFrame()) OpenItemActionmenu();
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         _parentAfterDrag = transform.parent;
@@ -90,7 +99,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
+        // _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
         _isHovering = true;
         _itemDescription.SetData(item.name, value, quantity, item.description, rarity, this);
         StartCoroutine(ShowDescription());
@@ -105,7 +114,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private IEnumerator ShowDescription()
     {
         yield return new WaitForSeconds(0.3f);
-        if (_isHovering)
+        if (_isHovering && !_itemActionmenu.gameObject.active)
             FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.SetActive(true);
     }
     public ItemData GetData()
@@ -120,6 +129,26 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         tier = data.tier;
         rarity = data.rarity;
         item = data.item;
+    }
+
+    private void OpenItemActionmenu()
+    {
+        _itemDescription.gameObject.SetActive(false);
+
+        _itemActionmenu.transform.position = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
+
+        _itemActionmenu.gameObject.SetActive(true);
+
+        _itemActionmenu.Read(item.type == Item.Item_Type.Consumable, FindAnyObjectByType<OverworldUI>().inventory.isSelling);
+        
+        _itemActionmenu.SetItem(this);
+    }
+
+    public void Sell()
+    {
+        FindAnyObjectByType<PlayerOverworldAttributes>().gold += value;
+        _itemActionmenu.gameObject.SetActive(false);
+        Destroy(this.gameObject);
     }
 }
 

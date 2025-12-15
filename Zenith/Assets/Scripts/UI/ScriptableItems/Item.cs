@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]
 public class Item : ScriptableObject
 {
-    // public Sprite sprite;
+    public Sprite sprite;
     public string name;
     public bool stackable;
     public int stackable_limit;
@@ -20,7 +20,8 @@ public class Item : ScriptableObject
         Helmet,
         Chestplate,
         Legs,
-        Boots
+        Boots,
+        Junk
     }
     public Item_Type type;
     public DraggableItem.Rarity rarity;

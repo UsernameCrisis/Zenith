@@ -13,6 +13,7 @@ public class InventoryLeft : MonoBehaviour
     public Panels CurrentPanel = Panels.Gear;
     public GameObject GearPanel;
     public GameObject ChestItemsUI;
+    public GameObject ShopPanel;
     public GameObject ArmorSlot1;
     public GameObject ArmorSlot2;
     public GameObject ArmorSlot3;
@@ -22,18 +23,27 @@ public class InventoryLeft : MonoBehaviour
     public void SetGearActive()
     {
         ChestItemsUI.SetActive(false);
+        ShopPanel.SetActive(false);
         GearPanel.SetActive(true);
     }
     
     public void SetInteractableInventoryActive()
     {
         GearPanel.SetActive(false);
+        ShopPanel.SetActive(false);
         ChestItemsUI.SetActive(true);
+    }
+    public void SetShopActive()
+    {
+        GearPanel.SetActive(false);
+        ChestItemsUI.SetActive(false);
+        ShopPanel.SetActive(true);
     }
     public void SetNoneActive()
     {
         GearPanel.SetActive(false);
         ChestItemsUI.SetActive(false);
+        ShopPanel.SetActive(false);
     }
 
     public int GetArmor()

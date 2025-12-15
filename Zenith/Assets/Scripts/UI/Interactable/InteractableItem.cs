@@ -2,6 +2,7 @@ using System.Collections;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InteractableItem : InteractableObject, Interactable
 {
@@ -25,6 +26,7 @@ public class InteractableItem : InteractableObject, Interactable
         newDraggableItem.InitializeItemValues();
         if (!inventory.CanInsertToInventory(newDraggableItem)) {Destroy(newDraggableItem); return;}
         inventory.AddItem(newDraggableItem);
+        newDraggableItem.gameObject.GetComponent<Image>().sprite = item.sprite;
         Kill();
         base.OnInteract();
     }

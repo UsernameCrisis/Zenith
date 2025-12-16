@@ -48,7 +48,7 @@ public class PlayerTrigger : MonoBehaviour
     {
         try
         {
-            InteractUI = FindAnyObjectByType<InteractUI>().gameObject;
+            InteractUI = FindAnyObjectByType<OverworldUI>().interactUI;
             _interactText = InteractUI.transform.GetChild(1).GetComponent<TMP_Text>();
         }
         catch (Exception ex)

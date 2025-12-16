@@ -25,12 +25,12 @@ public class DoorManager : MonoBehaviour
             else
                 exitDoors.Add(door);
         }
+
         availableEntries = new List<InteractableDoor>(entryDoors);
         Shuffle(availableEntries);
 
         RandomizeConnections();
     }
-
 
     private void RandomizeConnections()
     {
@@ -43,7 +43,9 @@ public class DoorManager : MonoBehaviour
         float spawnChance = 100f;
         foreach (var spawnExit in spawnExits.ToList())
         {
-            var validEntries = entryDoors.Where(e => e.roomID != spawnExit.roomID).ToList();
+            var validEntries = availableEntries
+                .Where(e => e.roomID != spawnExit.roomID)
+                .ToList();
 
             if (validEntries.Count == 0)
             {
@@ -74,7 +76,9 @@ public class DoorManager : MonoBehaviour
                 continue;
             }
 
-            var validEntries = entryDoors.Where(e => e.roomID != exitDoor.roomID).ToList();
+            var validEntries = availableEntries
+                .Where(e => e.roomID != exitDoor.roomID)
+                .ToList();
 
             if (validEntries.Count == 0)
             {
@@ -96,6 +100,16 @@ public class DoorManager : MonoBehaviour
 
     private void LinkDoors(InteractableDoor exitDoor, InteractableDoor entryDoor)
     {
+        // Treat "self-link" as unlinked
+        bool exitAlreadyLinked = exitDoor.linkedDoor != null && exitDoor.linkedDoor != exitDoor;
+        bool entryAlreadyLinked = entryDoor.linkedDoor != null && entryDoor.linkedDoor != entryDoor;
+
+        if (exitAlreadyLinked || entryAlreadyLinked)
+        {
+            Debug.LogWarning($"Door already linked: {exitDoor.name} or {entryDoor.name}");
+            return;
+        }
+
         exitDoor.linkedDoor = entryDoor;
         entryDoor.linkedDoor = exitDoor;
     }

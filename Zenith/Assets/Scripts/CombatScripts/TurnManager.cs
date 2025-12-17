@@ -8,26 +8,31 @@ public class TurnManager : MonoBehaviour
     
     public static TurnManager Instance;
     private GridData gridData;
+    private int maxTurn = 50;
+    private int currentTurn = 1;
     [SerializeField] private PopulateMap mapPopulator;
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private EnemyAIController_1 enemyAI;
+    [SerializeField] private TurnOrderUI turnOrderUI;
+
     
     private TurnQueue turnQueue;
 
     void Awake()
     {
         Instance = this;
-        
     }
 
     private IEnumerator Start()
     {
         yield return null;
         InitializeTurnQueue();
+        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         StartTurn();
     }
     private void InitializeTurnQueue()
     {
+        currentTurn = 1;
         gridData = mapPopulator.GetComponent<PopulateMap>().objectsData;
         var units = gridData.GetAllUnits();
 
@@ -38,14 +43,15 @@ public class TurnManager : MonoBehaviour
             characters.Add(u.character);
         }
 
-        turnQueue = new TurnQueue(characters); // Sementara belum pakai speed system
-        print(turnQueue.units.Count);
+        turnQueue = new TurnQueue(characters, 10); // Sementara simulate 10 turn ahead
+        print(turnQueue.allUnits.Count);
     }
     
     public void StartTurn()
     {
         CharacterObject current = turnQueue.GetCurrent();
-
+        AdvanceATB(current);
+        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         Vector3Int? posNullable = gridData.GetPositionOf(current);
 
         if (posNullable == null)
@@ -68,9 +74,26 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    void AdvanceATB(CharacterObject active)
+    {
+        if (active.Speed <= 0f)
+            return;
+
+        var units = gridData.GetAllUnits();
+        float time = (100f - active.CurrentATB) / active.Speed;
+
+        foreach (var u in units)
+        {
+            u.character.AddATB(u.character.Speed * time);
+        }
+
+        active.SubATB(100f);
+    }
+
     public void EndTurn()
     {
-        turnQueue.Next();
+        turnQueue.PopNext();
+        currentTurn++;
         StartTurn();
     }
 }

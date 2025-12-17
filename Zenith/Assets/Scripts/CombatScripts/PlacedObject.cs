@@ -47,6 +47,9 @@ public class CharacterObject : PlacedObject
     public int MaxHp { get; private set; }
     public int Damage { get; private set; }
     public int Defense { get; private set; }
+    public int Speed { get; private set; }
+    public float CurrentATB { get; private set; }
+    public Sprite Portrait { get; private set; }
     public int Team { get; private set; }
     public bool IsPlayer { get; private set; }
     public int MaxMoveRange { get; private set; } = 3;
@@ -54,18 +57,32 @@ public class CharacterObject : PlacedObject
     public int AtkRange { get; private set; }
     private bool canAttack = true;
 
-    public CharacterObject(string name, int hp, int damage, int defense, int team, int atkRange, bool isPlayer)
+    public CharacterObject(string name, int hp, int damage, int defense, int speed, 
+                            float currentATB, Sprite portrait, int team, int atkRange, bool isPlayer)
     {
         Name = name;
         HP = hp;
         MaxHp = hp;
         Damage = damage;
         Defense = defense;
+        CurrentATB = currentATB;
+        Speed = speed;
         Team = team;
         IsPlayer = isPlayer;
         ObjectType = ObjectType.Character;
         RemainingMoveRange = MaxMoveRange;
+        Portrait = portrait;
         AtkRange = atkRange;
+    }
+
+    public void AddATB(float addition)
+    {
+        CurrentATB += addition;
+    }
+
+    public void SubATB(float subtraction)
+    {
+        CurrentATB -= subtraction;
     }
 
     // Call at the start of each turn

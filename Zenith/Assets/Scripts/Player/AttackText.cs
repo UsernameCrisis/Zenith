@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class AttackText : MonoBehaviour
 {
-    void Update()
+    public void UpdateNumber()
     {
-        string t = "Atk: " + FindAnyObjectByType<PlayerOverworldAttributes>().Atk.ToString();
+        string t = "Atk: " + GameManager.Instance.playerAtk.ToString();
         GetComponent<TMP_Text>().text = t;
     }
 }

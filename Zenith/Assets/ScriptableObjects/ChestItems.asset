@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChestItems
   PossibleItems:
   - {fileID: 11400000, guid: 80ac8e447f2491d40a13a6c00e21bc25, type: 2}
+  - {fileID: 11400000, guid: 8120c7383b6719e498764b37d8b5a59f, type: 2}
   ChancePercentage:
   - 100
-  MinRange: 01000000
-  MaxRange: 01000000
+  - 100
+  MinRange: 0100000002000000
+  MaxRange: 010000000a000000

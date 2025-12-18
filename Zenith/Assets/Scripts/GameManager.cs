@@ -40,8 +40,6 @@ public class GameManager : MonoBehaviour
         playerHP = player.currentHP;
         playerMaxHP = player.maxHP;
         gold = player.gold;
-        playerAtk = player.Atk;
-        playerDef = player.Def;
 
         DraggableItemToItemData(player.inventory.SaveInventoryIn2DList(), player.inventory.GetEquipmentAsList());
         hasData = true;
@@ -57,11 +55,9 @@ public class GameManager : MonoBehaviour
         player.currentHP = playerHP;
         playerMaxHP = player.maxHP;
         player.gold = gold;
-        player.Atk = playerAtk;
-        player.Def = playerDef;
 
         player.inventory.LoadInventory(_items, _equipments);
-        player.UpdateStats();
+        UpdateStats();
     }
 
     private void DraggableItemToItemData(List<List<DraggableItem>> items, List<DraggableItem> equipments)
@@ -82,5 +78,11 @@ public class GameManager : MonoBehaviour
         {
             try {_equipments.Add(equipments[i].GetData());} catch (Exception e) {_equipments.Add(null);}
         }
+    }
+
+    public void UpdateStats()
+    {
+        playerDef = FindAnyObjectByType<OverworldUI>().inventory.GetArmor();
+        playerAtk = FindAnyObjectByType<OverworldUI>().inventory.GetATK();
     }
 }

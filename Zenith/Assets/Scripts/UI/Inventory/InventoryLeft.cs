@@ -19,6 +19,8 @@ public class InventoryLeft : MonoBehaviour
     public GameObject ArmorSlot3;
     public GameObject ArmorSlot4;
     public GameObject WeaponSlot;
+    public DefenseText defText;
+    public AttackText atkText;
 
     public void SetGearActive()
     {
@@ -44,6 +46,12 @@ public class InventoryLeft : MonoBehaviour
         GearPanel.SetActive(false);
         ChestItemsUI.SetActive(false);
         ShopPanel.SetActive(false);
+    }
+
+    public void UpdateStats()
+    {
+        atkText.UpdateNumber();
+        defText.UpdateNumber();
     }
 
     public int GetArmor()

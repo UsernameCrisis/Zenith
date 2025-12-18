@@ -23,6 +23,7 @@ public class OverworldUI : MonoBehaviour
     public GameObject ItemDescriptionObject;
     private Vector2 latestMousePos;
     public ItemActionMenu itemActionMenu;
+    public SecondaryItemActionMenu secondaryItemActionMenu;
 
 
     void Awake()

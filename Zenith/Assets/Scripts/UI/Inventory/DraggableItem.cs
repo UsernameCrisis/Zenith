@@ -14,9 +14,16 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool _isHovering = false;
     public ItemDescription _itemDescription;
     public ItemActionMenu _itemActionmenu;
+    public SecondaryItemActionMenu _secondaryItemActionMenu;
     public int value;
     public int quantity = 1;
     public int stat_value;
+    public enum SlotType
+    {
+        Inventory,
+        Shop,
+        Chest
+    }
     public enum Rarity
     {
         Commmon,
@@ -28,6 +35,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public int tier = 1;
     public float range_distance = 0.5f;
     public Rarity rarity;
+    public SlotType slotType = SlotType.Inventory;
     private float[] rarity_multiplier = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     private int rarity_num;
     private ItemData data;
@@ -36,6 +44,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         _itemDescription = FindAnyObjectByType<OverworldUI>().ItemDescriptionObject.GetComponent<ItemDescription>();
         _itemActionmenu = FindAnyObjectByType<OverworldUI>().itemActionMenu.GetComponent<ItemActionMenu>();
+        _secondaryItemActionMenu = FindAnyObjectByType<OverworldUI>().secondaryItemActionMenu.GetComponent<SecondaryItemActionMenu>();
+        FindAnyObjectByType<OverworldUI>().inventory.GetComponentInChildren<InventoryLeft>().UpdateStats();
         try {rarity = item.rarity;} catch (Exception e) {rarity = Rarity.Commmon;}
         switch (rarity)
         {
@@ -79,6 +89,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (slotType != SlotType.Inventory) return;
         _parentAfterDrag = transform.parent;
         transform.SetParent(FindAnyObjectByType<Canvas>().transform, true);
         transform.SetAsLastSibling();
@@ -87,14 +98,19 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (slotType != SlotType.Inventory) return;
         transform.position = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
         // transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (slotType != SlotType.Inventory) return;
         transform.SetParent(_parentAfterDrag);
         this.GetComponent<Image>().raycastTarget = true;
+
+        GameManager.Instance.UpdateStats();
+        FindAnyObjectByType<OverworldUI>().inventory.GetComponentInChildren<InventoryLeft>().UpdateStats();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -134,20 +150,46 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private void OpenItemActionmenu()
     {
         _itemDescription.gameObject.SetActive(false);
-
-        _itemActionmenu.transform.position = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
-
-        _itemActionmenu.gameObject.SetActive(true);
-
-        _itemActionmenu.Read(item.type == Item.Item_Type.Consumable, FindAnyObjectByType<OverworldUI>().inventory.isSelling);
-        
-        _itemActionmenu.SetItem(this);
+        if (slotType != SlotType.Inventory)
+        {
+            _secondaryItemActionMenu = FindAnyObjectByType<OverworldUI>().secondaryItemActionMenu.GetComponent<SecondaryItemActionMenu>();
+            _secondaryItemActionMenu.transform.position = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
+            _secondaryItemActionMenu.gameObject.SetActive(true);
+            _secondaryItemActionMenu.SetGameObject(this.gameObject);
+            _secondaryItemActionMenu.SetType(slotType, value);
+        }
+        else 
+        {
+            _itemActionmenu.transform.position = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
+            _itemActionmenu.gameObject.SetActive(true);
+            _itemActionmenu.Read(item.type == Item.Item_Type.Consumable, FindAnyObjectByType<OverworldUI>().inventory.isSelling);
+            _itemActionmenu.SetItem(this);
+        }
     }
 
     public void Sell()
     {
         FindAnyObjectByType<PlayerOverworldAttributes>().gold += value;
         _itemActionmenu.gameObject.SetActive(false);
+        Destroy(this.gameObject);
+    }
+
+    public void Buy()
+    {
+        FindAnyObjectByType<PlayerOverworldAttributes>().gold -= value;
+        _secondaryItemActionMenu.gameObject.SetActive(false);
+        DraggableItem newObject = Instantiate(this);
+        newObject.slotType = SlotType.Inventory;
+        FindAnyObjectByType<OverworldUI>().inventory.AddItem(newObject);
+        Destroy(this.gameObject);
+    }
+
+    public void Take()
+    {
+        _secondaryItemActionMenu.gameObject.SetActive(false);
+        DraggableItem newObject = Instantiate(this);
+        newObject.slotType = SlotType.Inventory;
+        FindAnyObjectByType<OverworldUI>().inventory.AddItem(newObject);
         Destroy(this.gameObject);
     }
 }

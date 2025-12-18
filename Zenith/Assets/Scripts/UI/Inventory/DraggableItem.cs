@@ -190,7 +190,14 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         DraggableItem newObject = Instantiate(this);
         newObject.slotType = SlotType.Inventory;
         FindAnyObjectByType<OverworldUI>().inventory.AddItem(newObject);
+        quantity = 0;
+        GetComponentInParent<InventorySlot>().UpdateQuantity();
         Destroy(this.gameObject);
+    }
+
+    public void SetSprite()
+    {
+        GetComponent<Image>().sprite = item.sprite;
     }
 }
 

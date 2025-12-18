@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ChestItems", menuName = "Scriptable Objects/ChestItems")]
-public class ChestItems : ScriptableObject
+public class ItemTable : ScriptableObject
 {
     public List<Item> PossibleItems;
     public List<float> ChancePercentage;

@@ -129,4 +129,9 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         t += n.ToString();
         return t;
     }
+
+    public void RemoveItem()
+    {
+        Destroy(transform.GetChild(0).GetChild(0).gameObject);
+    }
 }

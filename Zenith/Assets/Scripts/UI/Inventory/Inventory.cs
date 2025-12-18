@@ -61,6 +61,7 @@ public class Inventory : MonoBehaviour
                 }
                 DraggableItem newDraggableItem = Instantiate(DraggableItemPrefab);
                 newDraggableItem.SetData(inventory[i][j]);
+                newDraggableItem.SetSprite();
                 _inventory[i].Add(newDraggableItem);
             }
         }
@@ -74,6 +75,7 @@ public class Inventory : MonoBehaviour
             }
             DraggableItem newDraggableItem = Instantiate(DraggableItemPrefab);
             newDraggableItem.SetData(equipment[i]);
+            newDraggableItem.SetSprite();
             _equipment.Add(newDraggableItem);
         }
 

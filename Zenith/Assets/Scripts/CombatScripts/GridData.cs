@@ -218,7 +218,9 @@ public class GridData
                 tileSave.hp = character.HP;
                 tileSave.maxHp = character.MaxHp;
                 tileSave.damage = character.Damage;
+                tileSave.speed = character.Speed;
                 tileSave.defense = character.Defense;
+                tileSave.portrait = character.Portrait;
                 tileSave.team = character.Team;
                 tileSave.isPlayer = character.IsPlayer;
                 tileSave.atkRange = character.AtkRange;
@@ -254,6 +256,9 @@ public class GridData
                         tileSave.hp,
                         tileSave.damage,
                         tileSave.defense,
+                        tileSave.speed,
+                        tileSave.currentATB,
+                        tileSave.portrait,
                         tileSave.team,
                         tileSave.atkRange,
                         tileSave.isPlayer
@@ -287,6 +292,9 @@ public class TileSaveData
     public int maxHp;
     public int damage;
     public int defense;
+    public int speed;
+    public float currentATB;
+    public Sprite portrait;
     public int team;
     public bool isPlayer;
     public int atkRange;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 
 [CreateAssetMenu]
@@ -18,7 +19,11 @@ public class ObjectData
     [field: SerializeField]
     public int Damage { get; private set; }
     [field: SerializeField]
+    public int Speed { get; private set; }
+    [field: SerializeField]
     public int Defense { get; private set; }
+    [field: SerializeField]
+    public float currentATB { get; private set; }
     [field: SerializeField]
     public ObjectType Type { get; private set; }
     [field: SerializeField]
@@ -29,4 +34,6 @@ public class ObjectData
     public int AtkRange { get; private set; }
     [field: SerializeField]
     public GameObject Prefab { get; private set; }
+    [field: SerializeField]
+    public Sprite Portrait { get; private set; }
 } 

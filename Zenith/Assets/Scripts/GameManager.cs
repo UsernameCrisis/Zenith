@@ -85,4 +85,9 @@ public class GameManager : MonoBehaviour
         playerDef = FindAnyObjectByType<OverworldUI>().inventory.GetArmor();
         playerAtk = FindAnyObjectByType<OverworldUI>().inventory.GetATK();
     }
+    public void ClearInventoryData()
+    {
+        _items.Clear();
+        _equipments.Clear();
+    }
 }

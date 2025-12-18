@@ -42,6 +42,7 @@ public class ConfirmationUI : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(targetScene))
         {
+            Time.timeScale = 1;
             SceneManager.LoadScene(targetScene);
         }
     }

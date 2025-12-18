@@ -9,6 +9,7 @@ public class PauseMenuOverworldInput : MonoBehaviour
     private InputAction escapeKeyAction;
     [SerializeField] private PauseMenu pauseMenu;
     [SerializeField] private AudioSettingsUI optionMenu;
+    [SerializeField] private GameObject confirmationModal;
 
     void OnEnable()
     {
@@ -24,7 +25,12 @@ public class PauseMenuOverworldInput : MonoBehaviour
     void Awake()
     {
         escapeKeyAction = InputSystem.actions.FindAction("ExitSelect");
+        if (confirmationModal != null)
+        {
+            confirmationModal.SetActive(false);
+        }
     }
+
     void Update()
     {
         if (escapeKeyAction.WasPressedThisFrame()) HandleEscapePressed();
@@ -32,6 +38,12 @@ public class PauseMenuOverworldInput : MonoBehaviour
 
     private void HandleEscapePressed()
     {
+        if (confirmationModal != null && confirmationModal.activeSelf)
+        {
+            confirmationModal.SetActive(false);
+            return;
+        }
+
         if (isPaused && !isInsideOption)
         {
             Resume();
@@ -81,7 +93,6 @@ public class PauseMenuOverworldInput : MonoBehaviour
             pauseMenu.Hide();
             optionMenu.Show();
             isInsideOption = true;
-
         }
         else if (button == "Exit")
         {

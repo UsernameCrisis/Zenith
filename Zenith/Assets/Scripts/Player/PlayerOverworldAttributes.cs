@@ -1,8 +1,9 @@
-using UnityEngine;
 using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerOverworldAttributes : MonoBehaviour
 {
@@ -14,17 +15,31 @@ public class PlayerOverworldAttributes : MonoBehaviour
     private PlayerMovement movement;
     private bool isInvincible = false;
     [SerializeField] private float invincibilityDuration = 0.4f;
-    [SerializeField] private Volume deathVolume;
     private Vignette vignette;
     public int Atk;
     public int Def;
     public Inventory inventory;
+
+    [Header("Screen Fade")]
+    [SerializeField] private Volume deathVolume;
+    [SerializeField] private CanvasGroup fadeOverlay;
+    [SerializeField] private float vignetteDuration = 1f;
+    [SerializeField] private float postVignetteWait = 1f;
+    [SerializeField] private float fadeToBlackDuration = 2f;
+
 
     public event Action<int, int> HealthChanged;
 
     void Start()
     {
         deathVolume.profile.TryGet(out vignette);
+
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.alpha = 0f;
+            fadeOverlay.blocksRaycasts = false;
+            fadeOverlay.interactable = false;
+        }
     }
 
     void Awake()
@@ -61,7 +76,7 @@ public class PlayerOverworldAttributes : MonoBehaviour
         else
         {
             movement.Die();
-            StartCoroutine(DeathVignette());
+            StartCoroutine(DeathSequence());
         }
     }
 
@@ -72,22 +87,78 @@ public class PlayerOverworldAttributes : MonoBehaviour
         isInvincible = false;
     }
 
-    IEnumerator DeathVignette(float duration = 1f)
+    IEnumerator DeathSequence(float vignetteDuration = 1f)
     {
         float elapsed = 0f;
         float startIntensity = 0.3f;
         float targetIntensity = 0.75f;
 
-        while (elapsed < duration)
+        while (elapsed < vignetteDuration)
         {
-            float t = elapsed / duration;
+            float t = elapsed / vignetteDuration;
             vignette.intensity.value = Mathf.Lerp(startIntensity, targetIntensity, t);
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        vignette.intensity.value = targetIntensity;
+
+        yield return new WaitForSecondsRealtime(postVignetteWait);
+        yield return Fade(1f, fadeToBlackDuration);
+
+        DeathReset();
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Peaceful");
+    }
+    private IEnumerator Fade(float targetAlpha, float duration)
+    {
+        if (fadeOverlay == null) yield break;
+
+        float startAlpha = fadeOverlay.alpha;
+        float time = 0f;
+        bool goingDark = targetAlpha > startAlpha;
+
+        fadeOverlay.blocksRaycasts = goingDark;
+        fadeOverlay.interactable = goingDark;
+
+        while (time < duration)
+        {
+            time += Time.unscaledDeltaTime;
+            float t = time / duration;
+            fadeOverlay.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
             yield return null;
         }
 
-        vignette.intensity.value = targetIntensity;
+        fadeOverlay.alpha = targetAlpha;
+
+        if (Mathf.Approximately(targetAlpha, 0f))
+        {
+            fadeOverlay.blocksRaycasts = false;
+            fadeOverlay.interactable = false;
+        }
     }
+
+    public void DeathReset()
+    {
+        currentHP = maxHP;
+        SaveAttributesToManager();
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ClearInventoryData();
+        }
+    }
+
+    public void SaveAttributesToManager()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.playerHP = currentHP;
+            GameManager.Instance.playerMaxHP = maxHP;
+            GameManager.Instance.gold = gold;
+            GameManager.Instance.playerAtk = Atk;
+            GameManager.Instance.playerDef = Def;
+        }
+    }
+
     //TODO remove
     void Update()
     {

@@ -83,4 +83,9 @@ public class GameManager : MonoBehaviour
             try {_equipments.Add(equipments[i].GetData());} catch (Exception e) {_equipments.Add(null);}
         }
     }
+    public void ClearInventoryData()
+    {
+        _items.Clear();
+        _equipments.Clear();
+    }
 }

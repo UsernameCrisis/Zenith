@@ -24,7 +24,8 @@ public class OverworldUI : MonoBehaviour
     private Vector2 latestMousePos;
     public ItemActionMenu itemActionMenu;
     public SecondaryItemActionMenu secondaryItemActionMenu;
-    public ChestUIController chestUIController;
+    public LeftInventoryUIController chestUIController;
+    public LeftInventoryUIController shopUIController;
 
 
     void Awake()

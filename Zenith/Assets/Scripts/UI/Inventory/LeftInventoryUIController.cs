@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChestUIController : MonoBehaviour
+public class LeftInventoryUIController : MonoBehaviour
 {
     [SerializeField] private InventorySlot[] slot = new InventorySlot[24];
 

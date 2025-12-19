@@ -76,6 +76,7 @@ public class PlayerOverworldAttributes : MonoBehaviour
             movement.Die();
             StartCoroutine(DeathSequence());
         }
+        SaveAttributesToManager();
     }
 
     private IEnumerator InvincibilityFrames()

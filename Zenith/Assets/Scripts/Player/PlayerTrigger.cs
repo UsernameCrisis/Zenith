@@ -7,7 +7,8 @@ using UnityEngine.InputSystem;
 public class PlayerTrigger : MonoBehaviour
 {
     [HideInInspector] public GameObject InteractUI;
-    private GameObject CurrentInteractable;
+    public GameObject CurrentInteractable;
+    public GameObject CurrentOpenInteractable;
     [HideInInspector] public TMP_Text _interactText;
 
     void OnTriggerEnter(Collider other)
@@ -26,6 +27,7 @@ public class PlayerTrigger : MonoBehaviour
         {
             InteractUI.SetActive(false);
             CurrentInteractable = null;
+            CurrentOpenInteractable = null;
         }  
     }
 
@@ -33,6 +35,7 @@ public class PlayerTrigger : MonoBehaviour
     {
         InteractUI.SetActive(false);
         CurrentInteractable = null;
+        // CurrentOpenInteractable = null;
     }
 
     void Update()
@@ -40,6 +43,7 @@ public class PlayerTrigger : MonoBehaviour
         if (CurrentInteractable == null) return;
         if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
         {
+            CurrentOpenInteractable = CurrentInteractable;
             CurrentInteractable.GetComponent<Interactable>().OnInteract();
         }
     }

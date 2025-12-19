@@ -133,5 +133,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     public void RemoveItem()
     {
         Destroy(transform.GetChild(0).GetChild(0).gameObject);
+        UpdateQuantity();
+    }
+
+    internal void ClearQuantity()
+    {
+        QuantityText.text = "";
     }
 }

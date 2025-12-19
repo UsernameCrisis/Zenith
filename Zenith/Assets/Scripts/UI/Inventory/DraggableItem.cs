@@ -135,7 +135,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     public ItemData GetData()
     {
-        return new ItemData(value, stat_value, quantity, tier, rarity, item);
+        return new ItemData(value, stat_value, quantity, tier, rarity, item, slotType);
     }
     public void SetData(ItemData data)
     {
@@ -145,6 +145,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         tier = data.tier;
         rarity = data.rarity;
         item = data.item;
+        slotType = data.slotType;
     }
 
     private void OpenItemActionmenu()
@@ -171,6 +172,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         FindAnyObjectByType<PlayerOverworldAttributes>().gold += value;
         _itemActionmenu.gameObject.SetActive(false);
+        quantity = 0;
+        GetComponentInParent<InventorySlot>().UpdateQuantity();
         Destroy(this.gameObject);
     }
 
@@ -181,6 +184,10 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         DraggableItem newObject = Instantiate(this);
         newObject.slotType = SlotType.Inventory;
         FindAnyObjectByType<OverworldUI>().inventory.AddItem(newObject);
+        quantity = 0;
+        GetComponentInParent<InventorySlot>().UpdateQuantity();
+        
+        FindAnyObjectByType<PlayerTrigger>().CurrentOpenInteractable.GetComponent<InteractableMerchant>().ItemTaken(newObject.GetData());
         Destroy(this.gameObject);
     }
 
@@ -192,6 +199,9 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         FindAnyObjectByType<OverworldUI>().inventory.AddItem(newObject);
         quantity = 0;
         GetComponentInParent<InventorySlot>().UpdateQuantity();
+
+        Debug.Log(FindAnyObjectByType<PlayerTrigger>().CurrentOpenInteractable == null);
+        FindAnyObjectByType<PlayerTrigger>().CurrentOpenInteractable.GetComponent<InteractableInventory>().ItemTaken(newObject.GetData());
         Destroy(this.gameObject);
     }
 
@@ -209,8 +219,9 @@ public class ItemData
     public int tier;
     public DraggableItem.Rarity rarity;
     public Item item;
+    public DraggableItem.SlotType slotType;
 
-    public ItemData(int v, int sv, int q, int t, DraggableItem.Rarity r, Item i)
+    public ItemData(int v, int sv, int q, int t, DraggableItem.Rarity r, Item i, DraggableItem.SlotType st)
     {
         value = v;
         stat_value = sv;
@@ -218,5 +229,6 @@ public class ItemData
         tier = t;
         rarity = r;
         item = i;
+        slotType = st;
     }
 }

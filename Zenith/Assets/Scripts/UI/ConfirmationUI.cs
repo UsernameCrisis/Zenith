@@ -43,6 +43,10 @@ public class ConfirmationUI : MonoBehaviour
         if (!string.IsNullOrEmpty(targetScene))
         {
             Time.timeScale = 1;
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.playerHP = GameManager.Instance.playerMaxHP;
+            }
             SceneManager.LoadScene(targetScene);
         }
     }

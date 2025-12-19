@@ -223794,6 +223794,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8192
+  warningText: {fileID: 1137237602}
   checkRadius: 20
 --- !u!1 &2129641873
 GameObject:

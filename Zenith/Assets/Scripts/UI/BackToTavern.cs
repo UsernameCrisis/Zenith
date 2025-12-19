@@ -1,6 +1,7 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class BackToTavern : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class BackToTavern : MonoBehaviour
     public Button buttonActivator;
     [SerializeField] private ConfirmationUI confirmationUI;
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private TMP_Text warningText;
 
     [Header("Settings")]
     public float checkRadius = 20f;
@@ -44,23 +46,28 @@ public class BackToTavern : MonoBehaviour
             }
         }
 
-        if (enemyFound)
+        PlayerOverworldAttributes attributes = player.GetComponent<PlayerOverworldAttributes>();
+        if (attributes != null && attributes.currentHP <= 0)
         {
-            ShowWarning();
+            ShowWarning("You are dead! Unable To Teleport");
         }
-        else
+        else if (enemyFound)
         {
-            if (confirmationUI != null)
-            {
-                confirmationUI.OpenConfirmation("Peaceful");
-            }
+            ShowWarning("Enemies Nearby! Unable To Teleport.");
+        }
+        else if (confirmationUI != null)
+        {
+            confirmationUI.OpenConfirmation("Peaceful");
         }
     }
 
 
-    private void ShowWarning()
+    private void ShowWarning(string message)
     {
         if (warningUI == null) return;
+
+        if (warningText != null)
+            warningText.text = message;
 
         warningUI.gameObject.SetActive(true);
         StartCoroutine(FadeOutWarning());

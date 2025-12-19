@@ -43,6 +43,7 @@ public class OverworldUI : MonoBehaviour
         UpdateUI(playerOverworldAttributes.currentHP, playerOverworldAttributes.maxHP);
         inventory.ToggleInventory();
         interactUI.SetActive(false);
+        inventory.GetComponentInChildren<InventoryLeft>().UpdateStats();
     }
 
     void Update()

@@ -20,5 +20,6 @@ MonoBehaviour:
   value_max: 10
   base_stat_value: 5
   description: Increases speed in battle
+  ConsumableScript: {fileID: 11400000, guid: 37e0f7c03b0f57f4d840de432ce42d72, type: 2}
   type: 0
   rarity: 0

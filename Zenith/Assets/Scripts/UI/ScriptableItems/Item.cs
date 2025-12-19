@@ -13,6 +13,7 @@ public class Item : ScriptableObject
     public int value_max;
     public float base_stat_value; 
     public string description;
+    public ItemBaseScript ConsumableScript;
     public enum Item_Type
     {
         Consumable,

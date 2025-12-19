@@ -62,7 +62,7 @@ public class OverworldUI : MonoBehaviour
         }
     }
 
-    void UpdateUI(int current, int max)
+    public void UpdateUI(int current, int max)
     {
         int previous = (int)hpBar.value;
 

@@ -209,6 +209,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         GetComponent<Image>().sprite = item.sprite;
     }
+
+    public void Consume()
+    {
+        quantity--;
+        GetComponentInParent<InventorySlot>().UpdateQuantity();
+        if (quantity == 0) Destroy(this.gameObject);
+    }
 }
 
 public class ItemData

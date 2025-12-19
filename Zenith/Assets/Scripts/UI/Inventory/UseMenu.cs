@@ -1,16 +1,14 @@
+using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class UseMenu : MonoBehaviour
+public class UseMenu : ItemActionMenuChild, IPointerDownHandler
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        
-    }
+        if (!hover) return;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        draggableItem.item.ConsumableScript.OnConsume();
+        draggableItem.Consume();
     }
 }

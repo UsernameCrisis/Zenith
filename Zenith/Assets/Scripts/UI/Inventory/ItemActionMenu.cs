@@ -13,6 +13,7 @@ public class ItemActionMenu : MonoBehaviour, IPointerExitHandler
 
     public void SetItem(DraggableItem item)
     {
+        use.SetItem(item);
         sell.SetItem(item);
     }
 

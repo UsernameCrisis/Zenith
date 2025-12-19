@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     public void SaveAndLoadScene(string SceneName)
     {
         PlayerOverworldAttributes player = FindAnyObjectByType<PlayerOverworldAttributes>();
-
+        
         playerHP = player.currentHP;
         playerMaxHP = player.maxHP;
         gold = player.gold;

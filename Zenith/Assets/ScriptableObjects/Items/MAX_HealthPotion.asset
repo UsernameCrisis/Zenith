@@ -20,5 +20,6 @@ MonoBehaviour:
   value_max: 300
   base_stat_value: 999
   description: Recovers all HP
+  ConsumableScript: {fileID: 11400000, guid: 13b52c669554d74438650396e89caf49, type: 2}
   type: 0
   rarity: 4

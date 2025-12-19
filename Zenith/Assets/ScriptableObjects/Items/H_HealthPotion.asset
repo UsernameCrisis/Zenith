@@ -20,5 +20,6 @@ MonoBehaviour:
   value_max: 150
   base_stat_value: 80
   description: Consumable +80 HP
+  ConsumableScript: {fileID: 11400000, guid: 81552767e1f10544c931d67d54ade257, type: 2}
   type: 0
   rarity: 3

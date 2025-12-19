@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject shadow;
+    public float ExternalSpeedMultiplier = 1f;
 
     private float defaultMoveSpeed;
     private float idleTime = 0f;
@@ -39,7 +40,8 @@ public class PlayerMovement : MonoBehaviour
         bool isMoving = moveValue.magnitude > 0.01f;
         bool isSprinting = sprintAction.IsPressed();
         float speedMultiplier = isSprinting ? runMultiplier : 1f;
-        moveValue = moveValue * speedMultiplier;
+        moveValue = moveValue * speedMultiplier
+         * ExternalSpeedMultiplier;
         animator.SetInteger("stateRun", isMoving ? (isSprinting ? 2 : 1) : 0);
 
         if (!isMoving)

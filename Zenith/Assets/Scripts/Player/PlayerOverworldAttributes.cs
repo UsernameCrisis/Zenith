@@ -155,4 +155,24 @@ public class PlayerOverworldAttributes : MonoBehaviour
             GameManager.Instance.gold = gold;
         }
     }
+
+
+
+
+
+
+
+
+
+
+    public void StarSpeedResetTimer(float delay)
+    {
+        StartCoroutine(MainResetSpeed(delay));
+    }
+
+    private IEnumerator MainResetSpeed(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        movement.ExternalSpeedMultiplier = 1f;
+    }
 }

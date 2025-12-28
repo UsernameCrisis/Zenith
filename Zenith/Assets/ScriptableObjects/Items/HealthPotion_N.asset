@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
-  m_Name: MAX_HealthPotion
+  m_Name: HealthPotion_N
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
-  name: Max Health Potion
+  name: Health Potion
   stackable: 1
   stackable_limit: 999
-  value_min: 300
-  value_max: 300
-  base_stat_value: 999
-  description: Recovers all HP
-  ConsumableScript: {fileID: 11400000, guid: 13b52c669554d74438650396e89caf49, type: 2}
+  value_min: 10
+  value_max: 10
+  base_stat_value: 15
+  description: Consumable +15 HP
+  ConsumableScript: {fileID: 11400000, guid: 443ab76065be897409c00fd6d8d9d6aa, type: 2}
   type: 0
-  rarity: 4
+  rarity: 0

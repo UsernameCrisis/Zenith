@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c641b98158e3c1449315fac77f9cb61, type: 3}
-  m_Name: MAX_HealthPotion
-  m_EditorClassIdentifier: Assembly-CSharp::MAX_HealthPotion
+  m_Script: {fileID: 11500000, guid: 8d37455c46faf114fba1dc86f3dd82db, type: 3}
+  m_Name: HealthPotion_L
+  m_EditorClassIdentifier: Assembly-CSharp::L_HealthPotion

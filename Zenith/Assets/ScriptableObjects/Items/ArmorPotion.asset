@@ -20,5 +20,6 @@ MonoBehaviour:
   value_max: 10
   base_stat_value: 5
   description: Increases Def by +5
+  ConsumableScript: {fileID: 11400000, guid: 4dbf932ab1ef121499e107c948c1a2d2, type: 2}
   type: 0
   rarity: 0

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using Mono.Cecil.Cil;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -121,4 +122,22 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+
+
+
+
+    public void BuffSpeed(float amount, int seconds)
+    {
+        ExternalSpeedMultiplier += amount;
+
+        StartCoroutine(ResetSpeedBuff(amount, seconds));
+    }
+
+    private IEnumerator ResetSpeedBuff(float amount, int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        ExternalSpeedMultiplier -= amount;
+    } 
 }

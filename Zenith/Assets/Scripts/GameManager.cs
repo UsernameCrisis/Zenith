@@ -90,4 +90,5 @@ public class GameManager : MonoBehaviour
         _items.Clear();
         _equipments.Clear();
     }
+    
 }

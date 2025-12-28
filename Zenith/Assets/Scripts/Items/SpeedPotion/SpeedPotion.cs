@@ -7,9 +7,7 @@ public class SpeedPotion : ItemBaseScript
 {
     public override void OnConsume()
     {
-        FindAnyObjectByType<PlayerMovement>().ExternalSpeedMultiplier += 0.5f;
-
-        FindAnyObjectByType<PlayerOverworldAttributes>().StarSpeedResetTimer(300);
+        FindAnyObjectByType<PlayerMovement>().BuffSpeed(0.5f, 300);
 
         base.OnConsume();
     }

@@ -161,18 +161,15 @@ public class PlayerOverworldAttributes : MonoBehaviour
 
 
 
-
-
-
-
-    public void StarSpeedResetTimer(float delay)
+    public void BuffArmor(int amount, int seconds) 
     {
-        StartCoroutine(MainResetSpeed(delay));
+        GameManager.Instance.playerDef += amount;
+        StartCoroutine(ResetArmorBuff(amount, seconds));
     }
 
-    private IEnumerator MainResetSpeed(float delay)
+    private IEnumerator ResetArmorBuff(int amount, int seconds)
     {
-        yield return new WaitForSeconds(delay);
-        movement.ExternalSpeedMultiplier = 1f;
-    }
+        yield return new WaitForSeconds(seconds);
+        GameManager.Instance.playerDef -= amount;
+    } 
 }

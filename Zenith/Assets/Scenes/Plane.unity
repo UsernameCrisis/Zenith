@@ -692,6 +692,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1169126075559426559, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: PotionBuffPanel
+      value: 
+      objectReference: {fileID: 1478275650}
+    - target: {fileID: 1169126075559426559, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: playerOverworldAttributes
       value: 
       objectReference: {fileID: 1999368067}
@@ -3979,6 +3983,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8722425151213803543, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8756774602006368810, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4199,6 +4207,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6764343027662517617, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1478275650}
     - targetCorrespondingSourceObject: {fileID: 1309234431367595390, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
@@ -4927,6 +4938,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &1478275648 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6764343027662517617, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+  m_PrefabInstance: {fileID: 156464727}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1478275650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478275648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db226eb88dff2ac4494cc6ba7149a5d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  BuffTimerPrefab: {fileID: 2815313569609270782, guid: 88b7f3fbdb4493445b886a15185ca67c, type: 3}
 --- !u!1 &1522636502 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5633436321045983251, guid: a7304e832723af14880c15ff57e892a2, type: 3}

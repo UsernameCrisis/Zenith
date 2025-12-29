@@ -10,5 +10,6 @@ public class UseMenu : ItemActionMenuChild, IPointerDownHandler
 
         draggableItem.item.ConsumableScript.OnConsume();
         draggableItem.Consume();
+        if (draggableItem.item.HasTimer) FindAnyObjectByType<OverworldUI>().PotionBuffPanel.AddItem(draggableItem);
     }
 }

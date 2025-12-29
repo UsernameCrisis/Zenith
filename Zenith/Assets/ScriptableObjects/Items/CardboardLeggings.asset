@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: CardboardLeggings
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Cardboard Leggings
   stackable: 0
   stackable_limit: 0
@@ -20,5 +21,7 @@ MonoBehaviour:
   value_max: 1
   base_stat_value: 1
   description: Leggings made of cardboard
+  ConsumableScript: {fileID: 0}
+  HasTimer: 0
   type: 4
   rarity: 0

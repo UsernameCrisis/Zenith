@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BrokenSword
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Broken Sword
   stackable: 0
   stackable_limit: 0
@@ -20,5 +21,7 @@ MonoBehaviour:
   value_max: 35
   base_stat_value: 5
   description: A broken sword
+  ConsumableScript: {fileID: 0}
+  HasTimer: 0
   type: 1
   rarity: 0

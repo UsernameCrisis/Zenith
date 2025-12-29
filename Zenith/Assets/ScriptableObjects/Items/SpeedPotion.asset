@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SpeedPotion
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Speed Potion
   stackable: 1
   stackable_limit: 999
@@ -20,6 +21,7 @@ MonoBehaviour:
   value_max: 10
   base_stat_value: 5
   description: Increases speed in battle
-  ConsumableScript: {fileID: 11400000, guid: 37e0f7c03b0f57f4d840de432ce42d72, type: 2}
+  ConsumableScript: {fileID: 0}
+  HasTimer: 1
   type: 0
   rarity: 0

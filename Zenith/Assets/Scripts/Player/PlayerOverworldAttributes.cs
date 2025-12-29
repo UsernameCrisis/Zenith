@@ -171,5 +171,17 @@ public class PlayerOverworldAttributes : MonoBehaviour
     {
         yield return new WaitForSeconds(seconds);
         GameManager.Instance.playerDef -= amount;
-    } 
+    }
+
+    public void BuffATK(int amount, int seconds) 
+    {
+        GameManager.Instance.playerAtk += amount;
+        StartCoroutine(ResetATKBuff(amount, seconds));
+    }
+
+    private IEnumerator ResetATKBuff(int amount, int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        GameManager.Instance.playerAtk -= amount;
+    }  
 }

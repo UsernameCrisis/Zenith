@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ArmorPotion
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Armor Potion
   stackable: 1
   stackable_limit: 999
@@ -21,5 +22,6 @@ MonoBehaviour:
   base_stat_value: 5
   description: Increases Def by +5
   ConsumableScript: {fileID: 11400000, guid: 4dbf932ab1ef121499e107c948c1a2d2, type: 2}
+  HasTimer: 1
   type: 0
   rarity: 0

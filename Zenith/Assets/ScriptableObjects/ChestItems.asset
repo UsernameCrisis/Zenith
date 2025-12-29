@@ -15,7 +15,7 @@ MonoBehaviour:
   PossibleItems:
   - {fileID: 11400000, guid: 80ac8e447f2491d40a13a6c00e21bc25, type: 2}
   - {fileID: 11400000, guid: 8120c7383b6719e498764b37d8b5a59f, type: 2}
-  - {fileID: 11400000, guid: bce3dd572d734a54a878f0be9cd31bb5, type: 2}
+  - {fileID: 11400000, guid: ca4a69e2f8b49e44d8e5ad51a525930d, type: 2}
   ChancePercentage:
   - 100
   - 100

@@ -26,6 +26,7 @@ public class OverworldUI : MonoBehaviour
     public SecondaryItemActionMenu secondaryItemActionMenu;
     public LeftInventoryUIController chestUIController;
     public LeftInventoryUIController shopUIController;
+    public PotionBuffUIManager PotionBuffPanel;
 
 
     void Awake()

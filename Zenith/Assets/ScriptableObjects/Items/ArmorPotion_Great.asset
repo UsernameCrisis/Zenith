@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ArmorPotion_Great
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Great Armor Potion
   stackable: 1
   stackable_limit: 999
@@ -20,5 +21,7 @@ MonoBehaviour:
   value_max: 150
   base_stat_value: 35
   description: Increases Def by +35
+  ConsumableScript: {fileID: 11400000, guid: 5080d5f0d13914d418e19c35a0cd6897, type: 2}
+  HasTimer: 1
   type: 0
   rarity: 2

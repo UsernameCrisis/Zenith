@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HealthPotion_MAX
   m_EditorClassIdentifier: Assembly-CSharp::Item
   sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
   name: Max Health Potion
   stackable: 1
   stackable_limit: 999
@@ -21,5 +22,6 @@ MonoBehaviour:
   base_stat_value: 999
   description: Recovers all HP
   ConsumableScript: {fileID: 11400000, guid: 13b52c669554d74438650396e89caf49, type: 2}
+  HasTimer: 0
   type: 0
   rarity: 4

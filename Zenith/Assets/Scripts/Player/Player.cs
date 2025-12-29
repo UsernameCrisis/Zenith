@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -44,4 +45,22 @@ public class Player : Character
     {
         return moves;
     }
+
+
+
+
+
+
+
+    public void BuffSpeed(int amount, int seconds) 
+    {
+        speed += amount;
+        StartCoroutine(ResetSpeedBuff(amount, seconds));
+    }
+
+    private IEnumerator ResetSpeedBuff(int amount, int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        speed -= amount;
+    } 
 }

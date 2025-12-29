@@ -6,6 +6,7 @@ using UnityEngine;
 public class Item : ScriptableObject
 {
     public Sprite sprite;
+    public Sprite UILogo;
     public string name;
     public bool stackable;
     public int stackable_limit;
@@ -14,6 +15,7 @@ public class Item : ScriptableObject
     public float base_stat_value; 
     public string description;
     public ItemBaseScript ConsumableScript;
+    public bool HasTimer = false;
     public enum Item_Type
     {
         Consumable,

@@ -28,6 +28,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private bool isPaused = false, isInsideOption = false;
 
     public bool IsPlayer => true;
+    private bool isMoving = false;
 
     void OnEnable()
     {
@@ -105,6 +106,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void HandleActionClick(Collider collider)
     {
         if (selectedChar == null || currentAction == null) return;
+        if (isMoving) return;
 
         Vector3Int clickedGrid = grid.WorldToCell(mousePos);
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
@@ -133,6 +135,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private void HandleActionMenu(string action)
     {
+        if (isMoving) return;
         currentAction = action;
         isInActionMode = true;
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
@@ -188,18 +191,28 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private void HandleEscapePressed()
     {
+        if (isMoving)
+        {
+            if (!isPaused)
+                OpenPauseMenu();
+            else
+                Resume();
+
+            return;
+        }
+
         if (isPaused && !isInsideOption)
         {
             Resume();
-        }
-        else if (selectedChar != null)
-        {
-            ExitCharacter();
         }
         else if (isInsideOption)
         {
             optionMenu.Back();
             isInsideOption = false;
+        }
+        else if (selectedChar != null)
+        {
+            ExitCharacter();
         }
         else
         {
@@ -257,20 +270,20 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         if (objectsData.CanPlaceObjectAt(targetPos))
         {
             // objectsData.MoveObject(currentPos, targetPos);
-            
-            StartCoroutine(WalkPath(path, currentPos, charObj));
+            StartCoroutine(WalkPath(path, currentPos, charObj, selectedChar.transform));
             // charObj.UseMovement(distanceMoved);
-
         }
         movePreview.ClearAll();
         EndAction();
     }
 
-    private IEnumerator WalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject charObj)
+    private IEnumerator WalkPath(List<Vector3Int> path, Vector3Int currPos, 
+                                CharacterObject charObj, Transform charTransform)
     {
+        isMoving = true;
         for (int i = 0; i < path.Count; i++)
         {
-            Vector3 start = selectedChar.transform.position;
+            Vector3 start = charTransform.position;
             Vector3 end = grid.CellToWorld(path[i]);
             
             float t = 0f;
@@ -278,8 +291,11 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     
             while (t < 1f)
             {
+                if (charTransform == null)
+                    yield break;
+
                 t += Time.deltaTime * speed;
-                selectedChar.transform.position = Vector3.Lerp(start, end, t);
+                charTransform.position = Vector3.Lerp(start, end, t);
                 yield return null;
             }
         }
@@ -288,9 +304,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     
         int distanceMoved = path.Count;
         charObj.UseMovement(distanceMoved);
+        isMoving = false;
     
         movePreview.ClearAll();
-        EndAction();
+        // EndAction();
     }
 
     private void SelectCharacter(Collider collider)

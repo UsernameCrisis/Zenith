@@ -11,6 +11,7 @@ public class CombatCameraMovement : MonoBehaviour
     private Vector3 moveValue;
     private float isFast;
     private float moveSpeed;
+    private float minX = -5f, maxX = 5f, minZ= -10f, maxZ= 0f;
     private Rigidbody rb;
     private ObjectFader fader;
     private List<GameObject> characters = new();
@@ -19,7 +20,6 @@ public class CombatCameraMovement : MonoBehaviour
 
     [SerializeField] private float defaultMoveSpeed = 70f;
     [SerializeField] private float speedMultiplier = 2f;
-    [SerializeField] private LayerMask obstacleLayerMask;
     [SerializeField] private float defaultX = 0f, defaultY = 3.251f, defaultZ = -5f;
     void Awake()
     {
@@ -48,12 +48,30 @@ public class CombatCameraMovement : MonoBehaviour
         else
             moveSpeed = defaultMoveSpeed;
 
+        Vector3 movement = new Vector3(moveValue.x, 0, moveValue.y) * moveSpeed * Time.deltaTime;
+        transform.position += movement;
+    
+        Vector3 pos = transform.position;
+        pos.x = Mathf.Clamp(pos.x, minX, maxX);
+        pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
+        transform.position = pos;
         MakeTransparent();
     }
 
     void FixedUpdate()
     {
-        rb.AddForce(new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed));
+        // rb.AddForce(new Vector3(moveValue.x * moveSpeed, 0, moveValue.y * moveSpeed));
+        // ClampPosition();
+    }
+
+    private void ClampPosition()
+    {
+        Vector3 pos = rb.position;
+
+        pos.x = Mathf.Clamp(pos.x, minX, maxX);
+        pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
+
+        rb.position = pos;
     }
 
     private void MakeTransparent()

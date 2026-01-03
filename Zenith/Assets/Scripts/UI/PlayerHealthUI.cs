@@ -42,7 +42,7 @@ public class OverworldUI : MonoBehaviour
         hpText.enabled = false;
         Gold.SetActive(false);
         UpdateUI(playerOverworldAttributes.currentHP, playerOverworldAttributes.maxHP);
-        inventory.ToggleInventory();
+        inventory.SetActive(false);
         interactUI.SetActive(false);
         inventory.GetComponentInChildren<InventoryLeft>().UpdateStats();
     }

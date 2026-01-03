@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
   m_Name: Junk
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 0}
-  UILogo: {fileID: 0}
-  name: 
-  stackable: 0
-  stackable_limit: 0
-  value_min: 0
-  value_max: 0
+  sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  name: Junk
+  stackable: 1
+  stackable_limit: 999
+  value_min: 10
+  value_max: 50
   base_stat_value: 0
-  description: 
+  description: junk
   ConsumableScript: {fileID: 0}
   HasTimer: 0
-  type: 0
+  type: 6
   rarity: 0

@@ -92,9 +92,11 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: 8120c7383b6719e498764b37d8b5a59f, type: 2}
   _itemDescription: {fileID: 0}
   _itemActionmenu: {fileID: 0}
+  _secondaryItemActionMenu: {fileID: 0}
   value: 0
   quantity: 1
   stat_value: 0
   tier: 1
   range_distance: 0.5
   rarity: 0
+  slotType: 0

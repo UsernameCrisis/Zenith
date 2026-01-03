@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BehaviourTrees
@@ -33,26 +34,55 @@ namespace BehaviourTrees
     //     }
     // }
     
-    // public class Inverter : Node {
-    //     public Inverter(string name) : base(name) { }
+    public class Inverter : Node {
+        public Inverter(string name, int priority = 0) : base(name, priority) { }
         
-    //     public override Status Process() {
-    //         switch (children[0].Process()) {
-    //             case Status.Running:
-    //                 return Status.Running;
-    //             case Status.Failure:
-    //                 return Status.Success;
-    //             default:
-    //                 return Status.Failure;
-    //         }
-    //     }
-    // }
+        public override Status Process() {
+            switch (children[0].Process()) {
+                case Status.Running:
+                    return Status.Running;
+                case Status.Failure:
+                    return Status.Success;
+                case Status.Success:
+                    return Status.Failure;
+                default:
+                    return Status.Failure;
+            }
+        }
+    }
     
     public class RandomSelector : PrioritySelector
     {
-        protected override List<Node> SortChildren() => children.Shuffle().ToList();
+        private Node current;
+        protected override List<Node> SortChildren()  {
+            if (current == null) return children.Shuffle().ToList();
+            return children;
+        }
 
-        public RandomSelector(string name, int priority) : base(name, priority) {}
+        public RandomSelector(string name, int priority = 0) : base(name, priority) {}
+
+        public override Status Process()
+        {
+            if (current != null)
+            {
+                var status = current.Process();
+                if (status != Status.Running) current = null;
+                return status;
+            }
+
+            var shuffled = SortChildren();
+            foreach (var child in shuffled)
+            {
+                var status = child.Process();
+                if (status != Status.Failure)
+                {
+                    current = (status == Status.Running) ? child : null;
+                    return status;
+                }
+            }
+
+            return Status.Failure;
+        }
     }
 
     public class PrioritySelector : Selector

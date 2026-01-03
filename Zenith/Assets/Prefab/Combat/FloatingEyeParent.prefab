@@ -184,6 +184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController_1
   grid: {fileID: 0}
   previewSystem: {fileID: 0}
+  isMoving: 0
 --- !u!1 &3159793122656923418
 GameObject:
   m_ObjectHideFlags: 0

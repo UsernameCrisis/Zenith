@@ -12,7 +12,6 @@ public class TurnManager : MonoBehaviour
     private int currentTurn = 1;
     [SerializeField] private PopulateMap mapPopulator;
     [SerializeField] private PlayerSystem gridSelect;
-    [SerializeField] private EnemyAIController_1 enemyAI;
     [SerializeField] private TurnOrderUI turnOrderUI;
 
     
@@ -64,14 +63,20 @@ public class TurnManager : MonoBehaviour
 
         if (current.IsPlayer)
         {
-            print("player is playing");
             gridSelect.BeginTurn(pos, gridData);
+            return;
         }
-        else
+
+        TileData tile = gridData.GetTileAt(pos);
+        EnemyAIControllerBase ai = tile.PlacedGameObject.GetComponent<EnemyAIControllerBase>();
+        
+        if (ai == null)
         {
-            print("enemy is playing");
-            enemyAI.BeginTurn(pos, gridData);
+            EndTurn();
+            return;
         }
+        print("enemy is playing");
+        ai.BeginTurn(pos, gridData);
     }
 
     void AdvanceATB(CharacterObject active)

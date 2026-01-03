@@ -94,7 +94,7 @@ public class MovementPreview : MonoBehaviour
             if (tile == null)
                 continue;
 
-            if (tile.PlacedObject != null)
+            if (tile.PlacedObject != null && tile.PlacedObject is not CharacterObject)
                 return false;
         }
 

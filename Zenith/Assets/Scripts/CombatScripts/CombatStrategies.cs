@@ -42,9 +42,9 @@ namespace BehaviourTrees
 
     public class CheckEnemyExists : IStrategy
     {
-        EnemyAIController_1 ai;
+        EnemyAIControllerBase ai;
 
-        public CheckEnemyExists(EnemyAIController_1 ai)
+        public CheckEnemyExists(EnemyAIControllerBase ai)
         {
             this.ai = ai;
         }
@@ -57,29 +57,29 @@ namespace BehaviourTrees
         }
     }
 
-    public class FindClosestPlayer : IStrategy
+    public class FindClosest : IStrategy
     {
-        EnemyAIController_1 ai;
+        EnemyAIControllerBase ai;
         
-        public FindClosestPlayer(EnemyAIController_1 ai)
+        public FindClosest(EnemyAIControllerBase ai)
         {
             this.ai = ai;
         }
 
         public Node.Status Process()
         {
-            ai.setTargetPos(ai.FindClosestPlayer(ai.getLatestPos(), ai.getGridData().GetAllFriendlies()));
+            ai.setTargetPos(ai.FindClosest(ai.getLatestPos(), ai.getGridData().GetAllFriendlies()));
             return Node.Status.Success;
         }
     }
     
     public class IsInRange : IStrategy
     {
-        EnemyAIController_1 ai;
+        EnemyAIControllerBase ai;
 
-        public IsInRange(EnemyAIController_1 ai)
+        public IsInRange(EnemyAIControllerBase ai)
         {
-            this. ai = ai;
+            this.ai = ai;
         }
 
         public Node.Status Process()
@@ -91,11 +91,48 @@ namespace BehaviourTrees
         }
     }
 
+    public class IsTooClose : IStrategy
+    {
+        EnemyAIControllerBase ai;
+
+        public IsTooClose(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            var enemyPos = ai.getLatestPos();
+            var targetPos = ai.getTargetPos();
+
+            int dist = Mathf.Abs(enemyPos.x - targetPos.x) + Mathf.Abs(enemyPos.y - targetPos.y);
+            int minRange = 2;
+            Debug.Log("dist: "+dist);
+            Debug.Log(dist < minRange);
+            return dist < minRange ? Node.Status.Success : Node.Status.Failure;
+        }
+    }
+
+    public class HasLineOfSight : IStrategy
+    {
+        EnemyAIControllerBase ai;
+        public HasLineOfSight(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            bool hasLineOfSight = ai.HasLineOfSight(ai.getLatestPos(), ai.getTargetPos());
+            return hasLineOfSight ? Node.Status.Success : Node.Status.Failure;
+        }
+    }
+
     public class Attack : IStrategy
     {
-        EnemyAIController_1 ai;
+        EnemyAIControllerBase ai;
 
-        public Attack(EnemyAIController_1 ai)
+        public Attack(EnemyAIControllerBase ai)
         {
             this.ai = ai;
         }
@@ -111,12 +148,12 @@ namespace BehaviourTrees
         } 
     }
 
-    public class MoveTowardPlayer : IStrategy
+    public class MoveForRanged : IStrategy
     {
-        EnemyAIController_1 ai;
+        EnemyAIControllerBase ai;
         bool startedMovement = false;
 
-        public MoveTowardPlayer(EnemyAIController_1 ai)
+        public MoveForRanged(EnemyAIControllerBase ai)
         {
             this.ai = ai;
         }
@@ -127,7 +164,50 @@ namespace BehaviourTrees
             if (startedMovement) return ai.isMoving ? Node.Status.Running : Node.Status.Success;
             
             var enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+            var targetPos = ai.getTargetPos();
 
+            int minRange = 2;
+            int maxRange = enemyChar.AtkRange;
+
+            if ((Mathf.Abs(latestPos.x - targetPos.x) + Mathf.Abs(latestPos.y - targetPos.y)) >= minRange &&
+                (Mathf.Abs(latestPos.x - targetPos.x) + Mathf.Abs(latestPos.y - targetPos.y)) <= maxRange &&
+                ai.HasLineOfSight(latestPos, targetPos))
+            {
+                return Node.Status.Success;
+            }
+
+            ai.getPreview().ShowMovementRange(latestPos, enemyChar.RemainingMoveRange);
+            var reachable = ai.getPreview().GetReachableTiles();
+
+            Vector3Int bestMove = ai.FindBestRangedTile(latestPos, targetPos, reachable, minRange, maxRange);
+
+            if (bestMove == latestPos) return Node.Status.Success;
+            ai.setLatestPos(bestMove);
+
+            var path = ai.getPreview().FindPathAStar(latestPos, bestMove);
+            ai.getPreview().ClearAll();
+            ai.StartCoroutine(ai.EnemyWalkPath(path, latestPos, enemyChar));
+            startedMovement = true;
+            return Node.Status.Running;
+        }
+    }
+
+    public class MoveTowardPlayer : IStrategy
+    {
+        EnemyAIControllerBase ai;
+        bool startedMovement = false;
+
+        public MoveTowardPlayer(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            var latestPos = ai.getLatestPos();
+            if (startedMovement) return ai.isMoving ? Node.Status.Running : Node.Status.Success;
+            
+            var enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
             ai.getPreview().ShowMovementRange(latestPos, enemyChar.RemainingMoveRange);
             var reachable = ai.getPreview().GetReachableTiles();
 
@@ -136,13 +216,11 @@ namespace BehaviourTrees
 
             if (bestMove == latestPos)
                 return Node.Status.Success;
-
+            
             var path = ai.getPreview().FindPathAStar(latestPos, bestMove);
             ai.getPreview().ClearAll();
             ai.StartCoroutine(ai.EnemyWalkPath(path, latestPos, enemyChar));
             startedMovement = true;
-            
-            latestPos = bestMove;
             return Node.Status.Running;
         }
     }

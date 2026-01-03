@@ -46,7 +46,7 @@ MonoBehaviour:
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 2
-    <AtkRange>k__BackingField: 1
+    <AtkRange>k__BackingField: 2
     <Prefab>k__BackingField: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
     <Portrait>k__BackingField: {fileID: 1392459670, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Wall Obstacle

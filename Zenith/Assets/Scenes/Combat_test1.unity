@@ -1754,18 +1754,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 514926381795788189, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
+      propertyPath: grid
+      value: 
+      objectReference: {fileID: 780557240}
+    - target: {fileID: 514926381795788189, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
+      propertyPath: previewSystem
+      value: 
+      objectReference: {fileID: 857286124}
     - target: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
       propertyPath: m_Name
       value: Enemy2Parent
       objectReference: {fileID: 0}
-    - target: {fileID: 2434024955449463182, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
-      propertyPath: grid
-      value: 
-      objectReference: {fileID: 780557240}
-    - target: {fileID: 2434024955449463182, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
-      propertyPath: previewSystem
-      value: 
-      objectReference: {fileID: 857286124}
     - target: {fileID: 7333699444782909959, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2
@@ -2929,7 +2929,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurnManager
   mapPopulator: {fileID: 1118025225}
   gridSelect: {fileID: 331495578}
-  enemyAI: {fileID: 1725372508}
   turnOrderUI: {fileID: 2049846321}
 --- !u!1 &1718609762 stripped
 GameObject:
@@ -2958,17 +2957,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1725372508 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3171380504515424213, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
-  m_PrefabInstance: {fileID: 1774642235}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc9018eeb29de48429d01ac744f38787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController_1
 --- !u!1001 &1774642235
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2980,10 +2968,6 @@ PrefabInstance:
     - target: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
       propertyPath: m_Name
       value: FloatingEyeParent
-      objectReference: {fileID: 0}
-    - target: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3171380504515424213, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
       propertyPath: grid

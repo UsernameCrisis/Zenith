@@ -199,8 +199,6 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         FindAnyObjectByType<OverworldUI>().inventory.AddItem(newObject);
         quantity = 0;
         GetComponentInParent<InventorySlot>().UpdateQuantity();
-
-        Debug.Log(FindAnyObjectByType<PlayerTrigger>().CurrentOpenInteractable == null);
         FindAnyObjectByType<PlayerTrigger>().CurrentOpenInteractable.GetComponent<InteractableInventory>().ItemTaken(newObject.GetData());
         Destroy(this.gameObject);
     }

@@ -1,5 +1,3 @@
-using Microsoft.Unity.VisualStudio.Editor;
-using Mono.Cecil.Cil;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]

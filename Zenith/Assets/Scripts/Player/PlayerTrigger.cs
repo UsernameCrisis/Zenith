@@ -45,6 +45,7 @@ public class PlayerTrigger : MonoBehaviour
         {
             CurrentOpenInteractable = CurrentInteractable;
             CurrentInteractable.GetComponent<Interactable>().OnInteract();
+            Debug.Log(CurrentOpenInteractable == null);
         }
     }
 

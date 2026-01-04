@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc50d074e98032e418009a14d518c307, type: 3}
   m_Name: ChestItems 4
   m_EditorClassIdentifier: Assembly-CSharp::ItemTable
-  PossibleItems: []
-  ChancePercentage: []
-  MinRange: 
-  MaxRange: 
+  PossibleItems:
+  - {fileID: 11400000, guid: be6adc2421110f643b93d9bfe7ecc967, type: 2}
+  ChancePercentage:
+  - 100
+  MinRange: 02000000
+  MaxRange: 05000000

@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class FloatingEye : MonoBehaviour
+public class FloatingEye : OverworldEnemy
 {
     private enum EnemyState { Idle, Alert, Attack, Reload }
 

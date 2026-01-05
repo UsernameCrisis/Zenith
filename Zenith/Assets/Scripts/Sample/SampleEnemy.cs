@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public class SampleEnemy: MonoBehaviour
 {
-    private enum EnemyState { Idle, Alert, Attack, Reload }
+    private enum EnemyState { Idle, Alert, Attack, Reload, Flee }
 
     [Header("Idle Behavior")]
     [SerializeField] float desRadius = 5f;
@@ -61,6 +61,8 @@ public class SampleEnemy: MonoBehaviour
     [SerializeField] private float maxhp;
     [SerializeField] private float hp;
     public int projectileDamage = 0;
+    private float fleeTimer = 0f;
+    [SerializeField] private bool flee = false;
 
     private void Start()
     {
@@ -90,12 +92,21 @@ public class SampleEnemy: MonoBehaviour
         else
             FlipSpriteBasedOnMovement();
 
+        if (flee)
+        {
+            if (currentState != EnemyState.Flee && GetHPPercentage() <= 0.25f)
+            {
+                ChangeState(EnemyState.Flee);
+            }
+        }
+
         switch (currentState)
         {
             case EnemyState.Idle: Idle(); break;
             case EnemyState.Alert: Alert(); break;
             case EnemyState.Reload: Reload(); break;
             case EnemyState.Attack: Attack(); break;
+            case EnemyState.Flee: Flee(); break;
         }
     }
 
@@ -495,4 +506,31 @@ public class SampleEnemy: MonoBehaviour
     {
         return hp / maxhp;
     }
+
+    private void Flee()
+    {
+    fleeTimer += Time.deltaTime;
+
+    if (currentTarget != null)
+    {
+        Vector3 fleePos = FindRetreatPosition(
+            currentTarget.transform.position,
+            20f
+        );
+
+        agent.SetDestination(fleePos);
+    }
+
+    if (fleeTimer <= 1f)
+    {
+        hp += 1f;
+    }
+
+    // Stop fleeing after some time
+    if (fleeTimer >= 4f)
+    {
+        fleeTimer = 0f;
+        ChangeState(EnemyState.Idle);
+    }
+}
 }

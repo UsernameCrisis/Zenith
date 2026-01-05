@@ -16,7 +16,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
     <HP>k__BackingField: 0
-    <Damage>k__BackingField: 70
+    <Damage>k__BackingField: 200
     <Speed>k__BackingField: 15
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0

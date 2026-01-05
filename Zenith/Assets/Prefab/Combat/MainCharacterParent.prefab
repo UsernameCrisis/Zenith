@@ -219,6 +219,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8888875954917989042}
+  - component: {fileID: 8367958582059622040}
   m_Layer: 0
   m_Name: MainCharacterParent
   m_TagString: Player
@@ -245,6 +246,19 @@ Transform:
   - {fileID: 2701503262367393574}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8367958582059622040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5813913746638748159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce1629a001d858948a104bb59325e79a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterView
+  damagePopupPrefab: {fileID: 7942734881586010041, guid: 87925f4e4931f4149a320860773cd025, type: 3}
 --- !u!1 &6394801349847046491
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +270,7 @@ GameObject:
   - component: {fileID: 8404576300446841329}
   - component: {fileID: 320327385166283099}
   - component: {fileID: 6746925963526861174}
+  - component: {fileID: 7586146482229877130}
   m_Layer: 10
   m_Name: Sprite
   m_TagString: Player
@@ -357,3 +372,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2, y: 0.35, z: 0.1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!95 &7586146482229877130
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6394801349847046491}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0c6ee064de1ed5d43a33eb43c35784cb, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

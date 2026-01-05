@@ -51,6 +51,11 @@ public class GameManager : MonoBehaviour
     {
         if (!hasData) return;
 
+        if(SceneManager.GetActiveScene().name == "Combat_test1")
+        {
+            return;
+        }
+
         PlayerOverworldAttributes player = FindAnyObjectByType<PlayerOverworldAttributes>();
         player.currentHP = playerHP;
         playerMaxHP = player.maxHP;

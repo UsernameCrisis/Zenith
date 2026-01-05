@@ -6521,7 +6521,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49e2a631f220b2449bee41659f4fb36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
-  sceneMusic: {fileID: 0}
+  sceneMusic: {fileID: 8300000, guid: ff6061ffb4a58404fbb661906c21e9eb, type: 3}
 --- !u!4 &716365883
 Transform:
   m_ObjectHideFlags: 0

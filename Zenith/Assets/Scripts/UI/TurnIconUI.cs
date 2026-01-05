@@ -6,8 +6,9 @@ public class TurnIconUI : MonoBehaviour
 {
     private RectTransform rect;
     private Vector2 basePosition;
+    private CharacterObject boundCharacter;
     [SerializeField] private Image portrait;
-    [SerializeField] private Image frame;
+    [SerializeField] private Slider hpSlider;
     public bool WasAnimatedThisFrame { get; private set; }
 
     private void Awake()
@@ -19,7 +20,18 @@ public class TurnIconUI : MonoBehaviour
     {
         WasAnimatedThisFrame = false;
         portrait.sprite = character.Portrait;
-        // frame.color = character.IsPlayer ? Color.cyan : Color.red;
+
+        if (boundCharacter != null)
+        {
+            boundCharacter.OnHPChanged -= OnHPChanged;
+        }
+
+        boundCharacter = character;
+
+        hpSlider.maxValue = character.MaxHp;
+        hpSlider.value = character.HP;
+    
+        character.OnHPChanged += OnHPChanged;
     }
 
     public void SetBasePosition(Vector2 pos)
@@ -59,14 +71,25 @@ public class TurnIconUI : MonoBehaviour
         ).SetEase(Ease.OutCubic);
     }
 
+    private void OnHPChanged(int current, int max)
+    {
+        if (hpSlider == null) return;
+
+        hpSlider.maxValue = max;
+    
+        hpSlider.DOKill();
+        hpSlider.DOValue(current, 0.15f).SetEase(Ease.OutCubic);
+    }
+
     private void OnDisable()
     {
         rect.DOKill();
+        if (boundCharacter != null) boundCharacter.OnHPChanged -= OnHPChanged;
     }
 
     private void OnDestroy()
     {
-        if (rect != null)
-            rect.DOKill();
+        if (rect != null) rect.DOKill();
+        if (boundCharacter != null) boundCharacter.OnHPChanged -= OnHPChanged;
     }
 }

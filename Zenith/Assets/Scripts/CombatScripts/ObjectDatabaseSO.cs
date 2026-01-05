@@ -16,6 +16,8 @@ public class ObjectData
     [field: SerializeField]
     public int ID { get; private set; }
     [field: SerializeField]
+    public int HP { get; private set; }
+    [field: SerializeField]
     public int Damage { get; private set; }
     [field: SerializeField]
     public int Speed { get; private set; }
@@ -35,4 +37,13 @@ public class ObjectData
     public GameObject Prefab { get; private set; }
     [field: SerializeField]
     public Sprite Portrait { get; private set; }
+    public void setDamage(int damage)
+    {
+        Damage = damage;
+    }
+
+    public void setDefense(int def)
+    {
+        Defense = def;
+    }
 } 

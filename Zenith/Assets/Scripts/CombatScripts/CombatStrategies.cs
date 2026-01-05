@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Linq;
 
 
 namespace BehaviourTrees
@@ -87,6 +88,7 @@ namespace BehaviourTrees
             var latestPos = ai.getLatestPos();
             var enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
             bool inRange = ai.IsInRange(latestPos, ai.getTargetPos(), enemyChar.AtkRange);
+            Debug.Log(inRange);
             return inRange ? Node.Status.Success : Node.Status.Failure;
         }
     }
@@ -148,6 +150,64 @@ namespace BehaviourTrees
         } 
     }
 
+    public class MoveToRandomTile : IStrategy
+    {
+        EnemyAIControllerBase ai;
+        bool startedMovement = false;
+        Vector3Int targetTile;
+
+        public MoveToRandomTile(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            var latestPos = ai.getLatestPos();
+            Debug.Log(latestPos);
+            if (startedMovement) return ai.isMoving ? Node.Status.Running : Node.Status.Success;
+
+            var enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+            Debug.Log(enemyChar);
+            ai.getPreview().ShowMovementRange(latestPos, enemyChar.RemainingMoveRange);
+            var reachable = ai.getPreview().GetReachableTiles();
+
+            if (reachable == null || reachable.Count == 0)
+            {
+                ai.getPreview().ClearAll();
+                return Node.Status.Failure;
+            }
+
+            reachable.Remove(latestPos);
+
+            if (reachable.Count == 0)
+            {
+                ai.getPreview().ClearAll();
+                return Node.Status.Success;
+            }
+
+            Vector3Int bestMove = reachable.ElementAt(UnityEngine.Random.Range(0, reachable.Count));
+
+            ai.setLatestPos(bestMove);
+
+            if (bestMove == latestPos)
+            {
+                ai.getPreview().ClearAll();
+                return Node.Status.Success;
+            }
+
+            var path = ai.getPreview().FindPathAStar(latestPos, bestMove);
+
+            ai.getPreview().ClearAll();
+
+            ai.StartCoroutine(ai.EnemyWalkPath(path, latestPos, enemyChar)
+            );
+
+            startedMovement = true;
+            return Node.Status.Running;
+        }
+    }
+
     public class MoveForRanged : IStrategy
     {
         EnemyAIControllerBase ai;
@@ -180,13 +240,15 @@ namespace BehaviourTrees
             var reachable = ai.getPreview().GetReachableTiles();
 
             Vector3Int bestMove = ai.FindBestRangedTile(latestPos, targetPos, reachable, minRange, maxRange);
-
+            
             if (bestMove == latestPos) return Node.Status.Success;
             ai.setLatestPos(bestMove);
-
+            Debug.Log("Move For Ranged is executed");
             var path = ai.getPreview().FindPathAStar(latestPos, bestMove);
+            
             ai.getPreview().ClearAll();
             ai.StartCoroutine(ai.EnemyWalkPath(path, latestPos, enemyChar));
+            
             startedMovement = true;
             return Node.Status.Running;
         }

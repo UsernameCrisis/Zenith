@@ -15,8 +15,9 @@ MonoBehaviour:
   objectsData:
   - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
-    <Damage>k__BackingField: 20
-    <Speed>k__BackingField: 10
+    <HP>k__BackingField: 0
+    <Damage>k__BackingField: 200
+    <Speed>k__BackingField: 15
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
@@ -27,30 +28,46 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: 1952440101, guid: 646e9486f53bfee44a8064ce61d283bf, type: 3}
   - <Name>k__BackingField: Enemy1
     <ID>k__BackingField: 1
-    <Damage>k__BackingField: 15
+    <HP>k__BackingField: 0
+    <Damage>k__BackingField: 12
     <Speed>k__BackingField: 10
     <Defense>k__BackingField: 3
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 2
-    <AtkRange>k__BackingField: 1
+    <AtkRange>k__BackingField: 2
     <Prefab>k__BackingField: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Enemy2
     <ID>k__BackingField: 2
-    <Damage>k__BackingField: 20
-    <Speed>k__BackingField: 10
+    <HP>k__BackingField: 0
+    <Damage>k__BackingField: 15
+    <Speed>k__BackingField: 8
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 2
-    <AtkRange>k__BackingField: 2
+    <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
-    <Portrait>k__BackingField: {fileID: 1392459670, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
-  - <Name>k__BackingField: Wall Obstacle
+    <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
+  - <Name>k__BackingField: Enemy3
     <ID>k__BackingField: 3
+    <HP>k__BackingField: 0
+    <Damage>k__BackingField: 8
+    <Speed>k__BackingField: 14
+    <Defense>k__BackingField: 1
+    <currentATB>k__BackingField: 0
+    <Type>k__BackingField: 2
+    <IsPlayer>k__BackingField: 0
+    <Team>k__BackingField: 2
+    <AtkRange>k__BackingField: 1
+    <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: d427d3ca2c039d245b7d74d564dd9ee3, type: 3}
+    <Portrait>k__BackingField: {fileID: 1466295960, guid: 6b6aea6b09ae650479d233ca540ba809, type: 3}
+  - <Name>k__BackingField: Wall Obstacle
+    <ID>k__BackingField: 4
+    <HP>k__BackingField: 0
     <Damage>k__BackingField: 0
     <Speed>k__BackingField: 0
     <Defense>k__BackingField: 0

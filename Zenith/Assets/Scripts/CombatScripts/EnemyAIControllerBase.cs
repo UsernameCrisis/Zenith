@@ -60,7 +60,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
         foreach (var p in character)
         {
-            int dist = Mathf.Abs(p.pos.x - enemyPos.x) + Mathf.Abs(p.pos.y - enemyPos.y);
+            int dist = Manhattan(p.pos, enemyPos);
             if (dist < bestDist)
             {
                 bestDist = dist;
@@ -72,7 +72,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     public bool IsInRange(Vector3Int a, Vector3Int b, int range)
     {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) <= range;
+        return Manhattan(a, b) <= range;
     }
 
     public Vector3Int FindBestRangedTile(Vector3Int current, Vector3Int playerPos, HashSet<Vector3Int> reachable,
@@ -80,6 +80,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         Vector3Int best = current;
         float bestScore = float.MinValue;
+        bool foundRangedTile = false;
 
         foreach (var tile in reachable)
         {
@@ -87,8 +88,26 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
                 continue;
 
             float score = ScoreTile(tile, playerPos);
-            print("score : " + score);
-            print("best score : " + bestScore);
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = tile;
+                foundRangedTile = true;
+            }
+        }
+
+        if (foundRangedTile) return best;
+
+        // Jika terlalu jauh akan melakukan ini
+        bestScore = float.MinValue;
+
+        foreach (var tile in reachable)
+        {
+            int dist = Manhattan(tile, playerPos);
+
+            float score = -dist;
+
             if (score > bestScore)
             {
                 bestScore = score;
@@ -101,20 +120,18 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     private float ScoreTile(Vector3Int tile, Vector3Int playerPos)
     {
-        int dist = Mathf.Abs(tile.x - targetPos.x) + Mathf.Abs(tile.y - targetPos.y);
+        int dist = Manhattan(tile, playerPos);
     
         float distanceScore = dist * 10f;
     
-        // Optional: prefer not moving too much
-        float moveCost = Mathf.Abs(latestPos.x - tile.x) + Mathf.Abs(latestPos.y - tile.y);
-    
+        // Optional
+        float moveCost = Manhattan(latestPos, tile);
         return distanceScore;
     }
 
     private bool IsValidRangedTile(Vector3Int tile, Vector3Int playerPos, int minRange, int maxRange)
     {
-        int dist = Mathf.Abs(tile.x - playerPos.x) + Mathf.Abs(tile.y - playerPos.y);
-
+        int dist = Manhattan(tile, playerPos);
         if (dist < minRange || dist > maxRange)
             return false;
 
@@ -128,7 +145,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
         foreach (var tile in reachable)
         {
-            int dist = Mathf.Abs(tile.x - targetPos.x) + Mathf.Abs(tile.y - targetPos.y);
+            int dist = Manhattan(tile, targetPos);
             if (dist < bestDist)
             {
                 bestDist = dist;
@@ -218,6 +235,11 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         return line;
     }
 
+    int Manhattan(Vector3Int a, Vector3Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+   
     public GridData getGridData() {return gridData;}
     public void setTargetPos(Vector3Int pos) {targetPos = pos;}
     public Vector3Int getTargetPos() {return targetPos;}

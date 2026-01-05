@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class PlacedObject
 {
@@ -55,6 +57,9 @@ public class CharacterObject : PlacedObject
     public int MaxMoveRange { get; private set; } = 3;
     public int RemainingMoveRange { get; private set; }
     public int AtkRange { get; private set; }
+    public event Action<int, int> OnHPChanged;
+    public event Action<int> OnTakenDamage;
+    public event Action<CharacterObject> OnDied;
     private bool canAttack = true;
 
     public CharacterObject(string name, int hp, int damage, int defense, int speed, 
@@ -117,10 +122,19 @@ public class CharacterObject : PlacedObject
         HP -= finalDamage;
         HP = Mathf.Max(HP, 0);
 
+        OnHPChanged?.Invoke(HP, MaxHp);
+        OnTakenDamage?.Invoke(finalDamage);
+
         Debug.Log($"{Name} took {finalDamage} damage! (Raw: {amount}, Defense: {Defense}) Remaining HP: {HP}");
 
         if (HP <= 0)
             OnDeath();
+    }
+
+    public void Heal(int amount)
+    {
+        HP = Mathf.Clamp(HP + amount, 0, MaxHp);
+        OnHPChanged?.Invoke(HP, MaxHp);
     }
     
     public void Attack(CharacterObject target)
@@ -137,6 +151,11 @@ public class CharacterObject : PlacedObject
     protected virtual void OnDeath()
     {
         Debug.Log($"{Name} has died.");
-        // OnDeath logic
+
+        OnDied?.Invoke(this);
+        if (Name == "Main Character")
+        {
+            SceneManager.LoadScene("Tavern");
+        }
     }
 }

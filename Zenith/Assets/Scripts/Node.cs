@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -77,6 +78,46 @@ namespace BehaviourTrees
                 if (status != Status.Failure)
                 {
                     current = (status == Status.Running) ? child : null;
+                    return status;
+                }
+            }
+
+            return Status.Failure;
+        }
+    }
+
+    public class ProbabilitySelector : PrioritySelector
+    {
+        private List<float> weights;
+        private Node current;
+
+        public ProbabilitySelector(string name, List<float> weights, int priority = 0) : base(name, priority)
+        {
+            float total = weights.Sum();
+            this.weights = weights.Select(w => w / total).ToList();
+        }
+
+        public override Status Process()
+        {
+            if (current != null)
+            {
+                var status = current.Process();
+                if (status != Status.Running)
+                    current = null;
+                return status;
+            }
+            
+            float roll = Random.value;
+            float sum = 0f;
+
+            for (int i = 0; i < children.Count; i++)
+            {
+                sum += weights[i];
+                if (roll <= sum)
+                {
+                    var status = children[i].Process();
+                    if (status == Status.Running)
+                        current = children[i];
                     return status;
                 }
             }

@@ -2386,6 +2386,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (1)
@@ -9662,6 +9666,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (4)
@@ -48462,6 +48470,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (2)
@@ -67498,6 +67510,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (7)
@@ -68430,6 +68446,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (10)
@@ -68619,7 +68639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49e2a631f220b2449bee41659f4fb36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
-  sceneMusic: {fileID: 0}
+  sceneMusic: {fileID: 8300000, guid: e3eb756e6f237b643a41f7d2d6692699, type: 3}
 --- !u!4 &673962430
 Transform:
   m_ObjectHideFlags: 0
@@ -115652,6 +115672,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (6)
@@ -142967,6 +142991,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (13)
@@ -144983,6 +145011,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (5)
@@ -150771,6 +150803,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (11)
@@ -193241,6 +193277,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (9)
@@ -198088,6 +198128,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (12)
@@ -206647,6 +206691,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (3)
@@ -225343,6 +225391,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344655144}
     m_Modifications:
+    - target: {fileID: 1304326194655933138, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1342543831}
     - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_Name
       value: Floating_eye (8)

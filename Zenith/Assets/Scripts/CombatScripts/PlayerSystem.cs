@@ -17,6 +17,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     [SerializeField] private PauseMenu pauseMenu;
     [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
+    [SerializeField] private Animator animator;
 
     private Vector3 mousePos;
     private GridData objectsData;
@@ -281,6 +282,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                                 CharacterObject charObj, Transform charTransform)
     {
         isMoving = true;
+        animator.SetBool("isMoving", isMoving);
         for (int i = 0; i < path.Count; i++)
         {
             Vector3 start = charTransform.position;
@@ -305,6 +307,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         int distanceMoved = path.Count;
         charObj.UseMovement(distanceMoved);
         isMoving = false;
+        animator.SetBool("isMoving", isMoving);
     
         movePreview.ClearAll();
         // EndAction();

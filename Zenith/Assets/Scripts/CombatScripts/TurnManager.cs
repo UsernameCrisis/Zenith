@@ -1,12 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+public enum CombatState
+{
+    Playing,
+    Victory,
+    Defeat
+}
 
 public class TurnManager : MonoBehaviour
 {
     
     public static TurnManager Instance;
+    public CombatState State { get; private set; } = CombatState.Playing;
     private GridData gridData;
     private int maxTurn = 50;
     private int currentTurn = 1;
@@ -35,11 +43,14 @@ public class TurnManager : MonoBehaviour
         gridData = mapPopulator.GetComponent<PopulateMap>().objectsData;
         var units = gridData.GetAllUnits();
 
-        List<CharacterObject> characters = new(); // For getting the object only
+        List<CharacterObject> characters = new();
 
         foreach (var u in units)
         {
-            characters.Add(u.character);
+            CharacterObject c = u.character;
+            characters.Add(c);
+    
+            c.OnDied += HandleCharacterDeath;
         }
 
         turnQueue = new TurnQueue(characters, 10); // Sementara simulate 10 turn ahead
@@ -49,6 +60,11 @@ public class TurnManager : MonoBehaviour
     public void StartTurn()
     {
         CharacterObject current = turnQueue.GetCurrent();
+        if (current == null || gridData.GetPositionOf(current) == null)
+        {
+            EndTurn();
+            return;
+        }
         AdvanceATB(current);
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         Vector3Int? posNullable = gridData.GetPositionOf(current);
@@ -95,10 +111,32 @@ public class TurnManager : MonoBehaviour
         active.SubATB(100f);
     }
 
+    private void HandleCharacterDeath(CharacterObject character)
+    {
+        turnQueue.Remove(character);
+        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
+        
+        if (!AreEnemiesRemaining())
+        {
+            SceneManager.LoadScene("Ruins");
+            return;
+        }
+        
+        if (turnQueue.GetCurrent() == character)
+        {
+            EndTurn();
+        }
+    }
+
     public void EndTurn()
     {
         turnQueue.PopNext();
         currentTurn++;
         StartTurn();
+    }
+
+    private bool AreEnemiesRemaining()
+    {
+        return gridData.GetAllEnemies().Count > 0;
     }
 }

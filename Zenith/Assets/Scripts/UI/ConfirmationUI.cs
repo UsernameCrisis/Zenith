@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class ConfirmationUI : MonoBehaviour
@@ -47,7 +46,7 @@ public class ConfirmationUI : MonoBehaviour
             {
                 GameManager.Instance.playerHP = GameManager.Instance.playerMaxHP;
             }
-            SceneManager.LoadScene(targetScene);
+            GameManager.Instance.SaveAndLoadScene(targetScene);
         }
     }
 }

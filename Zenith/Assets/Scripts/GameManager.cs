@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     private List<List<ItemData>> _items = new List<List<ItemData>>();
     private List<ItemData> _equipments = new List<ItemData>();
     public bool hasData = false;
+    public GameObject CurrentEnemy;
 
     private void Awake()
     {

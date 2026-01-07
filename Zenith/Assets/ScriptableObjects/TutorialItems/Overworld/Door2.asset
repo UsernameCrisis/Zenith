@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10c0d6df33e4d5649931db6ed68fa6a1, type: 3}
-  m_Name: test2
+  m_Name: Door2
   m_EditorClassIdentifier: Assembly-CSharp::TutorialItem
-  image: {fileID: 21300000, guid: 8addd4328733ed24abf8e1c519185c70, type: 3}
-  description: page 2
+  image: {fileID: 21300000, guid: f0403ecee15386945880a8922b034760, type: 3}
+  description: Enter a door to move to the next room

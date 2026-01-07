@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     private List<ItemData> _equipments = new List<ItemData>();
     public bool hasData = false;
     public GameObject CurrentEnemy;
+    public bool ViewedOverworldTutorial = false;
 
     private void Awake()
     {
@@ -97,4 +98,6 @@ public class GameManager : MonoBehaviour
         _equipments.Clear();
     }
     
+
+
 }

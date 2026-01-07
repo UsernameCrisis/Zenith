@@ -28,6 +28,8 @@ public class TutorialController : MonoBehaviour
 
         image.sprite = items[index].image;
         description.text = items[index].description;
+
+        FindAnyObjectByType<PlayerMovement>().canMove(false);
     }
     public void Close()
     {
@@ -36,6 +38,8 @@ public class TutorialController : MonoBehaviour
         CloseButton.SetActive(false);
 
         gameObject.SetActive(false);
+
+        FindAnyObjectByType<PlayerMovement>().canMove(true);
     }
     public void Next()
     {

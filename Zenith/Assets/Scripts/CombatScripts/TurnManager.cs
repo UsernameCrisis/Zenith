@@ -118,10 +118,11 @@ public class TurnManager : MonoBehaviour
         
         if (!AreEnemiesRemaining())
         {
-            SceneManager.UnloadSceneAsync("Combat_test1");
-            ShowScene(SceneManager.GetActiveScene());
-            Destroy(GameManager.Instance.CurrentEnemy);
-            GameManager.Instance.CurrentEnemy = null;
+            // SceneManager.UnloadSceneAsync("Combat_test1");
+            // ShowScene(SceneManager.GetActiveScene());
+            // Destroy(GameManager.Instance.CurrentEnemy);
+            // GameManager.Instance.CurrentEnemy = null;
+            SceneManager.LoadScene("ruins");
             return;
         }
         
@@ -148,11 +149,11 @@ public class TurnManager : MonoBehaviour
 
 
 
-    void ShowScene(Scene scene)
-{
-    foreach (GameObject root in scene.GetRootGameObjects())
-    {
-        root.SetActive(true);
-    }
-}
+    // void ShowScene(Scene scene)
+    // {
+    //     foreach (GameObject root in scene.GetRootGameObjects())
+    //     {
+    //         root.SetActive(true);
+    //     }
+    // }
 }

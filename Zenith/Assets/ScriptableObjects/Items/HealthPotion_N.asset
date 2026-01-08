@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
   m_Name: HealthPotion_N
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
-  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  sprite: {fileID: 21300000, guid: 02c975fe72c94da49bb7c5571a1d9e8c, type: 3}
+  UILogo: {fileID: 21300000, guid: 02c975fe72c94da49bb7c5571a1d9e8c, type: 3}
   name: Health Potion
   stackable: 1
   stackable_limit: 999

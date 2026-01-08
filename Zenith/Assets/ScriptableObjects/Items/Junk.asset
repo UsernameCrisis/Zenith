@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
   m_Name: Junk
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
-  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  sprite: {fileID: 21300000, guid: 17e2b2557474d0a45b19ce0d8e4c5a88, type: 3}
+  UILogo: {fileID: 21300000, guid: 17e2b2557474d0a45b19ce0d8e4c5a88, type: 3}
   name: Junk
   stackable: 1
   stackable_limit: 999

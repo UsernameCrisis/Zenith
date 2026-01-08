@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f02e94878d034549b1cc3ce9f3d73a0, type: 3}
   m_Name: Sword
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  sprite: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
-  UILogo: {fileID: 21300000, guid: 6dd496e996e6222469858986d95a0d8c, type: 3}
+  sprite: {fileID: 21300000, guid: 5d2e8541bc93fb848996c1e0b0a06357, type: 3}
+  UILogo: {fileID: 21300000, guid: 5d2e8541bc93fb848996c1e0b0a06357, type: 3}
   name: Sword
   stackable: 0
   stackable_limit: 0

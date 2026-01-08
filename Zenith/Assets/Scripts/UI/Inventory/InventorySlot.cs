@@ -22,11 +22,13 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     }
     public Item_Type AcceptedType = Item_Type.Any;
     public DraggableItem draggableItemPrefab;
+    public DraggableItem.SlotType slotType = DraggableItem.SlotType.Inventory;
     private void Start() {
         UpdateQuantity();
     }
     public virtual void OnDrop(PointerEventData eventData)
     {
+        if (slotType == DraggableItem.SlotType.Shop || slotType == DraggableItem.SlotType.Chest) return;
         GameObject dropped = eventData.pointerDrag;
 
         //type check
@@ -53,18 +55,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         {
             DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
             draggableItem._parentAfterDrag = transform.GetChild(0);
+
+            draggableItem.slotType = slotType;
         }
         UpdateQuantity();
-        // FindAnyObjectByType<PlayerOverworldAttributes>().UpdateStats();
     }
-
-    // public void SetItem(DraggableItem item)
-    // {
-    //     DraggableItem newDraggableItem = Instantiate(draggableItemPrefab);
-    //     newDraggableItem.item = item.item;
-    //     newDraggableItem.transform.SetParent(transform.GetChild(0), false);
-    //     UpdateQuantity();
-    // }
     public void SetItem(DraggableItem item)
     {
         item.transform.SetParent(transform.GetChild(0), false);

@@ -16,6 +16,8 @@ public class InteractableItem : InteractableObject, Interactable
     private void Start() {
         inventory = FindAnyObjectByType<OverworldUI>().inventory;
 
+        GetComponent<SpriteRenderer>().sprite = item.sprite;
+
         StartCoroutine(anim());
     }
 

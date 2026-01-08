@@ -19,15 +19,16 @@ public class PlayerTrigger : MonoBehaviour
             InteractUI.SetActive(true);
             CurrentInteractable = other.gameObject;
             _interactText.text = CurrentInteractable.GetComponent<InteractableObject>().InteractText;
+
+            CurrentOpenInteractable = null;
         }       
     }
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Interactable"))
         {
-            InteractUI.SetActive(false);
-            CurrentInteractable = null;
-            CurrentOpenInteractable = null;
+            TurnOff();
+            if (FindAnyObjectByType<OverworldUI>().inventory.isActiveAndEnabled) FindAnyObjectByType<OverworldUI>().inventory.SetActive(false);
         }  
     }
 
@@ -45,7 +46,6 @@ public class PlayerTrigger : MonoBehaviour
         {
             CurrentOpenInteractable = CurrentInteractable;
             CurrentInteractable.GetComponent<Interactable>().OnInteract();
-            Debug.Log(CurrentOpenInteractable == null);
         }
     }
 

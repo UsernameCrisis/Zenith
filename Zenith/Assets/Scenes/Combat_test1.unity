@@ -3374,6 +3374,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2049846317}
     m_Modifications:
+    - target: {fileID: 4082001268156445302, guid: aaaa02566b0369045aadfd9eac322465, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4082001268156445302, guid: aaaa02566b0369045aadfd9eac322465, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6586435631316201667, guid: aaaa02566b0369045aadfd9eac322465, type: 3}
       propertyPath: m_Name
       value: TurnIcon

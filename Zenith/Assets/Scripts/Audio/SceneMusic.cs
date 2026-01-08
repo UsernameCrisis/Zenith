@@ -7,6 +7,10 @@ public class SceneMusic : MonoBehaviour
     void Start()
     {
         if (AudioManager.Instance != null)
+        {
+            print("playing music");
             AudioManager.Instance.PlayMusic(sceneMusic);
+        }
+           
     }
 }

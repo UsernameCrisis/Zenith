@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
-public class PauseMenuOverworldInput : MonoBehaviour
+public class PauseMenuTavern : MonoBehaviour
 {
     private bool isPaused = false;
     private bool isInsideOption = false, isInsideTutorial = false;
@@ -10,7 +11,6 @@ public class PauseMenuOverworldInput : MonoBehaviour
     [SerializeField] private PauseMenu pauseMenu;
     [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private TutorialMenu tutorialMenu;
-    [SerializeField] private GameObject confirmationModal;
 
     void OnEnable()
     {
@@ -28,10 +28,6 @@ public class PauseMenuOverworldInput : MonoBehaviour
     void Awake()
     {
         escapeKeyAction = InputSystem.actions.FindAction("ExitSelect");
-        if (confirmationModal != null)
-        {
-            confirmationModal.SetActive(false);
-        }
     }
 
     void Update()
@@ -41,11 +37,6 @@ public class PauseMenuOverworldInput : MonoBehaviour
 
     private void HandleEscapePressed()
     {
-        if (confirmationModal != null && confirmationModal.activeSelf)
-        {
-            confirmationModal.SetActive(false);
-            return;
-        }
 
         if (isInsideTutorial)
         {
@@ -119,6 +110,11 @@ public class PauseMenuOverworldInput : MonoBehaviour
             pauseMenu.Hide();
             tutorialMenu.Show();
             isInsideTutorial = true;
+        }
+        else if (button == "Exit")
+        {
+            Time.timeScale = 1;
+            SceneManager.LoadScene("Main Menu");
         }
     }
 }

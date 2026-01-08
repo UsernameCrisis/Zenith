@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSystem : MonoBehaviour, ITurnActor
 {
@@ -15,6 +16,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     [SerializeField] private MovementPreview movePreview;
     [SerializeField] private CharacterActionMenu actionMenu;
     [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private TutorialMenu tutorialMenu;
+
     [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
     [SerializeField] private Animator animator;
@@ -26,7 +29,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private Color defaultColor;
     private bool isInActionMode = false;
     private string currentAction = null;
-    private bool isPaused = false, isInsideOption = false;
+    private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
 
     public bool IsPlayer => true;
     private bool isMoving = false;
@@ -39,6 +42,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         actionMenu.OnActionSelected += HandleActionMenu;
         pauseMenu.OnButtonSelected += HandlePauseMenu;
         optionMenu.OnButtonSelected += HandleOptionMenu;
+        tutorialMenu.OnButtonSelected += HandleTutorialMenu;
     }
 
     void OnDisable()
@@ -49,6 +53,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         actionMenu.OnActionSelected -= HandleActionMenu;
         pauseMenu.OnButtonSelected -= HandlePauseMenu;
         optionMenu.OnButtonSelected -= HandleOptionMenu;
+        tutorialMenu.OnButtonSelected -= HandleTutorialMenu;
     }
     
     public void BeginTurn(Vector3Int pos, GridData gridData)
@@ -175,9 +180,16 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
             isInsideOption = true;
 
         }
+        else if (button == "Tutorial")
+        {
+            pauseMenu.Hide();
+            tutorialMenu.Show();
+            isInsideTutorial = true;
+        }
         else if (button == "Exit")
         {
-            print("Exit pressed");
+            Time.timeScale = 1;
+            SceneManager.LoadScene("Main Menu");
         }
     }
 
@@ -190,35 +202,44 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         }
     }
 
+    private void HandleTutorialMenu(string button)
+    {
+        if (button == "Back")
+        {
+            tutorialMenu.Back();
+            isInsideTutorial = false;
+        }
+    }
+
     private void HandleEscapePressed()
     {
-        if (isMoving)
+        if (isInsideTutorial)
         {
-            if (!isPaused)
-                OpenPauseMenu();
-            else
-                Resume();
-
+            tutorialMenu.Back();
+            isInsideTutorial = false;
             return;
         }
 
-        if (isPaused && !isInsideOption)
-        {
-            Resume();
-        }
-        else if (isInsideOption)
+        if (isInsideOption)
         {
             optionMenu.Back();
             isInsideOption = false;
+            return;
         }
-        else if (selectedChar != null)
+
+        if (isPaused)
+        {
+            Resume();
+            return;
+        }
+
+        if (selectedChar != null)
         {
             ExitCharacter();
+            return;
         }
-        else
-        {
-            OpenPauseMenu();
-        }
+
+        OpenPauseMenu();
     }
     
     private void Resume()

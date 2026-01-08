@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
     {
         if (!hasData) return;
 
-        if(SceneManager.GetActiveScene().name == "Combat_test1")
+        if(SceneManager.GetActiveScene().name == "Combat_test1" || SceneManager.GetActiveScene().name == "Main Menu")
         {
             return;
         }

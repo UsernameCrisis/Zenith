@@ -12,9 +12,12 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource soundFXSource;
+    [SerializeField] private float musicMaxVolume = 1f;
 
     [Header("SFX Library")]
     public List<SFXEntry> sfxClips = new List<SFXEntry>();
+    private Coroutine musicFadeCoroutine;
+    
 
     private void Awake()
     {
@@ -59,15 +62,32 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat("soundFXVolume", value);
     }
 
+    public void StopMusicImmediate()
+    {
+        if (musicFadeCoroutine != null)
+            StopCoroutine(musicFadeCoroutine);
+
+        musicSource.Stop();
+        musicSource.volume = musicMaxVolume;
+    }
+
     public void PlayMusic(AudioClip clip, float fadeTime = 1f)
     {
-        StartCoroutine(FadeMusic(clip, fadeTime));
+        print(Time.timeScale);
+        if (musicFadeCoroutine != null)
+            StopCoroutine(musicFadeCoroutine);
+
+        musicFadeCoroutine = StartCoroutine(FadeMusic(clip, fadeTime));
     }
 
     private IEnumerator FadeMusic(AudioClip newClip, float fadeTime)
     {
         if (musicSource.clip == newClip)
+        {
+            print("music is the same");
             yield break;
+        }
+            
 
         float startVol = musicSource.volume;
 
@@ -75,6 +95,7 @@ public class AudioManager : MonoBehaviour
         for (float t = 0; t < fadeTime; t += Time.deltaTime)
         {
             musicSource.volume = Mathf.Lerp(startVol, 0, t / fadeTime);
+            print("test");
             yield return null;
         }
 
@@ -82,12 +103,15 @@ public class AudioManager : MonoBehaviour
         musicSource.clip = newClip;
         musicSource.Play();
 
+
         // Fade in new music
         for (float t = 0; t < fadeTime; t += Time.deltaTime)
         {
-            musicSource.volume = Mathf.Lerp(0, startVol, t / fadeTime);
+            musicSource.volume = Mathf.Lerp(0, musicMaxVolume, t / fadeTime);
             yield return null;
         }
+        musicSource.volume = musicMaxVolume;
+        print(musicSource.clip);
     }
 
     public void PlaySFX(string name)

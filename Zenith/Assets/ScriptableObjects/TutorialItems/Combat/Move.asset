@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10c0d6df33e4d5649931db6ed68fa6a1, type: 3}
-  m_Name: Location
+  m_Name: Move
   m_EditorClassIdentifier: Assembly-CSharp::TutorialItem
-  image: {fileID: 21300000, guid: 5f0779c85a41af84a8375312a2cd540e, type: 3}
-  description: Select a location from the right sidebar
+  image: {fileID: 21300000, guid: a2a570b5b8d1c4a419619d79dd248ab0, type: 3}
+  description: Use move action to move your character to a reachable tile. You may
+    move again in one turn if you have leftover move action points.

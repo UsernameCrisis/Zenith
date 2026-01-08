@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     public Button resume;
     public Button settings;
+    public Button tutorial;
     public Button exit;
     public event Action<string> OnButtonSelected;
 
@@ -13,6 +14,7 @@ public class PauseMenu : MonoBehaviour
     {
         resume.onClick.AddListener(() => OnButtonSelected?.Invoke("Resume"));
         settings.onClick.AddListener(() => OnButtonSelected?.Invoke("Settings"));
+        tutorial.onClick.AddListener(() => OnButtonSelected?.Invoke("Tutorial"));
         exit.onClick.AddListener(() => OnButtonSelected?.Invoke("Exit"));
         gameObject.SetActive(false);
     }
@@ -20,12 +22,10 @@ public class PauseMenu : MonoBehaviour
     public void Show()
     {
         gameObject.SetActive(true);
-        print("show pause");
     }
 
     public void Hide()
     {
-        print("pause hide");
         gameObject.SetActive(false);
     }
 }

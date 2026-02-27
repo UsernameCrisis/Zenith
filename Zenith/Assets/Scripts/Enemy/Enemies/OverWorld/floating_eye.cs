@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class FloatingEye : OverworldEnemy
+public class FloatingEye : MonoBehaviour
 {
     private enum EnemyState { Idle, Alert, Attack, Reload }
 
@@ -60,6 +60,17 @@ public class FloatingEye : OverworldEnemy
     {
         ammo = maxAmmo;
         originalSpeed = agent.speed;
+
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+        else
+        {
+            Debug.LogWarning("No GameObject with tag 'Player' found in the scene!");
+        }
+
         PickRandomDestination();
         ChangeState(EnemyState.Idle);
     }
@@ -259,7 +270,11 @@ public class FloatingEye : OverworldEnemy
 
         Projectile projectile = proj.GetComponent<Projectile>();
         projectile.Initialize(direction);
-        projectile.IgnoreShooter(GetComponent<Collider>());
+        Collider[] shooterColliders = GetComponentsInChildren<Collider>();
+        foreach (Collider col in shooterColliders)
+        {
+            projectile.IgnoreShooter(col);
+        }
     }
 
     private void SeePlayerCheck()

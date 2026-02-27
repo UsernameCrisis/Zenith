@@ -128344,10 +128344,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Floating_eye
       objectReference: {fileID: 0}
-    - target: {fileID: 3359095611322043199, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8849100482313379016, guid: bd101aa8c5adc3241a0b4a826d4c2775, type: 3}
       propertyPath: m_LocalPosition.x
       value: 147.94916
@@ -230402,6 +230398,10 @@ PrefabInstance:
     - target: {fileID: 4366758908039255003, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7613042265651345359, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
+      propertyPath: currentHP
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7613042265651345359, guid: 5aae273d7dddf024baacc1693e54f746, type: 3}
       propertyPath: inventory

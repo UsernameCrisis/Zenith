@@ -11,6 +11,8 @@ TagManager:
   - Enemy
   - Audio
   - Interactable
+  - Wall
+  - Goal
   layers:
   - Default
   - TransparentFX

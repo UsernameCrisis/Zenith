@@ -7,6 +7,7 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private bool loadFromSave = true;
     [SerializeField] private bool forTrainingAgent = false;
+    private int minX, maxX, minY, maxY;
 
     public GridData objectsData;
     public List<GameObject> placedGameObjects = new();
@@ -23,7 +24,8 @@ public class PopulateMap : MonoBehaviour
         }
         else if (forTrainingAgent == true)
         {
-            PopulateForAgent();
+            PopulateFromGridJSON();
+            SpawnTeams();
         }
         else
         {
@@ -31,34 +33,67 @@ public class PopulateMap : MonoBehaviour
         }
     }
 
-    private void PopulateForAgent()
+    private void SpawnTeams()
     {
-        PlaceObject(new Vector3Int(-3, 1, 0), 0, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(2, -1, 0), 1, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-1, -2, 0), 2, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-1, -3, 0), 3, placedGameObjects.Count - 1);
+        Vector3Int team1Center = GetRandomEmptyTile();
+        Vector3Int team2Center;
 
-        //Obstacle
-        PlaceObject(new Vector3Int(0, 0, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(0, -1, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-1, -1, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-1, 0, 0), 7, placedGameObjects.Count - 1);
+        // ensure teams are far apart
+        do
+        {
+            team2Center = GetRandomEmptyTile();
+        }
+        while (Vector3Int.Distance(team1Center, team2Center) < 4);
 
-        PlaceObject(new Vector3Int(3, 3, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(3, 2, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(2, 3, 0), 7, placedGameObjects.Count - 1);
+        SpawnTeam(team1Center, 4, 6); // team 1 IDs
+        SpawnTeam(team2Center, 1, 3); // team 2 IDs
+    }
 
-        PlaceObject(new Vector3Int(-4, 3, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-3, 3, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-4, 2, 0), 7, placedGameObjects.Count - 1);
+    private void SpawnTeam(Vector3Int center, int minID, int maxID)
+    {
+        int units = 3;
+        int attempts = 0;
 
-        PlaceObject(new Vector3Int(3, -4, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(3, -3, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(2, -4, 0), 7, placedGameObjects.Count - 1);
-        
-        PlaceObject(new Vector3Int(-4, -4, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-4, -3, 0), 7, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-3, -4, 0), 7, placedGameObjects.Count - 1);
+        while (units > 0 && attempts < 50)
+        {
+            attempts++;
+
+            int dx = Random.Range(-1, 2);
+            int dy = Random.Range(-1, 2);
+
+            Vector3Int pos = new Vector3Int(center.x + dx, center.y + dy, 0);
+
+            if (!IsInsideBounds(pos))
+                continue;
+
+            if (objectsData.GetTileAt(pos) != null)
+                continue;
+
+            int id = Random.Range(minID, maxID + 1);
+
+            PlaceObject(pos, id, placedGameObjects.Count - 1);
+
+            units--;
+        }
+    }
+
+    private Vector3Int GetRandomEmptyTile()
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            int x = Random.Range(minX, maxX);
+            int y = Random.Range(minY, maxY);
+
+            Vector3Int pos = new Vector3Int(x, y, 0);
+
+            if (!IsInsideBounds(pos))
+                continue;
+
+            if (objectsData.GetTileAt(pos) == null)
+                return pos;
+        }
+
+        return Vector3Int.zero;
     }
 
     private void PopulateManually()
@@ -114,6 +149,8 @@ public class PopulateMap : MonoBehaviour
 
         int offsetX = width / 2;
         int offsetY = height / 2;
+
+        minX = -offsetX; maxX = offsetX; minY = -offsetY; maxY = offsetY;
 
         for (int y = 0; y < height; y++)
         {
@@ -191,6 +228,12 @@ public class PopulateMap : MonoBehaviour
             default:
                 return new StaticObject(data.Name);
         }
+    }
+
+    private bool IsInsideBounds(Vector3Int pos)
+    {
+        return pos.x >= minX && pos.x <= maxX &&
+               pos.y >= minY && pos.y <= maxY;
     }
 }
 

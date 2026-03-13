@@ -107,7 +107,7 @@ public class Bat : MonoBehaviour
     {
         attackTimer += Time.deltaTime;
 
-        if (!hasDealtDamage && attackTimer >= 0.25f)
+        if (!hasDealtDamage && attackTimer >= 0.4f)
         {
             CheckForHit();
             hasDealtDamage = true;

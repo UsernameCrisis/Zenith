@@ -13,12 +13,18 @@ public class GameManager : MonoBehaviour
     //
     public int playerAtk;
     public int playerDef;
-    private List<List<ItemData>> _items = new List<List<ItemData>>();
-    private List<ItemData> _equipments = new List<ItemData>();
+    private List<List<ItemData>> _items = new();
+    private List<ItemData> _equipments = new();
     public bool hasData = false;
-    public GameObject CurrentEnemy;
     public bool ViewedOverworldTutorial = false;
 
+    [Header("Combat Transition Settings")]
+    public string combatSceneName = "Combat_test1";
+    public List<string> currentEncounterEnemyNames = new();
+    public List<string> defeatedEnemyNames = new();
+
+    private GameObject currentOverworldRoot;
+    private EnemyTrigger activeTrigger;
     private void Awake()
     {
         if (Instance == null)
@@ -34,7 +40,59 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SetOverworldRoot(GameObject root)
+    {
+        currentOverworldRoot = root;
+    }
 
+    public void PrepareCombat(List<string> enemyNames, EnemyTrigger trigger)
+    {
+        currentEncounterEnemyNames = new List<string>(enemyNames);
+        defeatedEnemyNames.Clear();
+        activeTrigger = trigger;
+    }
+
+    public void StartCombatScene()
+    {
+        // BUGTEST: Log the enemies we are carrying into combat
+        if (currentEncounterEnemyNames.Count > 0)
+        {
+            string enemyList = string.Join(", ", currentEncounterEnemyNames);
+            Debug.Log($"<color=orange>Combat Starting!</color> Enemies detected: {enemyList}");
+        }
+        else
+        {
+            Debug.LogWarning("Combat started, but no enemy names were captured!");
+        }
+
+        // 1. Disable the Overworld Root to "pause" the world
+        if (currentOverworldRoot != null)
+        {
+            currentOverworldRoot.SetActive(false);
+            Debug.Log("Overworld Root disabled.");
+        }
+        else
+        {
+            Debug.LogError("No Overworld Root found! Make sure your OverworldAnchor is set up.");
+        }
+
+        // 2. Load the combat scene without destroying the Overworld
+        // Use LoadSceneMode.Additive so both technically exist in the hierarchy
+        SceneManager.LoadScene(combatSceneName, LoadSceneMode.Additive);
+    }
+
+    public void EndCombat()
+    {
+        SceneManager.UnloadSceneAsync(combatSceneName);
+
+        if (currentOverworldRoot != null)
+            currentOverworldRoot.SetActive(true);
+
+        if (activeTrigger != null)
+        {
+            activeTrigger.CleanupDefeatedEnemies(defeatedEnemyNames);
+        }
+    }
     public void SaveAndLoadScene(string SceneName)
     {
         PlayerOverworldAttributes player = FindAnyObjectByType<PlayerOverworldAttributes>();
@@ -97,7 +155,5 @@ public class GameManager : MonoBehaviour
         _items.Clear();
         _equipments.Clear();
     }
-    
-
 
 }

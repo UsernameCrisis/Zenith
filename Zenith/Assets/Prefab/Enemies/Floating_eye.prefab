@@ -152,6 +152,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6027362ba4de00e4cad44f34eeea75eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
+  checkRadius: 5
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 8192
+  maxNearbyEnemies: 3
   desRadius: 8
   minDistToDest: 0.5
   minWait: 1

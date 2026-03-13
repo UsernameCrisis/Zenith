@@ -95,7 +95,6 @@ public class AudioManager : MonoBehaviour
         for (float t = 0; t < fadeTime; t += Time.deltaTime)
         {
             musicSource.volume = Mathf.Lerp(startVol, 0, t / fadeTime);
-            print("test");
             yield return null;
         }
 

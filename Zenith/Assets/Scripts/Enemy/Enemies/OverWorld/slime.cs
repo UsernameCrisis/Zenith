@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Slime : MonoBehaviour
+public class Slime : EnemyTrigger
 {
     private enum EnemyState { Idle, Alert }
 

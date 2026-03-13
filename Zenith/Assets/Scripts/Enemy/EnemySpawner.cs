@@ -21,7 +21,6 @@ public class EnemySpawner : MonoBehaviour
         {
             int randomIndex = Random.Range(0, enemyPrefabs.Length);
             Instantiate(enemyPrefabs[randomIndex], transform.position, Quaternion.identity);
-            Debug.Log("Spawned: " + enemyPrefabs[randomIndex].name);
         }
     }
 }

@@ -20,7 +20,7 @@ public class EnemySpawner : MonoBehaviour
         if (roll <= spawnProbability)
         {
             int randomIndex = Random.Range(0, enemyPrefabs.Length);
-            Instantiate(enemyPrefabs[randomIndex], transform.position, Quaternion.identity);
+            Instantiate(enemyPrefabs[randomIndex], transform.position, Quaternion.identity, transform);
         }
     }
 }

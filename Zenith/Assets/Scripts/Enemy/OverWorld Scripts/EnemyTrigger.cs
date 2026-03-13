@@ -30,41 +30,84 @@ public class EnemyTrigger : MonoBehaviour
 
         int count = Physics.OverlapSphereNonAlloc(transform.position, checkRadius, hitResults, enemyLayer);
 
-        List<string> encounteredEnemyNames = new();
+        List<string> encounteredEnemyNames = new List<string>();
 
         for (int i = 0; i < count; i++)
         {
-            // Use transform.root as per your previous script to ensure we get the main enemy object
-            GameObject enemyObj = hitResults[i].transform.root.gameObject;
+            GameObject hitObj = hitResults[i].gameObject;
+            GameObject enemyMainBody = null;
 
-            // Ensure we don't add the same enemy twice (if they have multiple colliders)
-            if (!encounteredEnemyNames.Contains(enemyObj.name))
+            if (hitObj.CompareTag("Enemy"))
             {
-                encounteredEnemyNames.Add(enemyObj.name);
+                enemyMainBody = hitObj;
+            }
+            else if (hitObj.transform.parent != null && hitObj.transform.parent.CompareTag("Enemy"))
+            {
+                enemyMainBody = hitObj.transform.parent.gameObject;
+            }
+
+            if (enemyMainBody != null)
+            {
+                if (!encounteredEnemyNames.Contains(enemyMainBody.name))
+                {
+                    encounteredEnemyNames.Add(enemyMainBody.name);
+                }
             }
         }
 
-        // Send the data to your GameManager
-        // We pass 'this' so the GameManager knows who to talk to when combat ends
+        if (encounteredEnemyNames.Count == 0)
+        {
+            encounteredEnemyNames.Add(transform.parent.gameObject.name);
+        }
+
         GameManager.Instance.PrepareCombat(encounteredEnemyNames, this);
         GameManager.Instance.StartCombatScene();
+
+        // --- TEST BLOCK ---
+        //Debug.Log($"Testing Cleanup for: {string.Join(", ", encounteredEnemyNames)}");
+        //CleanupDefeatedEnemies(encounteredEnemyNames);
+        // ------------------
     }
 
     public void CleanupDefeatedEnemies(List<string> defeatedNames)
     {
-        // One last check to find and destroy the specific objects
         int count = Physics.OverlapSphereNonAlloc(transform.position, checkRadius, hitResults, enemyLayer);
 
         for (int i = 0; i < count; i++)
         {
-            GameObject enemyObj = hitResults[i].transform.root.gameObject;
-            if (defeatedNames.Contains(enemyObj.name))
+            GameObject hitObj = hitResults[i].gameObject;
+            GameObject enemyMainBody = null;
+
+            if (hitObj.CompareTag("Enemy"))
             {
-                Destroy(enemyObj);
+                enemyMainBody = hitObj;
+            }
+            else if (hitObj.transform.parent != null && hitObj.transform.parent.CompareTag("Enemy"))
+            {
+                enemyMainBody = hitObj.transform.parent.gameObject;
+            }
+
+            if (enemyMainBody != null && defeatedNames.Contains(enemyMainBody.name))
+            {
+                if (transform.parent != null && enemyMainBody == transform.parent.gameObject)
+                {
+                    continue;
+                }
+
+                Debug.Log($"Cleaning up nearby ally: {enemyMainBody.name}");
+                Destroy(enemyMainBody);
             }
         }
 
-        // Self-destruct this trigger so the fight can't happen again
-        Destroy(gameObject);
+        if (transform.parent != null && transform.parent.CompareTag("Enemy"))
+        {
+            Debug.Log($"Cleaning up main target parent: {transform.parent.name}");
+            Destroy(transform.parent.gameObject);
+        }
+        else
+        {
+            Debug.Log($"Cleaning up main target self: {gameObject.name}");
+            Destroy(gameObject);
+        }
     }
 }

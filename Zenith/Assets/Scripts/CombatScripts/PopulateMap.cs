@@ -5,7 +5,9 @@ public class PopulateMap : MonoBehaviour
 {
     [SerializeField] private ObjectDatabaseSO database;
     [SerializeField] private Grid grid;
-    [SerializeField] private bool loadFromSave = false;
+    [SerializeField] private bool loadFromSave = true;
+    [SerializeField] private bool forTrainingAgent = false;
+    private int minX, maxX, minY, maxY;
 
     public GridData objectsData;
     public List<GameObject> placedGameObjects = new();
@@ -16,14 +18,82 @@ public class PopulateMap : MonoBehaviour
     }
     void Start()
     {
-        if (loadFromSave && SaveSystem.HasSaveFile())
+        if (loadFromSave)
         {
-            LoadFromSave();
+            PopulateFromGridJSON();
+        }
+        else if (forTrainingAgent == true)
+        {
+            PopulateFromGridJSON();
+            SpawnTeams();
         }
         else
         {
             PopulateManually();
         }
+    }
+
+    private void SpawnTeams()
+    {
+        Vector3Int team1Center = GetRandomEmptyTile();
+        Vector3Int team2Center;
+
+        // ensure teams are far apart
+        do
+        {
+            team2Center = GetRandomEmptyTile();
+        }
+        while (Vector3Int.Distance(team1Center, team2Center) < 4);
+
+        SpawnTeam(team1Center, 4, 6); // team 1 IDs
+        SpawnTeam(team2Center, 1, 3); // team 2 IDs
+    }
+
+    private void SpawnTeam(Vector3Int center, int minID, int maxID)
+    {
+        int units = 3;
+        int attempts = 0;
+
+        while (units > 0 && attempts < 50)
+        {
+            attempts++;
+
+            int dx = Random.Range(-1, 2);
+            int dy = Random.Range(-1, 2);
+
+            Vector3Int pos = new Vector3Int(center.x + dx, center.y + dy, 0);
+
+            if (!IsInsideBounds(pos))
+                continue;
+
+            if (objectsData.GetTileAt(pos) != null)
+                continue;
+
+            int id = Random.Range(minID, maxID + 1);
+
+            PlaceObject(pos, id, placedGameObjects.Count - 1);
+
+            units--;
+        }
+    }
+
+    private Vector3Int GetRandomEmptyTile()
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            int x = Random.Range(minX, maxX);
+            int y = Random.Range(minY, maxY);
+
+            Vector3Int pos = new Vector3Int(x, y, 0);
+
+            if (!IsInsideBounds(pos))
+                continue;
+
+            if (objectsData.GetTileAt(pos) == null)
+                return pos;
+        }
+
+        return Vector3Int.zero;
     }
 
     private void PopulateManually()
@@ -34,59 +104,68 @@ public class PopulateMap : MonoBehaviour
         PlaceObject(new Vector3Int(-1, -3, 0), 3, placedGameObjects.Count - 1);
 
         //Obstacle
-        PlaceObject(new Vector3Int(0, 0, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(0, -1, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-1, -1, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-1, 0, 0), 4, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(0, 0, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(0, -1, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-1, -1, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-1, 0, 0), 7, placedGameObjects.Count - 1);
 
-        PlaceObject(new Vector3Int(3, 3, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(3, 2, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(2, 3, 0), 4, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(3, 3, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(3, 2, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(2, 3, 0), 7, placedGameObjects.Count - 1);
 
-        PlaceObject(new Vector3Int(-4, 3, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-3, 3, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-4, 2, 0), 4, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-4, 3, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-3, 3, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-4, 2, 0), 7, placedGameObjects.Count - 1);
 
-        PlaceObject(new Vector3Int(3, -4, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(3, -3, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(2, -4, 0), 4, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(3, -4, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(3, -3, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(2, -4, 0), 7, placedGameObjects.Count - 1);
         
-        PlaceObject(new Vector3Int(-4, -4, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-4, -3, 0), 4, placedGameObjects.Count - 1);
-        PlaceObject(new Vector3Int(-3, -4, 0), 4, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-4, -4, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-4, -3, 0), 7, placedGameObjects.Count - 1);
+        PlaceObject(new Vector3Int(-3, -4, 0), 7, placedGameObjects.Count - 1);
     }
     
-    private void LoadFromSave()
+    private void PopulateFromGridJSON()
     {
-        // Load GridData from JSON
-        objectsData = SaveSystem.Load(database);
+        TextAsset jsonFile = Resources.Load<TextAsset>("maps/map_1"); // ($"maps/map_{Random.Range(0,5)}");
 
-        foreach (var kvp in objectsData.GetAllTiles())
+        if (jsonFile == null)
         {
-            TileData tile = kvp.Value;
-            Vector3Int gridPos = kvp.Key;
-            PlacedObject placedObj = tile.PlacedObject;
+            Debug.LogError("Map JSON not found!");
+            return;
+        }
+        
+        MapGrid map = JsonUtility.FromJson<MapGrid>(jsonFile.text);
 
-            ObjectData data = database.objectsData.Find(d => d.Name == placedObj.Name);
-            if (data == null)
-            {
-                Debug.LogWarning($"No prefab found in database for {placedObj.Name}");
-                continue;
-            }
-
-            GameObject obj = Instantiate(data.Prefab, grid.CellToWorld(gridPos), Quaternion.identity);
-            placedGameObjects.Add(obj);
-
-            if (placedObj is CharacterObject character)
-            {
-                character.OnDied += HandleCharacterDeath;
-                CharacterView view = obj.GetComponent<CharacterView>();
-                if (view != null)
-                    view.Bind(character);
-            }
+        if (map == null || map.grid == null)
+        {
+            Debug.LogError("Map JSON failed to parse!");
+            return;
         }
 
-        Debug.Log("Map populated from save file.");
+        int height = map.grid.Length;
+        int width = map.grid[0].row.Length;
+
+        int offsetX = width / 2;
+        int offsetY = height / 2;
+
+        minX = -offsetX; maxX = offsetX; minY = -offsetY; maxY = offsetY;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int id = map.grid[y].row[x];
+
+                if (id < 0) 
+                    continue; // empty tile
+
+                Vector3Int pos = new Vector3Int(x - offsetX, offsetY - y - 1, 0);
+
+                PlaceObject(pos, id, placedGameObjects.Count - 1);
+            }
+        }
     }
 
     private void PlaceObject(Vector3Int gridPos, int ID, int placedObjectIndex)
@@ -150,4 +229,22 @@ public class PopulateMap : MonoBehaviour
                 return new StaticObject(data.Name);
         }
     }
+
+    private bool IsInsideBounds(Vector3Int pos)
+    {
+        return pos.x >= minX && pos.x <= maxX &&
+               pos.y >= minY && pos.y <= maxY;
+    }
+}
+
+[System.Serializable]
+public class GridRow
+{
+    public int[] row;
+}
+
+[System.Serializable]
+public class MapGrid
+{
+    public GridRow[] grid;
 }

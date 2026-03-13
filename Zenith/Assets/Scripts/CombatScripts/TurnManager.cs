@@ -17,7 +17,7 @@ public class TurnManager : MonoBehaviour
     public CombatState State { get; private set; } = CombatState.Playing;
     private GridData gridData;
     private int maxTurn = 50;
-    private int currentTurn = 1;
+    [HideInInspector] public int currentTurn = 1;
     [SerializeField] private PopulateMap mapPopulator;
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;

@@ -33,7 +33,7 @@ public class GridData
             tempData.occupiedPos = End; // Update position in the actual grid data
             placedObjects[End] = tempData;
             RemoveObjectAt(Start);
-            tempData.PlacedObject.OnPlaced(End); // Update position for the placed object
+            tempData.PlacedObject.OnPlaced(End); // Update position variable inside placed object
 
             if (tempData.PlacedGameObject != null)
                 tempData.PlacedGameObject.transform.position = new Vector3(End.x, 0, End.y);
@@ -100,7 +100,7 @@ public class GridData
 
     public Dictionary<Vector3Int, TileData> GetAllTiles()
     {
-       return placedObjects;
+        return placedObjects;
     }
 
     public List<(Vector3Int pos, CharacterObject character)> GetAllUnits()
@@ -276,13 +276,13 @@ public class GridData
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class GridSaveData
 {
     public List<TileSaveData> tiles = new();
 }
 
-[System.Serializable]
+[Serializable]
 public class TileSaveData
 {
     public int x, y, z;

@@ -42,7 +42,7 @@ public class RandomObject : PlacedObject
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class CharacterObject : PlacedObject
 {
     public int HP { get; private set; }

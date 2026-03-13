@@ -10,14 +10,14 @@ public static class SaveSystem
         GridSaveData saveData = grid.ToSaveData();
         string json = JsonUtility.ToJson(saveData, true);
         File.WriteAllText(savePath, json);
-        Debug.Log($"✅ Grid saved to {savePath}");
+        Debug.Log($"Grid saved to {savePath}");
     }
 
     public static GridData Load(ObjectDatabaseSO database)
     {
         if (!File.Exists(savePath))
         {
-            Debug.LogWarning("⚠️ No save file found!");
+            Debug.LogWarning("No save file found!");
             return new GridData();
         }
 

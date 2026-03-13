@@ -7,7 +7,13 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private bool loadFromSave = true;
     [SerializeField] private bool forTrainingAgent = false;
-    private int minX, maxX, minY, maxY;
+    [SerializeField] private bool useMaxFlow = false;
+    [SerializeField] private int minTraversablePaths = 3;
+    [SerializeField] private float obstacleDensity = 0.1f;
+    [SerializeField] private int obstacleID = 7;
+    [SerializeField] private int teamDist = 6;
+    private int minX, maxX, minY, maxY, width, height;
+    private Vector3Int team1Center, team2Center;
 
     public GridData objectsData;
     public List<GameObject> placedGameObjects = new();
@@ -26,6 +32,7 @@ public class PopulateMap : MonoBehaviour
         {
             PopulateFromGridJSON();
             SpawnTeams();
+            SpawnRandomObstacles();
         }
         else
         {
@@ -33,17 +40,253 @@ public class PopulateMap : MonoBehaviour
         }
     }
 
+    private void SpawnRandomObstacles()
+    {
+        //Mungkin lebih bagus kalau disuruh coba spawn sampai targetobstacle count tercapai?
+
+        int attempts = 150;
+
+        for (int i = 0; i < attempts; i++)
+        {
+            if (Random.value > obstacleDensity)
+                continue;
+
+            Vector3Int pos = GetRandomEmptyTile();
+
+            if (!IsInsideBounds(pos))
+                continue;
+            
+            if (pos == team1Center || pos == team2Center)
+                continue;
+
+            PlaceObject(pos, obstacleID, placedGameObjects.Count - 1);
+
+            int pathCount = useMaxFlow ? MaxFlow(team1Center, team2Center, width, height) : CountPaths(team1Center, team2Center);
+
+            Debug.Log("Path count: " + pathCount);
+            if (pathCount < minTraversablePaths)
+            {
+                objectsData.RemoveObjectAt(pos);
+
+                Destroy(placedGameObjects[^1]);
+                placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
+            }
+        }
+    }
+
+    private int MaxFlow(Vector3Int start, Vector3Int goal, int width, int height)
+    {
+        Debug.Log("Using Max Flow");
+        int n = width * height;
+        int[,] capacity = new int[n, n];
+
+        Vector3Int[] dirs =
+        {
+            Vector3Int.up,
+            Vector3Int.down,
+            Vector3Int.left,
+            Vector3Int.right
+        };
+
+        Shuffle(dirs);
+
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+            {
+                Vector3Int pos = new Vector3Int(x + minX, y + minY, 0);
+
+                if (!IsWalkable(pos))
+                    continue;
+
+                int u = NodeIndex(x, y, width);
+
+                foreach (var d in dirs)
+                {
+                    Vector3Int npos = pos + d;
+
+                    if (!IsWalkable(npos))
+                        continue;
+
+                    int nx = npos.x - minX;
+                    int ny = npos.y - minY;
+
+                    int v = NodeIndex(nx, ny, width);
+
+                    capacity[u, v] = 1;
+                }
+            }
+
+        int source = NodeIndex(start.x - minX, start.y - minY, width);
+        int sink = NodeIndex(goal.x - minX, goal.y - minY, width);
+
+        int flow = 0;
+
+        while (true)
+        {
+            //BFS
+            int[] parent = new int[n];
+            for (int i = 0; i < n; i++) parent[i] = -1;
+
+            Queue<int> q = new();
+            q.Enqueue(source);
+            parent[source] = source;
+
+            while (q.Count > 0 && parent[sink] == -1)
+            {
+                int u = q.Dequeue();
+
+                for (int v = 0; v < n; v++)
+                {
+                    if (parent[v] == -1 && capacity[u, v] > 0)
+                    {
+                        parent[v] = u;
+                        q.Enqueue(v);
+                    }
+                }
+            }
+
+            if (parent[sink] == -1)
+                break;
+
+            int vtx = sink;
+
+            while (vtx != source)
+            {
+                int u = parent[vtx];
+                capacity[u, vtx]--;
+                capacity[vtx, u]++;
+                vtx = u;
+            }
+
+            flow++;
+        }
+
+        return flow;
+    }
+
+    private bool IsWalkable(Vector3Int pos)
+    {
+        if (!IsInsideBounds(pos))
+            return false;
+
+        var tile = objectsData.GetTileAt(pos);
+
+        if (tile == null)
+            return true;
+
+        return !(tile.PlacedObject is StaticObject || tile.PlacedObject is RandomObject);
+    }
+
+    private int NodeIndex(int x, int y, int width)
+    {
+        return y * width + x;
+    }
+
+    private int CountPaths(Vector3Int start, Vector3Int goal)
+    {
+        Debug.Log("Using BFS");
+        HashSet<Vector3Int> blocked = new();
+        int paths = 0;
+
+        while (true)
+        {
+            var path = FindPath(start, goal, blocked);
+
+            if (path == null)
+                break;
+
+            paths++;
+
+            for (int i = 1; i < path.Count - 1; i++)
+            {
+                blocked.Add(path[i]);
+            }
+
+            if (paths >= minTraversablePaths)
+                break;
+        }
+
+        return paths;
+    }
+
+    private List<Vector3Int> FindPath(Vector3Int start, Vector3Int goal, HashSet<Vector3Int> blocked)
+    {
+        Queue<Vector3Int> q = new();
+        Dictionary<Vector3Int, Vector3Int> parent = new();
+
+        Vector3Int[] dirs =
+        {
+            Vector3Int.up,
+            Vector3Int.down,
+            Vector3Int.left,
+            Vector3Int.right
+        };
+
+        Shuffle(dirs);
+
+        q.Enqueue(start);
+        parent[start] = start;
+
+        while (q.Count > 0)
+        {
+            var pos = q.Dequeue();
+
+            if (pos == goal)
+                break;
+
+            foreach (var d in dirs)
+            {
+                var next = pos + d;
+
+                if (!IsWalkable(next))
+                    continue;
+
+                if (blocked.Contains(next))
+                    continue;
+
+                if (parent.ContainsKey(next))
+                    continue;
+
+                parent[next] = pos;
+                q.Enqueue(next);
+            }
+        }
+
+        if (!parent.ContainsKey(goal))
+            return null;
+
+        List<Vector3Int> path = new();
+        var cur = goal;
+
+        while (cur != start)
+        {
+            path.Add(cur);
+            cur = parent[cur];
+        }
+
+        path.Add(start);
+
+        return path;
+    }
+
+    private void Shuffle(Vector3Int[] array)
+    {
+        for (int i = array.Length - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (array[i], array[j]) = (array[j], array[i]);
+        }
+    }
+
     private void SpawnTeams()
     {
-        Vector3Int team1Center = GetRandomEmptyTile();
-        Vector3Int team2Center;
+        team1Center = GetRandomEmptyTile();
 
-        // ensure teams are far apart
         do
         {
             team2Center = GetRandomEmptyTile();
         }
-        while (Vector3Int.Distance(team1Center, team2Center) < 4);
+        while (Vector3Int.Distance(team1Center, team2Center) < teamDist);
 
         SpawnTeam(team1Center, 4, 6); // team 1 IDs
         SpawnTeam(team2Center, 1, 3); // team 2 IDs
@@ -144,13 +387,13 @@ public class PopulateMap : MonoBehaviour
             return;
         }
 
-        int height = map.grid.Length;
-        int width = map.grid[0].row.Length;
+        height = map.grid.Length;
+        width = map.grid[0].row.Length;
 
         int offsetX = width / 2;
         int offsetY = height / 2;
 
-        minX = -offsetX; maxX = offsetX; minY = -offsetY; maxY = offsetY;
+        minX = -offsetX; maxX = offsetX - 1; minY = -offsetY; maxY = offsetY - 1;
 
         for (int y = 0; y < height; y++)
         {

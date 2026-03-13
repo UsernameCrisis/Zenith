@@ -2492,6 +2492,11 @@ MonoBehaviour:
   grid: {fileID: 780557240}
   loadFromSave: 0
   forTrainingAgent: 1
+  useMaxFlow: 1
+  minTraversablePaths: 3
+  obstacleDensity: 0.2
+  obstacleID: 7
+  teamDist: 6
   placedGameObjects: []
 --- !u!1 &1127068153
 GameObject:

@@ -57,7 +57,7 @@ public class BackToTavern : MonoBehaviour
         }
         else if (confirmationUI != null)
         {
-            confirmationUI.OpenConfirmation("Peaceful");
+            confirmationUI.OpenConfirmation("Tavern");
         }
     }
 

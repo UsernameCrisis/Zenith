@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Combat_Tavern.unity
     guid: bbf6f44aa66400b45b7248440b02d8f0
   - enabled: 1
-    path: Assets/Scenes/Peaceful.unity
+    path: Assets/Scenes/Tavern.unity
     guid: e79415d71b256f246bd8abe4cb5cb52b
   - enabled: 1
     path: Assets/Scenes/Cave.unity

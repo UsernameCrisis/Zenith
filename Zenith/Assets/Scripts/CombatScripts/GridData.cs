@@ -6,14 +6,26 @@ using UnityEngine;
 public class GridData
 {
     Dictionary<Vector3Int, TileData> placedObjects = new();
+    Dictionary<int, List<(Vector3Int pos, CharacterObject character)>> teamUnits = new();
 
     public void AddObjectAt(Vector3Int gridPos, PlacedObject placedObject, int placedObjectIndex, GameObject obj = null)
     {
         if (placedObjects.ContainsKey(gridPos))
             throw new Exception($"{gridPos} already occupied");
-        TileData data = new TileData(gridPos, placedObject, placedObjectIndex);
-        data.PlacedGameObject = obj;
+        TileData data = new TileData(gridPos, placedObject, placedObjectIndex)
+        {
+            PlacedGameObject = obj
+        };
+
         placedObjects[gridPos] = data;
+
+        if (placedObject is CharacterObject character)
+        {
+            if (!teamUnits.ContainsKey(character.Team))
+                teamUnits[character.Team] = new List<(Vector3Int, CharacterObject)>();
+    
+            teamUnits[character.Team].Add((gridPos, character));
+        }
     }
 
     public bool CanPlaceObjectAt(Vector3Int gridPos)
@@ -25,19 +37,33 @@ public class GridData
         return true;
     }
 
-    public void MoveObject(Vector3Int Start, Vector3Int End)
+    public void MoveObject(Vector3Int start, Vector3Int end)
     {
-        if (CanPlaceObjectAt(End))
-        {
-            TileData tempData = placedObjects[Start];
-            tempData.occupiedPos = End; // Update position in the actual grid data
-            placedObjects[End] = tempData;
-            RemoveObjectAt(Start);
-            tempData.PlacedObject.OnPlaced(End); // Update position variable inside placed object
+        if (!CanPlaceObjectAt(end))
+            return;
+        
+        TileData tempData = placedObjects[start];
+        tempData.occupiedPos = end; // Update position in the actual grid data
+        placedObjects[end] = tempData;
+        RemoveObjectAt(start);
 
-            if (tempData.PlacedGameObject != null)
-                tempData.PlacedGameObject.transform.position = new Vector3(End.x, 0, End.y);
+        if (tempData.PlacedObject is CharacterObject character)
+        {
+            var teamList = teamUnits[character.Team];
+
+            for (int i = 0; i < teamList.Count; i++)
+            {
+                if (teamList[i].character == character)
+                {
+                    teamList[i] = (end, character);
+                    break;
+                }
+            }
         }
+
+        tempData.PlacedObject.OnPlaced(end); // Update position variable inside placed object
+        if (tempData.PlacedGameObject != null)
+            tempData.PlacedGameObject.transform.position = new Vector3(end.x, 0, end.y);
     }
 
     public void AttackObject(Vector3Int attackerPos, Vector3Int targetPos)
@@ -105,19 +131,36 @@ public class GridData
 
     public List<(Vector3Int pos, CharacterObject character)> GetAllUnits()
     {
-        var result = new List<(Vector3Int, CharacterObject)>();
-        result.AddRange(GetAllPlayers());
-        result.AddRange(GetTeamNPC());
-        result.AddRange(GetAllEnemies());
+        List<(Vector3Int, CharacterObject)> result = new();
+
+        foreach (var team in teamUnits.Values)
+            result.AddRange(team);
+
         return result;
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetEnemyTeamUnit(int team)
+    {
+        if (team == 1) 
+            return GetUnitsByTeam(2);
+        else if (team == 2)
+            return GetUnitsByTeam(1);
+        else
+            return GetUnitsByTeam(1);
+        
+    }
+
+    public List<(Vector3Int pos, CharacterObject character)> GetUnitsByTeam(int team)
+    {
+        if (teamUnits.TryGetValue(team, out var list))
+            return new List<(Vector3Int, CharacterObject)>(list);
+
+        return new List<(Vector3Int, CharacterObject)>();
     }
 
     public List<(Vector3Int pos, CharacterObject character)> GetAllFriendlies()
     {
-        var result = new List<(Vector3Int, CharacterObject)>();
-        result.AddRange(GetAllPlayers());
-        result.AddRange(GetTeamNPC());
-        return result;
+        return GetUnitsByTeam(1);
     }
 
     public List<(Vector3Int pos, CharacterObject character)> GetAllPlayers()
@@ -154,18 +197,7 @@ public class GridData
 
     public List<(Vector3Int pos, CharacterObject character)> GetAllEnemies()
     {
-        List<(Vector3Int, CharacterObject)> list = new();
-
-        foreach (var kvp in placedObjects)
-        {
-            TileData tile = kvp.Value;
-            if (tile.PlacedObject is CharacterObject c && c.Team == 2 && !c.IsPlayer)
-            {
-                list.Add((kvp.Key, c));
-            }
-        }
-
-        return list;
+        return GetUnitsByTeam(2);
     }
 
     public bool IsWithinBounds(Vector3Int pos)
@@ -185,11 +217,19 @@ public class GridData
 
     public void RemoveObjectAt(Vector3Int gridPos)
     {
-        if (placedObjects.TryGetValue(gridPos, out TileData data))
+        if (!placedObjects.TryGetValue(gridPos, out TileData data))
+            return;
+        
+        if (data.PlacedObject is CharacterObject character)
         {
-            data.PlacedObject?.OnRemoved();
-            placedObjects.Remove(gridPos);
+            var teamList = teamUnits[character.Team];
+
+            teamList.RemoveAll(x => x.character == character);
         }
+
+        data.PlacedObject?.OnRemoved();
+        placedObjects.Remove(gridPos);
+        
     }
 
     public GridSaveData ToSaveData()

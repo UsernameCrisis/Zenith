@@ -10,6 +10,12 @@ public enum CombatState
     Defeat
 }
 
+public enum CombatControlMode
+{
+    Player,
+    MLAgent
+}
+
 public class TurnManager : MonoBehaviour
 {
     
@@ -21,9 +27,11 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private PopulateMap mapPopulator;
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;
+    [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
+    [SerializeField] private CombatAgent combatAgent;
 
-    
     private TurnQueue turnQueue;
+    private List<CharacterObject> allySlots = new();
 
     void Awake()
     {
@@ -49,6 +57,9 @@ public class TurnManager : MonoBehaviour
         {
             CharacterObject c = u.character;
             characters.Add(c);
+
+            if (c.Team == 1)
+                allySlots.Add(c);
     
             c.OnDied += HandleCharacterDeath;
         }
@@ -76,11 +87,27 @@ public class TurnManager : MonoBehaviour
         }
 
         Vector3Int pos = posNullable.Value;
-
-        if (current.IsPlayer)
+        // PLAYER MODE
+        if (controlMode == CombatControlMode.Player)
         {
-            gridSelect.BeginTurn(pos, gridData);
-            return;
+            if (current.IsPlayer)
+            {
+                gridSelect.BeginTurn(pos, gridData);
+                return;
+            }
+        }
+
+        // AGENT MODE
+        if (controlMode == CombatControlMode.MLAgent && current.Team == 1)
+        {
+            int index = GetAllySlotIndex(current);
+
+            if (index >= 0)
+            {
+                combatAgent.SetActiveUnitIndex(index);
+                combatAgent.RequestDecision();
+                return;
+            }
         }
 
         TileData tile = gridData.GetTileAt(pos);
@@ -115,16 +142,8 @@ public class TurnManager : MonoBehaviour
     {
         turnQueue.Remove(character);
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
-        
-        if (!AreEnemiesRemaining())
-        {
-            // SceneManager.UnloadSceneAsync("Combat_test1");
-            // ShowScene(SceneManager.GetActiveScene());
-            // Destroy(GameManager.Instance.CurrentEnemy);
-            // GameManager.Instance.CurrentEnemy = null;
-            SceneManager.LoadScene("ruins");
-            return;
-        }
+
+        CheckBattleEnd();
         
         if (turnQueue.GetCurrent() == character)
         {
@@ -134,6 +153,15 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
+        if (currentTurn >= maxTurn)
+        {
+            if (controlMode == CombatControlMode.MLAgent)
+            {
+                combatAgent.AddReward(-0.2f);
+                combatAgent.EndEpisode();
+            }
+            return;
+        }
         turnQueue.PopNext();
         currentTurn++;
         StartTurn();
@@ -144,9 +172,52 @@ public class TurnManager : MonoBehaviour
         return gridData.GetAllEnemies().Count > 0;
     }
 
+    int GetAllySlotIndex(CharacterObject unit)
+    {
+        for (int i = 0; i < allySlots.Count; i++)
+        {
+            if (allySlots[i] == unit)
+                return i;
+        }
 
+        return -1;
+    }
 
+    void CheckBattleEnd()
+    {
+        int aliveAllies = gridData.GetTeamNPC().Count;
+        int aliveEnemies = gridData.GetAllEnemies().Count;
 
+        if (aliveEnemies == 0)
+        {
+            State = CombatState.Victory;
+
+            if (controlMode == CombatControlMode.MLAgent)
+            {
+                combatAgent.AddReward(1f);
+                combatAgent.EndEpisode();
+            }
+            else
+            {
+                // SceneManager.UnloadSceneAsync("Combat_test1");
+                // ShowScene(SceneManager.GetActiveScene());
+                // Destroy(GameManager.Instance.CurrentEnemy);
+                // GameManager.Instance.CurrentEnemy = null;
+                SceneManager.LoadScene("ruins");
+            }
+        }
+
+        if (aliveAllies == 0)
+        {
+            State = CombatState.Defeat;
+
+            if (controlMode == CombatControlMode.MLAgent)
+            {
+                combatAgent.AddReward(-1f);
+                combatAgent.EndEpisode();
+            }
+        }
+    }
 
 
     // void ShowScene(Scene scene)

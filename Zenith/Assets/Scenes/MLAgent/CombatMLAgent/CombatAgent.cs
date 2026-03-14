@@ -14,33 +14,49 @@ public class CombatAgent : Agent
     [HideInInspector] public int currEp = 0;
     [HideInInspector] public float cumulativeReward = 0f;
 
-    private Dictionary<int, CharacterObject> _characterDict = new();
-    
+    private List<CharacterObject> allySlots = new();
+    private List<CharacterObject> enemySlots = new();
+    private int activeUnitIndex = 0;
+    private int mapMin = -5;
+    private int mapMax = 5;
 
     public override void Initialize()
     {
         currEp = 0;
         cumulativeReward = 0f;
-
-        for (int i = 0; i < 3; i++)
-        {
-            
-        }
     }
 
     public override void OnEpisodeBegin()
     {
-        
+        allySlots.Clear();
+        enemySlots.Clear();
+
+        // sementara hard code team 1 untuk agent team 2 untuk enemy
+        var allies = _gridData.GetUnitsByTeam(1);
+        var enemies = _gridData.GetUnitsByTeam(2);
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (i < allies.Count)
+                allySlots.Add(allies[i].character);
+            else
+                allySlots.Add(null);
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (i < enemies.Count)
+                enemySlots.Add(enemies[i].character);
+            else
+                enemySlots.Add(null);
+        }
+
+        activeUnitIndex = 0; // sementara pakai ini (belum sesuai dengan ATB)
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        int mapMin = -5;
-        int mapMax = 5;
-        int mapSize = 10;
-        int activeUnitIndex = 0;
-    
-        // --- 1. GLOBAL GRID ---
+        // GRID
         for (int x = mapMin; x < mapMax; x++)
         {
             for (int y = mapMin; y < mapMax; y++)
@@ -81,12 +97,11 @@ public class CombatAgent : Agent
             }
         }
     
-        // --- 2. ALLY UNIT DATA (TEAM NPC) ---
-        var allies = _gridData.GetTeamNPC();
-    
+        // ALLY UNIT DATA
         for (int i = 0; i < 3; i++)
         {
-            if (i >= allies.Count)
+            CharacterObject character = allySlots[i];
+            if (i >= allySlots.Count) //character == null || character.HP <= 0
             {
                 // padding if fewer units
                 for (int j = 0; j < 7; j++)
@@ -94,7 +109,7 @@ public class CombatAgent : Agent
             }
             else
             {
-                var (pos, character) = allies[i];
+                Vector3Int pos = character.Position;
     
                 sensor.AddObservation((float)character.HP / character.MaxHp);
                 sensor.AddObservation((float)character.Damage / 20f);
@@ -108,19 +123,18 @@ public class CombatAgent : Agent
             }
         }
     
-        // --- 3. ENEMY UNIT DATA ---
-        var enemies = _gridData.GetAllEnemies();
-    
+        //  ENEMY UNIT DATA
         for (int i = 0; i < 3; i++)
         {
-            if (i >= enemies.Count)
+            CharacterObject character = enemySlots[i];
+            if (i >= enemySlots.Count)
             {
                 for (int j = 0; j < 7; j++)
                     sensor.AddObservation(0f);
             }
             else
             {
-                var (pos, character) = enemies[i];
+                Vector3Int pos = character.Position;
     
                 sensor.AddObservation((float)character.HP / character.MaxHp);
                 sensor.AddObservation((float)character.Damage / 20f);
@@ -134,21 +148,52 @@ public class CombatAgent : Agent
             }
         }
     
-        // --- 4. WHICH UNIT IS ACTING ---
+        // WHICH UNIT IS ACTING
         for (int i = 0; i < 3; i++)
         {
             sensor.AddObservation(i == activeUnitIndex ? 1f : 0f);
         }
     
-        // --- 5. TURN INFO ---
+        // TURN INFO
         sensor.AddObservation(_turnmanager.currentTurn / _maxTurn);
     
-        sensor.AddObservation(allies.Count / 3f);
-        sensor.AddObservation(enemies.Count / 3f);
+        sensor.AddObservation(GetAliveAllies() / 3f); // num allies alive
+        sensor.AddObservation(GetAliveEnemies() / 3f); // num enemies alive
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
         base.OnActionReceived(actions);
+    }
+    
+    private float GetAliveAllies()
+    {
+        int alive = 0;
+
+        foreach (var unit in allySlots)
+        {
+            if (unit != null && unit.HP > 0)
+                alive++;
+        }
+
+        return alive;
+    }
+
+    private float GetAliveEnemies()
+    {
+        int alive = 0;
+
+        foreach (var unit in enemySlots)
+        {
+            if (unit != null && unit.HP > 0)
+                alive++;
+        }
+
+        return alive;
+    }
+
+    public void SetActiveUnitIndex(int index)
+    {
+        activeUnitIndex = index;
     }
 }

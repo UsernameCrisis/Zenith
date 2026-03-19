@@ -7,16 +7,28 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public int playerHP = 90;
-    public int playerMaxHP = 100;
+    [Header("Presist Inventory")]
     public int gold = 0;
-    //
-    public int playerAtk;
-    public int playerDef;
+    public int inventory = 0; //placeholder
+
+    [Header("Combat Stats")]
+    public int playerHP = 100;
+    private readonly int basePlayerMaxHp = 100;
+    public int playerMaxHP = 100;
+    private readonly int basePlayerAtk = 10;
+    public int playerAtk = 10;
+    private readonly int basePlayerDef = 0;
+    public int playerDef = 0;
+    private readonly int basePlayerSpeed = 5;
+    public int playerSpeed = 5;
+    
+    // will delete old inventory system later
     private List<List<ItemData>> _items = new();
     private List<ItemData> _equipments = new();
-    public bool hasData = false;
-    public bool ViewedOverworldTutorial = false;
+
+    [Header("Tutorial")]
+    public bool hasData = false; //hook to playerprefs later
+    public bool ViewedOverworldTutorial = false; //hook to playerprefs later
 
     [Header("Combat Transition Settings")]
     public string combatSceneName = "Combat_test1";

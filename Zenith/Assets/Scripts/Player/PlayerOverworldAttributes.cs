@@ -160,6 +160,23 @@ public class PlayerOverworldAttributes : MonoBehaviour
 
 
 
+    public void Heal(int amount)
+    {
+        currentHP += amount;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+
+        HealthChanged?.Invoke(currentHP, maxHP);
+
+        SaveAttributesToManager();
+        Debug.Log("Healed for " + amount + ". Current HP: " + currentHP);
+    }
+
+    public void AddGold(int amount)
+    {
+        gold += amount;
+        SaveAttributesToManager();
+        Debug.Log("Gained " + amount + " Gold. Total Gold: " + gold);
+    }
 
     public void BuffArmor(int amount, int seconds) 
     {

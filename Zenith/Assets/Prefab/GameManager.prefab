@@ -44,11 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 718fd661518cfc94f8d9d6d9a6f7a81e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  gold: 0
+  inventory: 0
   playerHP: 100
   playerMaxHP: 100
-  gold: 0
-  playerAtk: 0
+  playerAtk: 10
   playerDef: 0
+  playerSpeed: 5
   hasData: 0
-  CurrentEnemy: {fileID: 0}
   ViewedOverworldTutorial: 0
+  combatSceneName: Combat_test1
+  currentEncounterEnemyNames: []
+  defeatedEnemyNames: []

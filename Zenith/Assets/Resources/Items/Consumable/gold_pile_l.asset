@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: gold_pile_l
   m_EditorClassIdentifier: Assembly-CSharp::ConsumableItem
   icon: {fileID: 21300000, guid: d81869e92006b9e4da836b5b4bd1084b, type: 3}
-  itemName: Gold Pile (Small)
-  description: A valueble medium pile of gold, sought by merchants. Can be consumed
+  itemName: Gold Pile (Large)
+  description: A valueble large pile of gold, sought by merchants. Can be consumed
     to gain 500 gold or sold for 750 gold.
   type: 1
   rarity: 2

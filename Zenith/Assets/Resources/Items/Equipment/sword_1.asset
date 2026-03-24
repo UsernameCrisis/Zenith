@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee6605798303e424590243a4ff2110e2, type: 3}
+  m_Name: sword_1
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  icon: {fileID: 21300000, guid: 5d2e8541bc93fb848996c1e0b0a06357, type: 3}
+  itemName: Iron Sword
+  description: A standard iron sword, used by soldiers and adventurers alike.
+  type: 2
+  rarity: 1
+  isStackable: 0
+  maxStackSize: 1
+  sellPrice: 100
+  weight: 20
+  slot: 0
+  attackBonus: 20
+  defenseBonus: 2
+  speedBonus: 0
+  maxHpBonus: 0

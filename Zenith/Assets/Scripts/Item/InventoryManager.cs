@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [System.Serializable]
 public class ItemStack
@@ -20,7 +21,7 @@ public class InventoryManager : MonoBehaviour
 
     [Header("Inventory Settings")]
     public List<ItemStack> mainInventory = new();
-    public float maxWeight = 50.0f;
+    public float maxWeight = 200.0f;
     public float currentWeight;
 
     public Dictionary<EquipmentItem.EquipSlot, EquipmentItem> equippedItems = new();
@@ -37,30 +38,56 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public void SortInventory()
+    {
+        mainInventory = mainInventory
+            .OrderBy(stack => GetTypePriority(stack.itemData.type)) // 1. Type
+            .ThenByDescending(stack => (int)stack.itemData.rarity)  // 2. Rarity (Legendary first)
+            .ThenBy(stack => stack.itemData.itemName)              // 3. Alphabetical
+            .ToList();
+
+        PrintInventoryDebug();
+    }
+
+    private int GetTypePriority(ItemType type)
+    {
+        return type switch
+        {
+            ItemType.Equipment => 0,
+            ItemType.Consumable => 1,
+            ItemType.Junk => 2,
+            _ => 3
+        };
+    }
+
     public bool AddItem(BaseItem item, int amount)
     {
-        // 1. Check weight first
+        // Check weight first
         if (currentWeight + (item.weight * amount) > maxWeight)
         {
-            Debug.Log("Too heavy to carry!");
+            Debug.Log("<color=red>Too heavy to carry!</color>");
             return false;
         }
 
-        // 2. Handle Stacking
+        bool foundStack = false;
+        // Handle Stacking
         if (item.isStackable)
         {
             ItemStack existingStack = mainInventory.Find(slot => slot.itemData == item);
             if (existingStack != null)
             {
                 existingStack.quantity += amount;
-                UpdateWeight();
-                return true;
+                foundStack = true;
             }
         }
 
-        // 3. Add as new stack (if not stackable or not found)
-        mainInventory.Add(new ItemStack(item, amount));
+        // Add as new stack if we didn't find one
+        if (!foundStack)
+        {
+            mainInventory.Add(new ItemStack(item, amount));
+        }
         UpdateWeight();
+        SortInventory();
         return true;
     }
 
@@ -129,5 +156,23 @@ public class InventoryManager : MonoBehaviour
             player.maxHP = totalMaxHP;
             player.currentHP = Mathf.Min(player.currentHP, player.maxHP);
         }
+    }
+
+    private void PrintInventoryDebug()
+    {
+        string debugLog = "--- CURRENT INVENTORY ---\n";
+        debugLog += $"Total Weight: {currentWeight}/{maxWeight}\n";
+        debugLog += "TYPE | RARITY | NAME | QTY\n";
+        debugLog += "---------------------------\n";
+
+        foreach (var stack in mainInventory)
+        {
+            debugLog += $"[{stack.itemData.type}] ";
+            debugLog += $"({stack.itemData.rarity}) ";
+            debugLog += $"{stack.itemData.itemName} ";
+            debugLog += $"x{stack.quantity}\n";
+        }
+
+        Debug.Log(debugLog);
     }
 }

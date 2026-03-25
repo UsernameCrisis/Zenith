@@ -19,7 +19,7 @@ MonoBehaviour:
     a good gift or to sell!
   type: 0
   rarity: 2
-  isStackable: 0
+  isStackable: 1
   maxStackSize: 99
   sellPrice: 200
   weight: 1

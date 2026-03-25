@@ -13,13 +13,11 @@ MonoBehaviour:
   m_Name: common_1
   m_EditorClassIdentifier: Assembly-CSharp::JunkItem
   icon: {fileID: 21300000, guid: 962f8d3eb44cbda448932ed5317ea065, type: 3}
-  itemName: Sanguine Petal
-  description: Powerful flowers that contains life essence. Useless as is, but a
-    sought after as an indgredient. Grows in deeper parts of the dungeon. Makes for
-    a good gift or to sell!
+  itemName: Glass Shard
+  description: A magical piece of glass shard, originally a part of something whole
   type: 0
-  rarity: 2
-  isStackable: 0
+  rarity: 0
+  isStackable: 1
   maxStackSize: 99
   sellPrice: 50
   weight: 2

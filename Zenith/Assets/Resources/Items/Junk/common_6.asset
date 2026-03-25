@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e89f0b7ccdd624441a972f24bb92024a, type: 3}
-  m_Name: flower_0
+  m_Name: common_6
   m_EditorClassIdentifier: Assembly-CSharp::JunkItem
-  icon: {fileID: 21300000, guid: f5835f130d70ddf449196d2dc71e1c94, type: 3}
-  itemName: Dungeon Lily
-  description: Strange type of flower, commonly found on surface areas of the dungeon.
-    Grows by extracting power from the dungeon, makes a great gift!
+  icon: {fileID: 21300000, guid: b5bdbee034e5fa745b44b0f8d34d2985, type: 3}
+  itemName: Emerald Shard
+  description: A small piece of emerald shard, valueble mineral.
   type: 0
   rarity: 0
   isStackable: 1
   maxStackSize: 99
-  sellPrice: 25
+  sellPrice: 50
   weight: 1

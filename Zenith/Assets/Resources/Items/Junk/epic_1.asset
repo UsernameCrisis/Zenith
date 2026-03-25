@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e89f0b7ccdd624441a972f24bb92024a, type: 3}
-  m_Name: flower_0
+  m_Name: epic_1
   m_EditorClassIdentifier: Assembly-CSharp::JunkItem
-  icon: {fileID: 21300000, guid: f5835f130d70ddf449196d2dc71e1c94, type: 3}
-  itemName: Dungeon Lily
-  description: Strange type of flower, commonly found on surface areas of the dungeon.
-    Grows by extracting power from the dungeon, makes a great gift!
+  icon: {fileID: 21300000, guid: f58754cc0fa03744ebbb75a34c978bb2, type: 3}
+  itemName: Purple Gemstone
+  description: A very rare and sought after gemstone, holds a powerful spell inside.
   type: 0
-  rarity: 0
+  rarity: 3
   isStackable: 1
   maxStackSize: 99
-  sellPrice: 25
-  weight: 1
+  sellPrice: 325
+  weight: 4

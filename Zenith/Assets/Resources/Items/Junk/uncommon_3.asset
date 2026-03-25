@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e89f0b7ccdd624441a972f24bb92024a, type: 3}
-  m_Name: flower_0
+  m_Name: uncommon_3
   m_EditorClassIdentifier: Assembly-CSharp::JunkItem
-  icon: {fileID: 21300000, guid: f5835f130d70ddf449196d2dc71e1c94, type: 3}
-  itemName: Dungeon Lily
-  description: Strange type of flower, commonly found on surface areas of the dungeon.
-    Grows by extracting power from the dungeon, makes a great gift!
+  icon: {fileID: 21300000, guid: 2a645058f80322e4faa8b6a47622989a, type: 3}
+  itemName: Crude Blue Orb
+  description: A crude magical orb found in dungeons, all used up of their power,
+    but still holds some value
   type: 0
-  rarity: 0
+  rarity: 1
   isStackable: 1
   maxStackSize: 99
-  sellPrice: 25
-  weight: 1
+  sellPrice: 75
+  weight: 2

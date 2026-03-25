@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PopulateMap : MonoBehaviour
 {
@@ -448,6 +449,19 @@ public class PopulateMap : MonoBehaviour
             return;
 
         TileData tile = objectsData.GetTileAt(pos.Value);
+        if (tile.PlacedGameObject.CompareTag("Player"))
+        {
+            SceneManager.LoadScene("Tavern");
+        } 
+        else if (tile.PlacedGameObject.CompareTag("Enemy"))
+        {
+            //IMPORTANT sementara kan aku manual pasang enemynya jadi namanya agak aneh, nanti kedepan aku ubah ke otomatis sesuai dengan nama enemy dari listnya
+            TurnManager.Instance.defeatedEnemyNames.Add(tile.PlacedGameObject.name); 
+        } 
+        else if (tile.PlacedGameObject.CompareTag("Allies"))
+        {
+            // Do something for allies
+        }
     
         if (tile.PlacedGameObject != null)
             Destroy(tile.PlacedGameObject);

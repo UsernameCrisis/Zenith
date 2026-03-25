@@ -102,6 +102,7 @@ public class GameManager : MonoBehaviour
 
         if (activeTrigger != null)
         {
+            //IMPORTANT sementara kan aku manual pasang enemynya jadi namanya agak aneh, nanti kedepan aku ubah ke otomatis sesuai dengan nama enemy dari listnya
             activeTrigger.CleanupDefeatedEnemies(defeatedEnemyNames);
         }
     }

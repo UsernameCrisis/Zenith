@@ -32,6 +32,7 @@ public class TurnManager : MonoBehaviour
 
     private TurnQueue turnQueue;
     private List<CharacterObject> allySlots = new();
+    public List<string> defeatedEnemyNames = new();
 
     void Awake()
     {
@@ -153,6 +154,7 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
+        print(" halo" +gridData.GetAllEnemies().Count);
         if (currentTurn >= maxTurn)
         {
             if (controlMode == CombatControlMode.MLAgent)
@@ -203,7 +205,18 @@ public class TurnManager : MonoBehaviour
                 // ShowScene(SceneManager.GetActiveScene());
                 // Destroy(GameManager.Instance.CurrentEnemy);
                 // GameManager.Instance.CurrentEnemy = null;
-                SceneManager.LoadScene("ruins");
+                
+                for (int i = 0; i < 3;i++)
+                {
+                    GameManager.Instance.defeatedEnemyNames.Add(defeatedEnemyNames[i]);
+                }
+
+                string enemyList = string.Join(", ", GameManager.Instance.defeatedEnemyNames);
+                Debug.Log($" Enemies defeated: {enemyList}");
+
+                // PERLU TAMBAH END SCREEN 
+                
+                GameManager.Instance.EndCombat();
             }
         }
 

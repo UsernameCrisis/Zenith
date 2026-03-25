@@ -291,9 +291,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
         if (objectsData.CanPlaceObjectAt(targetPos))
         {
-            // objectsData.MoveObject(currentPos, targetPos);
             StartCoroutine(WalkPath(path, currentPos, charObj, selectedChar.transform));
-            // charObj.UseMovement(distanceMoved);
         }
         movePreview.ClearAll();
         EndAction();

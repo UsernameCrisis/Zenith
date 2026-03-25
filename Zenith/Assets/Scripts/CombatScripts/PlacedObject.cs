@@ -153,9 +153,5 @@ public class CharacterObject : PlacedObject
         Debug.Log($"{Name} has died.");
 
         OnDied?.Invoke(this);
-        if (Name == "Main Character")
-        {
-            SceneManager.LoadScene("Tavern");
-        }
     }
 }

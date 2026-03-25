@@ -9,7 +9,7 @@ public class MainMenu : MonoBehaviour
     private AudioSettingsUI setting;
     public void NewGame()
     {
-        SceneManager.LoadScene("Peaceful");
+        SceneManager.LoadScene("Tavern");
     }
 
     public void LoadSave()

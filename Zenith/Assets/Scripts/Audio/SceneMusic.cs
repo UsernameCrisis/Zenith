@@ -11,6 +11,5 @@ public class SceneMusic : MonoBehaviour
             print("playing music");
             AudioManager.Instance.PlayMusic(sceneMusic);
         }
-           
     }
 }

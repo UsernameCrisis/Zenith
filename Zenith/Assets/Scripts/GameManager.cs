@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Presist Inventory")]
     public int gold = 0;
-    public int inventory = 0; //placeholder
+    public int gold_spent = 0;
 
     [Header("Combat Stats")]
     public int playerHP = 100;

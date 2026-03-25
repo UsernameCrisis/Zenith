@@ -1,0 +1,185 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d993e2e42df0ad349b3bcabdd8e78e40, type: 3}
+  m_Name: Ruins_Loot_Table_Items
+  m_EditorClassIdentifier: Assembly-CSharp::LootTable
+  tableEntries:
+  - item: {fileID: 11400000, guid: fb2d74cf95d91494c96c11609c6216c6, type: 2}
+    weight0to1k: 30
+    weight1kto5k: 40
+    weight5kto10k: 50
+    weightOver10k: 60
+  - item: {fileID: 11400000, guid: f04bc96280caf2b4f9141de19ddae3ad, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 15
+    weight5kto10k: 25
+    weightOver10k: 25
+  - item: {fileID: 11400000, guid: 7c0c69b94a8296f4dacdcaa85154759d, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 15
+    weight5kto10k: 25
+    weightOver10k: 25
+  - item: {fileID: 11400000, guid: 6fd9fdaadb7f2f542b5028dc0bb07c3f, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 4a7f6af5c198b11439290e9f4984e0f4, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 9c600dd6599a3084dba7b335a2a6455b, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: f397a1c241b67f347a9c8b8f737a0388, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 014535fe31367f743827a5e3d5c6b757, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 067b0fb55252e424aaab2a906851bd93, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 7254f64644c0919488120cdd300bf885, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 2bd2757bb357fe34085ee3ea0e2e3393, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 7c4cec7a92629694a8088119236b94ae, type: 2}
+    weight0to1k: 5
+    weight1kto5k: 5
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 7deac4f6d44d38b49983550baec37a6a, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: b3fd5b53fd54fed4b9cc57201a39a9ba, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: b3fd5b53fd54fed4b9cc57201a39a9ba, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: c4680184d9e50e74986f7f66155e890e, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 1c521996b9e9bac40aebe5845885575e, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 067b0fb55252e424aaab2a906851bd93, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: 94fff2525fe16b847839740477ec1fb1, type: 2}
+    weight0to1k: 1
+    weight1kto5k: 4
+    weight5kto10k: 5
+    weightOver10k: 5
+  - item: {fileID: 11400000, guid: b1f3a8410e4eb3a4f9d45e34554dbecb, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 1
+    weight5kto10k: 3
+    weightOver10k: 4
+  - item: {fileID: 11400000, guid: d1f92858aad81524c984a2a482dda370, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 1
+    weight5kto10k: 3
+    weightOver10k: 4
+  - item: {fileID: 11400000, guid: 254888840904a8242bb7072636e6f6e0, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 1
+    weight5kto10k: 3
+    weightOver10k: 4
+  - item: {fileID: 11400000, guid: bf8d57be45c45674291059f951999222, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 1
+    weight5kto10k: 3
+    weightOver10k: 4
+  - item: {fileID: 11400000, guid: d2d11646d77a87d4990f11ccb431ca73, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 1
+    weight5kto10k: 3
+    weightOver10k: 4
+  - item: {fileID: 11400000, guid: ce893249f7191244cb01983d6f1f368e, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: da89ec22c4471354282608af460e4089, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: 5d981d89a9f62a74e97d1d5b3bba7ebc, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: 232a250173f55cb4aa99cb59d6e55986, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: 56807107de9dedc4790a8600ee75e12d, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: e34f252bce48c7b4da0e679fd5d5f1c0, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: aa154d345adfd85468a7948e9dea46e3, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 2
+    weightOver10k: 3
+  - item: {fileID: 11400000, guid: 6e0b4731a44c8414bb619befaa3d2b23, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 1
+    weightOver10k: 2
+  - item: {fileID: 11400000, guid: 9d9cf30d71ca3354690051ee539ac480, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 1
+    weight5kto10k: 3
+    weightOver10k: 4
+  - item: {fileID: 11400000, guid: 9d9cf30d71ca3354690051ee539ac480, type: 2}
+    weight0to1k: 0
+    weight1kto5k: 0
+    weight5kto10k: 1
+    weightOver10k: 2

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee6605798303e424590243a4ff2110e2, type: 3}
   m_Name: dagger_1
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
-  icon: {fileID: 21300000, guid: 5d2e8541bc93fb848996c1e0b0a06357, type: 3}
+  icon: {fileID: 21300000, guid: 73957e0052734704e9f3a6f4c17e462f, type: 3}
   itemName: Dagger
   description: A swift and nimble blade. Altough not very strong, it allows for quick
     and fast attacks.

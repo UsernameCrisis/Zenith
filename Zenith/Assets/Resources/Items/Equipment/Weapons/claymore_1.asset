@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee6605798303e424590243a4ff2110e2, type: 3}
   m_Name: claymore_1
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
-  icon: {fileID: 21300000, guid: 5d2e8541bc93fb848996c1e0b0a06357, type: 3}
+  icon: {fileID: 21300000, guid: 13c3cc669954cd44ea2afb4d4a40059d, type: 3}
   itemName: Claymore
   description: A 2-handed heavy wielding blade. Great for dealing massive amounts
     of damage, with penalty to the wearer's speed.

@@ -18,7 +18,7 @@ public class CombatAgent : Agent
 
     private List<CharacterObject> allySlots = new();
     private List<CharacterObject> enemySlots = new();
-    private int activeUnitIndex = 0;
+    private int activeUnitIndex;
     private int mapMin = -5;
     private int mapMax = 5;
     private bool isMoving;
@@ -54,66 +54,54 @@ public class CombatAgent : Agent
                 enemySlots.Add(null);
         }
 
-        activeUnitIndex = 0; // sementara pakai ini (belum sesuai dengan ATB)
+        // this code should not run (should already be handled by turn manager and turn queue)
+        if (allySlots[activeUnitIndex] == null)
+        {
+            Debug.Log("<color=red>WARNING:</color> null slot is selected, changing to another unit!");
+            activeUnitIndex = allySlots.FindIndex(u => u != null);
+        }
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
+
+        // fallback if the active unit is null
+        CharacterObject active = allySlots[activeUnitIndex];
+        Vector3Int currPos = active != null ? active.Position : Vector3Int.zero;
+
         // GRID
         for (int x = mapMin; x < mapMax; x++)
         {
             for (int y = mapMin; y < mapMax; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
-    
                 TileData tile = _gridData.GetTileAt(pos);
-    
+                float occupation;
+
                 if (tile == null)
-                {
                     // empty tile
-                    sensor.AddObservation(0f); // obstacle
-                    sensor.AddObservation(0f); // ally
-                    sensor.AddObservation(0f); // enemy
-                }
+                    occupation = 0f;
                 else if (tile.PlacedObject is CharacterObject character)
-                {
-                    sensor.AddObservation(0f); // obstacle
-    
-                    if (character.Team == 1)
-                    {
-                        sensor.AddObservation(1f); // ally
-                        sensor.AddObservation(0f);
-                    }
-                    else
-                    {
-                        sensor.AddObservation(0f);
-                        sensor.AddObservation(1f); // enemy
-                    }
-                }
+                    occupation = (character.Team == 1) ? 2f : 3f;
                 else
-                {
-                    // static object / obstacle
-                    sensor.AddObservation(1f);
-                    sensor.AddObservation(0f);
-                    sensor.AddObservation(0f);
-                }
+                    occupation = 1f; // obstacle
+
+                sensor.AddObservation(occupation / 3f);
             }
         }
-    
+
         // ALLY UNIT DATA
         for (int i = 0; i < 3; i++)
         {
             CharacterObject character = allySlots[i];
-            if (i >= allySlots.Count) //character == null || character.HP <= 0
+            if (character == null) 
             {
                 // padding if fewer units
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < 8; j++)
                     sensor.AddObservation(0f);
             }
             else
             {
-                Vector3Int pos = character.Position;
-    
                 sensor.AddObservation((float)character.HP / character.MaxHp);
                 sensor.AddObservation((float)character.Damage / 20f);
                 sensor.AddObservation((float)character.Defense / 20f);
@@ -121,11 +109,9 @@ public class CombatAgent : Agent
 
                 sensor.AddObservation(character.CurrentATB / 100f);
                 sensor.AddObservation(character.Speed / 20f);
-    
-                sensor.AddObservation((pos.x + 5) / 10f);
-                sensor.AddObservation((pos.y + 5) / 10f);
-    
-                sensor.AddObservation(character.HP > 0 ? 1f : 0f);
+
+                sensor.AddObservation((character.Position.x - currPos.x) / 10f); // ubah jadi relative pos
+                sensor.AddObservation((character.Position.y - currPos.y) / 10f);
             }
         }
     
@@ -133,15 +119,13 @@ public class CombatAgent : Agent
         for (int i = 0; i < 3; i++)
         {
             CharacterObject character = enemySlots[i];
-            if (i >= enemySlots.Count)
+            if (character == null)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < 8; j++)
                     sensor.AddObservation(0f);
             }
             else
             {
-                Vector3Int pos = character.Position;
-    
                 sensor.AddObservation((float)character.HP / character.MaxHp);
                 sensor.AddObservation((float)character.Damage / 20f);
                 sensor.AddObservation((float)character.Defense / 20f);
@@ -149,23 +133,19 @@ public class CombatAgent : Agent
 
                 sensor.AddObservation(character.CurrentATB / 100f);
                 sensor.AddObservation(character.Speed / 20f);
-    
-                sensor.AddObservation((pos.x + 5) / 10f);
-                sensor.AddObservation((pos.y + 5) / 10f);
-    
-                sensor.AddObservation(character.HP > 0 ? 1f : 0f);
+
+                sensor.AddObservation((character.Position.x - currPos.x) / 10f); // ubah jadi relative pos
+                sensor.AddObservation((character.Position.y - currPos.y) / 10f);
             }
         }
-    
+
         // WHICH UNIT IS ACTING
         for (int i = 0; i < 3; i++)
-        {
             sensor.AddObservation(i == activeUnitIndex ? 1f : 0f);
-        }
-    
+
         // TURN INFO
         sensor.AddObservation(_turnmanager.currentTurn / _maxTurn);
-    
+
         sensor.AddObservation(GetAliveAllies() / 3f); // num allies alive
         sensor.AddObservation(GetAliveEnemies() / 3f); // num enemies alive
     }
@@ -205,6 +185,68 @@ public class CombatAgent : Agent
         }
 
         _turnmanager.EndTurn();
+    }
+
+    public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+    {
+        var allies = _gridData.GetUnitsByTeam(1);
+
+        if (activeUnitIndex < 0 || activeUnitIndex >= allies.Count)
+            return;
+
+        var (currentPos, character) = allies[activeUnitIndex];
+
+        var reachable = previewSystem.BFSReachables(currentPos, character.RemainingMoveRange);
+        var attackable = previewSystem.GetAttackableTiles(currentPos, character.AtkRange);
+
+        // MASK ACTION TYPE
+        if (reachable.Count == 0)
+            actionMask.SetActionEnabled(0, 0, false); // disable MOVE
+
+        if (attackable.Count == 0)
+            actionMask.SetActionEnabled(0, 1, false); // disable ATTACK
+
+        // WAIT usually always allowed → index 2
+
+        // MASK X/Y
+        // Build allowed positions
+        HashSet<Vector3Int> validTargets = new();
+
+        if (reachable.Count > 0)
+            validTargets.UnionWith(reachable);
+
+        if (attackable.Count > 0)
+            validTargets.UnionWith(attackable);
+
+        // If no valid targets, disable all coords
+        if (validTargets.Count == 0)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                actionMask.SetActionEnabled(1, i, false);
+                actionMask.SetActionEnabled(2, i, false);
+            }
+            return;
+        }
+
+        // Convert tile positions → mask
+        HashSet<int> validX = new();
+        HashSet<int> validY = new();
+
+        foreach (var pos in validTargets)
+        {
+            validX.Add(pos.x + 5);
+            validY.Add(pos.y + 5);
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (!validX.Contains(i))
+                actionMask.SetActionEnabled(1, i, false);
+
+            if (!validY.Contains(i))
+                actionMask.SetActionEnabled(2, i, false);
+        }
     }
     
     private float GetAliveAllies()

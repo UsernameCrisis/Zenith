@@ -479,7 +479,7 @@ public class PopulateMap : MonoBehaviour
             case ObjectType.RandomProp:
                 return new RandomObject(data.Name);
             case ObjectType.Character:
-                return new CharacterObject(data.Name, 100, data.Damage, data.Defense, data.Speed, 
+                return new CharacterObject(data.Name, data.ID, data.HP, data.Damage, data.Defense, data.Speed, 
                                             data.currentATB, data.Portrait, data.Team, data.AtkRange, 
                                             data.IsPlayer);
             default:

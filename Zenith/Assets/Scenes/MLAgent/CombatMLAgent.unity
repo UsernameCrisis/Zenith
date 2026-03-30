@@ -3895,6 +3895,8 @@ MonoBehaviour:
   mapPopulator: {fileID: 1118025225}
   gridSelect: {fileID: 331495578}
   turnOrderUI: {fileID: 2049846321}
+  controlMode: 0
+  combatAgent: {fileID: 0}
 --- !u!1001 &1774642235
 PrefabInstance:
   m_ObjectHideFlags: 0

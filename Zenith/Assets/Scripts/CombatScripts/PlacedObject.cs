@@ -46,6 +46,7 @@ public class RandomObject : PlacedObject
 public class CharacterObject : PlacedObject
 {
     public int HP { get; private set; }
+    public int ID { get; private set; }
     public int MaxHp { get; private set; }
     public int Damage { get; private set; }
     public int Defense { get; private set; }
@@ -62,10 +63,11 @@ public class CharacterObject : PlacedObject
     public event Action<CharacterObject> OnDied;
     private bool canAttack = true;
 
-    public CharacterObject(string name, int hp, int damage, int defense, int speed, 
+    public CharacterObject(string name, int id, int hp, int damage, int defense, int speed, 
                             float currentATB, Sprite portrait, int team, int atkRange, bool isPlayer)
     {
         Name = name;
+        ID = id;
         HP = hp;
         MaxHp = hp;
         Damage = damage;

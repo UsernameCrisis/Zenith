@@ -45,20 +45,21 @@ public class MovementPreview : MonoBehaviour
             startTeam = sc.Team;
 
 
-        reachableTiles = BFSReachable(startPos, moveRange);
+        reachableTiles = BFSReachables(startPos, moveRange);
 
         foreach (var tile in reachableTiles)
             SpawnHighlight(tile, highlightPrefab);
     }
 
-    public void ShowAttackableEnemies(Vector3Int startPos, int attackRange = 1)
+    public HashSet<Vector3Int> GetAttackableTiles(Vector3Int startPos, int attackRange = 1)
     {
+        HashSet<Vector3Int> result = new();
         startTilePos = startPos;
         TileData startTile = gridData.GetTileAt(startPos);
-        if (startTile?.PlacedObject is not CharacterObject sc)
-            return;
+        if (startTile?.PlacedObject is not CharacterObject attacker)
+            return result;
 
-        startTeam = sc.Team;
+        startTeam = attacker.Team;
 
         for (int x = -attackRange; x <= attackRange; x++)
         {
@@ -76,12 +77,23 @@ public class MovementPreview : MonoBehaviour
                 {
                     if (HasLineOfSight(startPos, tilePos))
                     {
-                        attackableTiles.Add(tilePos);
-                        SpawnHighlight(tilePos, enemyHighlightPrefab != null ? enemyHighlightPrefab : highlightPrefab);
+                        result.Add(tilePos);
                     }
                 }
             }
         }
+        attackableTiles = result;
+        return result;
+    }
+
+    public void ShowAttackableTiles(Vector3Int startPos, int attackRange)
+    {
+        var tiles = GetAttackableTiles(startPos, attackRange);
+
+    foreach (var pos in tiles)
+    {
+        SpawnHighlight(pos, enemyHighlightPrefab != null ? enemyHighlightPrefab : highlightPrefab);
+    }
     }
 
     private bool HasLineOfSight(Vector3Int start, Vector3Int end)
@@ -156,7 +168,7 @@ public class MovementPreview : MonoBehaviour
         attackableTiles.Clear();
     }
 
-    private HashSet<Vector3Int> BFSReachable(Vector3Int startPos, int moveRange)
+    public HashSet<Vector3Int> BFSReachables(Vector3Int startPos, int moveRange)
     {
         Queue<Vector3Int> frontier = new();
         Dictionary<Vector3Int, int> distance = new();

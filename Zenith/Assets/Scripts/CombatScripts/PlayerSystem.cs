@@ -155,7 +155,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         else if (action == "Attack")
         {
             if (charObj.canStillAttack())
-                movePreview.ShowAttackableEnemies(startPos, charObj.AtkRange);
+                movePreview.ShowAttackableTiles(startPos, charObj.AtkRange);
             gridVisualization.SetActive(true);
             cellIndicator.SetActive(true);
             Debug.Log("Attack mode enabled.");

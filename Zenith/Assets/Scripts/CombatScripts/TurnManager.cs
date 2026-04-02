@@ -37,6 +37,8 @@ public class TurnManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        gridData = mapPopulator.GetComponent<PopulateMap>().objectsData;
+        combatAgent.setGridData(gridData);
     }
 
     private IEnumerator Start()
@@ -49,7 +51,7 @@ public class TurnManager : MonoBehaviour
     private void InitializeTurnQueue()
     {
         currentTurn = 1;
-        gridData = mapPopulator.GetComponent<PopulateMap>().objectsData;
+        
         var units = gridData.GetAllUnits();
 
         List<CharacterObject> characters = new();

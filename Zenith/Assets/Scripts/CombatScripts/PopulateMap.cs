@@ -9,11 +9,15 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private bool loadFromSave = true;
     [SerializeField] private bool forTrainingAgent = false;
     [SerializeField] private bool useMaxFlow = false;
-    [SerializeField] private int minTraversablePaths = 3;
-    [SerializeField] private float obstacleDensity = 0.1f;
+    [SerializeField] private bool isFullyRandom = false;
+    [SerializeField] private int minTraversablePaths = 2;
+    [SerializeField] private float obstacleDensity = 0.15f;
+    [SerializeField] private float skipValidationChance = 0.25f;
+    [SerializeField] private int clusterLimit = 2;
     [SerializeField] private int obstacleID = 7;
     [SerializeField] private int teamDist = 6;
-    private int minX, maxX, minY, maxY, width, height;
+    [SerializeField] private int width, height;
+    private int minX, maxX, minY, maxY, offsetX, offsetY;
     private Vector3Int team1Center, team2Center;
 
     public GridData objectsData;
@@ -25,13 +29,17 @@ public class PopulateMap : MonoBehaviour
     }
     void Start()
     {
+        offsetX = width / 2;
+        offsetY = height / 2;
+
+        minX = -offsetX; maxX = offsetX - 1; minY = -offsetY; maxY = offsetY - 1;
         if (loadFromSave)
         {
             PopulateFromGridJSON();
         }
         else if (forTrainingAgent == true)
         {
-            PopulateFromGridJSON();
+            // PopulateFromGridJSON();
             SpawnTeams();
             SpawnRandomObstacles();
         }
@@ -43,35 +51,56 @@ public class PopulateMap : MonoBehaviour
 
     private void SpawnRandomObstacles()
     {
-        //Mungkin lebih bagus kalau disuruh coba spawn sampai targetobstacle count tercapai?
+        int totalTiles = width * height;
+        int targetObstacles = Mathf.RoundToInt(totalTiles * obstacleDensity);
+        int placed = 0;
+        int attempts = totalTiles * 3;
+        print("tes");
 
-        int attempts = 150;
-
-        for (int i = 0; i < attempts; i++)
+        for (int i = 0; i < attempts && placed < targetObstacles; i++)
         {
-            if (Random.value > obstacleDensity)
-                continue;
-
+            print("inside for loop" + i);
             Vector3Int pos = GetRandomEmptyTile();
 
             if (!IsInsideBounds(pos))
                 continue;
-            
+
+            if (objectsData.GetTileAt(pos) != null)
+                continue;
+
             if (pos == team1Center || pos == team2Center)
                 continue;
 
+            if (isFullyRandom)
+            {
+                print("inside cluster");
+                int neighborObstacles = CountObstacleNeighbors(pos);
+                if (neighborObstacles > clusterLimit)
+                    continue;
+            }
+
+            bool skipValidation = isFullyRandom && Random.value < skipValidationChance;
+
             PlaceObject(pos, obstacleID, placedGameObjects.Count - 1);
 
-            int pathCount = useMaxFlow ? MaxFlow(team1Center, team2Center, width, height) : CountPaths(team1Center, team2Center);
-
-            Debug.Log("Path count: " + pathCount);
-            if (pathCount < minTraversablePaths)
+            if (!skipValidation)
             {
-                objectsData.RemoveObjectAt(pos);
+                print("isnside validation");
+                int pathCount = useMaxFlow ? MaxFlow(team1Center, team2Center, width, height)
+                                            : CountPaths(team1Center, team2Center);
+                print("after path count");
+                if (pathCount < minTraversablePaths)
+                {
+                    objectsData.RemoveObjectAt(pos);
 
-                Destroy(placedGameObjects[^1]);
-                placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
+                    Destroy(placedGameObjects[^1]);
+                    placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
+                    print("after remove object");
+                    continue;
+                }
             }
+            print("before placed++");
+            placed++;
         }
     }
 
@@ -163,6 +192,36 @@ public class PopulateMap : MonoBehaviour
         }
 
         return flow;
+    }
+
+    private int CountObstacleNeighbors(Vector3Int pos)
+    {
+        int count = 0;
+
+        Vector3Int[] dirs =
+        {
+            Vector3Int.up,
+            Vector3Int.down,
+            Vector3Int.left,
+            Vector3Int.right
+        };
+
+        foreach (var d in dirs)
+        {
+            var neighbor = pos + d;
+
+            if (!IsInsideBounds(neighbor))
+                continue;
+
+            var tile = objectsData.GetTileAt(neighbor);
+
+            if (tile != null && (tile.PlacedObject is StaticObject || tile.PlacedObject is RandomObject))
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     private bool IsWalkable(Vector3Int pos)
@@ -388,13 +447,9 @@ public class PopulateMap : MonoBehaviour
             return;
         }
 
-        height = map.grid.Length;
-        width = map.grid[0].row.Length;
+        
 
-        int offsetX = width / 2;
-        int offsetY = height / 2;
-
-        minX = -offsetX; maxX = offsetX - 1; minY = -offsetY; maxY = offsetY - 1;
+        
 
         for (int y = 0; y < height; y++)
         {

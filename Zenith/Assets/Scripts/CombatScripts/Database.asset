@@ -100,7 +100,7 @@ MonoBehaviour:
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
-    <Team>k__BackingField: 2
+    <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: d427d3ca2c039d245b7d74d564dd9ee3, type: 3}
     <Portrait>k__BackingField: {fileID: 1466295960, guid: 6b6aea6b09ae650479d233ca540ba809, type: 3}

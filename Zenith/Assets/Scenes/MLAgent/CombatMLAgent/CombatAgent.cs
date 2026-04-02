@@ -7,7 +7,6 @@ using System.Collections.Generic;
 
 public class CombatAgent : Agent
 {
-    [SerializeField] private GridData _gridData;
     [SerializeField] private float _maxTurn;
     [SerializeField] private TurnManager _turnmanager;
     [SerializeField] private Grid grid;
@@ -18,6 +17,7 @@ public class CombatAgent : Agent
 
     private List<CharacterObject> allySlots = new();
     private List<CharacterObject> enemySlots = new();
+    private GridData _gridData;
     private int activeUnitIndex;
     private int mapMin = -5;
     private int mapMax = 5;
@@ -152,13 +152,13 @@ public class CombatAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // BELUM ADA ACTION MASKING
-        // ACTION MASKING MENGGUNAKAN PREVIEW SYSTEM (reachable dan attackable tile)
+        // BELUM CEK ACTION MASKING BISA APA TIDAK
         int actionType = actions.DiscreteActions[0];
-        int targetX = actions.DiscreteActions[1] - 5; // -5 karena range x dan y -5 hingga 4
-        int targetY = actions.DiscreteActions[2] - 5;
+        int tileIndex = actions.DiscreteActions[1]; 
 
-        Vector3Int targetPos = new Vector3Int(targetX, targetY, 0);
+        int x = (tileIndex % 10) - 5; // -5 karena range x dan y -5 hingga 4
+        int y = (tileIndex / 10) - 5;
+        Vector3Int targetPos = new Vector3Int(x, y, 0);
 
         var allies = _gridData.GetUnitsByTeam(1); // hard code agent
 
@@ -172,15 +172,25 @@ public class CombatAgent : Agent
 
         switch (actionType)
         {
-            case 0: // MOVE
+            case 0:
+                if (!previewSystem.BFSReachables(currentPos, character.RemainingMoveRange).Contains(targetPos))
+                {
+                    AddReward(-0.5f);
+                    break;
+                }
                 HandleMove(currentPos, targetPos, character); 
                 break;
 
-            case 1: // ATTACK
+            case 1:
+                if (!previewSystem.GetAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
+                {
+                    AddReward(-0.5f);
+                    break;
+                }
                 HandleAttack(currentPos, targetPos, character);
                 break;
 
-            case 2: // WAIT
+            case 2: // End turn
                 break;
         }
 
@@ -200,55 +210,42 @@ public class CombatAgent : Agent
         var attackable = previewSystem.GetAttackableTiles(currentPos, character.AtkRange);
 
         // MASK ACTION TYPE
-        if (reachable.Count == 0)
+        bool canMove = reachable.Count > 0;
+        bool canAttack = attackable.Count > 0;
+
+        if (!canMove)
             actionMask.SetActionEnabled(0, 0, false); // disable MOVE
 
-        if (attackable.Count == 0)
+        if (!canAttack)
             actionMask.SetActionEnabled(0, 1, false); // disable ATTACK
-
-        // WAIT usually always allowed → index 2
 
         // MASK X/Y
         // Build allowed positions
-        HashSet<Vector3Int> validTargets = new();
+        HashSet<int> validTiles = new();
 
-        if (reachable.Count > 0)
-            validTargets.UnionWith(reachable);
-
-        if (attackable.Count > 0)
-            validTargets.UnionWith(attackable);
-
-        // If no valid targets, disable all coords
-        if (validTargets.Count == 0)
+        foreach (var pos in reachable)
         {
-            for (int i = 0; i < 10; i++)
-            {
-                actionMask.SetActionEnabled(1, i, false);
-                actionMask.SetActionEnabled(2, i, false);
-            }
-            return;
+            int index = (pos.y + 5) * 10 + (pos.x + 5);
+            validTiles.Add(index);
         }
-
-        // Convert tile positions → mask
-        HashSet<int> validX = new();
-        HashSet<int> validY = new();
-
-        foreach (var pos in validTargets)
+    
+        foreach (var pos in attackable)
         {
-            validX.Add(pos.x + 5);
-            validY.Add(pos.y + 5);
+            int index = (pos.y + 5) * 10 + (pos.x + 5);
+            validTiles.Add(index);
         }
-
-        for (int i = 0; i < 10; i++)
+    
+        // ✅ ALWAYS include current position as fallback
+        int currentIndex = (currentPos.y + 5) * 10 + (currentPos.x + 5);
+        validTiles.Add(currentIndex);
+    
+        // Apply mask
+        for (int i = 0; i < 100; i++)
         {
-            if (!validX.Contains(i))
+            if (!validTiles.Contains(i))
                 actionMask.SetActionEnabled(1, i, false);
-
-            if (!validY.Contains(i))
-                actionMask.SetActionEnabled(2, i, false);
         }
     }
-    
     private float GetAliveAllies()
     {
         int alive = 0;
@@ -340,5 +337,10 @@ public class CombatAgent : Agent
 
         character.UseMovement(path.Count);
         isMoving = false;
+    }
+
+    public void setGridData(GridData data)
+    {
+        _gridData = data;
     }
 }

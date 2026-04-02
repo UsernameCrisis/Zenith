@@ -16,7 +16,6 @@ public class PlayerOverworldAttributes : MonoBehaviour
     private bool isInvincible = false;
     [SerializeField] private float invincibilityDuration = 0.4f;
     private Vignette vignette;
-    public Inventory inventory;
 
     [Header("Screen Fade")]
     [SerializeField] private Volume deathVolume;
@@ -25,12 +24,12 @@ public class PlayerOverworldAttributes : MonoBehaviour
     [SerializeField] private float postVignetteWait = 1f;
     [SerializeField] private float fadeToBlackDuration = 2f;
 
-
     public event Action<int, int> HealthChanged;
 
     void Start()
     {
-        deathVolume.profile.TryGet(out vignette);
+        if (deathVolume != null)
+            deathVolume.profile.TryGet(out vignette);
 
         if (fadeOverlay != null)
         {
@@ -48,13 +47,11 @@ public class PlayerOverworldAttributes : MonoBehaviour
             currentHP = GameManager.Instance.playerHP;
             maxHP = GameManager.Instance.playerMaxHP;
             gold = GameManager.Instance.gold;
-
-            GameManager.Instance.UpdateStats();
         }
 
-        if (currentHP == 0)
+        if (currentHP <= 0)
         {
-            currentHP++;
+            currentHP = 1;
         }
     }
 
@@ -86,7 +83,7 @@ public class PlayerOverworldAttributes : MonoBehaviour
         isInvincible = false;
     }
 
-    IEnumerator DeathSequence(float vignetteDuration = 1f)
+    IEnumerator DeathSequence()
     {
         float elapsed = 0f;
         float startIntensity = 0.3f;
@@ -95,11 +92,14 @@ public class PlayerOverworldAttributes : MonoBehaviour
         while (elapsed < vignetteDuration)
         {
             float t = elapsed / vignetteDuration;
-            vignette.intensity.value = Mathf.Lerp(startIntensity, targetIntensity, t);
+            if (vignette != null)
+                vignette.intensity.value = Mathf.Lerp(startIntensity, targetIntensity, t);
+
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
-        vignette.intensity.value = targetIntensity;
+
+        if (vignette != null) vignette.intensity.value = targetIntensity;
 
         yield return new WaitForSecondsRealtime(postVignetteWait);
         yield return Fade(1f, fadeToBlackDuration);
@@ -108,6 +108,7 @@ public class PlayerOverworldAttributes : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("Peaceful");
     }
+
     private IEnumerator Fade(float targetAlpha, float duration)
     {
         if (fadeOverlay == null) yield break;
@@ -128,21 +129,17 @@ public class PlayerOverworldAttributes : MonoBehaviour
         }
 
         fadeOverlay.alpha = targetAlpha;
-
-        if (Mathf.Approximately(targetAlpha, 0f))
-        {
-            fadeOverlay.blocksRaycasts = false;
-            fadeOverlay.interactable = false;
-        }
     }
 
     public void DeathReset()
     {
         currentHP = maxHP;
         SaveAttributesToManager();
-        if (GameManager.Instance != null)
+
+        // --- TRIGGER DEATH PENALTY ---
+        if (InventoryManager.Instance != null)
         {
-            GameManager.Instance.ClearInventoryData();
+            InventoryManager.Instance.HandleDeathPenalty();
         }
     }
 
@@ -156,30 +153,24 @@ public class PlayerOverworldAttributes : MonoBehaviour
         }
     }
 
-
-
-
-
     public void Heal(int amount)
     {
         currentHP += amount;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
-
         HealthChanged?.Invoke(currentHP, maxHP);
-
         SaveAttributesToManager();
-        Debug.Log("Healed for " + amount + ". Current HP: " + currentHP);
     }
 
     public void AddGold(int amount)
     {
         gold += amount;
         SaveAttributesToManager();
-        Debug.Log("Gained " + amount + " Gold. Total Gold: " + gold);
     }
 
-    public void BuffArmor(int amount, int seconds) 
+    // --- BUFF LOGIC ---
+    public void BuffArmor(int amount, int seconds)
     {
+        if (GameManager.Instance == null) return;
         GameManager.Instance.playerDef += amount;
         StartCoroutine(ResetArmorBuff(amount, seconds));
     }
@@ -187,11 +178,12 @@ public class PlayerOverworldAttributes : MonoBehaviour
     private IEnumerator ResetArmorBuff(int amount, int seconds)
     {
         yield return new WaitForSeconds(seconds);
-        GameManager.Instance.playerDef -= amount;
+        if (GameManager.Instance != null) GameManager.Instance.playerDef -= amount;
     }
 
-    public void BuffATK(int amount, int seconds) 
+    public void BuffATK(int amount, int seconds)
     {
+        if (GameManager.Instance == null) return;
         GameManager.Instance.playerAtk += amount;
         StartCoroutine(ResetATKBuff(amount, seconds));
     }
@@ -199,6 +191,6 @@ public class PlayerOverworldAttributes : MonoBehaviour
     private IEnumerator ResetATKBuff(int amount, int seconds)
     {
         yield return new WaitForSeconds(seconds);
-        GameManager.Instance.playerAtk -= amount;
-    }  
+        if (GameManager.Instance != null) GameManager.Instance.playerAtk -= amount;
+    }
 }

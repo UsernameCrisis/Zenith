@@ -8,8 +8,4 @@ public abstract class InteractableObject : MonoBehaviour, Interactable
     {
         FindAnyObjectByType<PlayerTrigger>().TurnOff();
     }
-
-    public virtual void ItemTaken(ItemData itemData)
-    {
-    }
 }

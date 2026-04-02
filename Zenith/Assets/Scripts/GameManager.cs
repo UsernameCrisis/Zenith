@@ -21,10 +21,6 @@ public class GameManager : MonoBehaviour
     public int playerDef = 0;
     private readonly int basePlayerSpeed = 5;
     public int playerSpeed = 5;
-    
-    // will delete old inventory system later
-    private List<List<ItemData>> _items = new();
-    private List<ItemData> _equipments = new();
 
     [Header("Tutorial")]
     public bool hasData = false; //hook to playerprefs later
@@ -113,8 +109,6 @@ public class GameManager : MonoBehaviour
         playerHP = player.currentHP;
         playerMaxHP = player.maxHP;
         gold = player.gold;
-
-        DraggableItemToItemData(player.inventory.SaveInventoryIn2DList(), player.inventory.GetEquipmentAsList());
         hasData = true;
 
         SceneManager.LoadScene(SceneName);
@@ -133,40 +127,5 @@ public class GameManager : MonoBehaviour
         player.currentHP = playerHP;
         playerMaxHP = player.maxHP;
         player.gold = gold;
-
-        player.inventory.LoadInventory(_items, _equipments);
-        UpdateStats();
     }
-
-    private void DraggableItemToItemData(List<List<DraggableItem>> items, List<DraggableItem> equipments)
-    {
-        _items.Clear();
-        _equipments.Clear();
-
-        for (int i = 0; i < items.Count; i++)
-        {
-            _items.Add(new List<ItemData>());
-            for (int j = 0; j < items[i].Count; j++)
-            {
-                try {_items[i].Add(items[i][j].GetData());} catch (Exception e) {_items[i].Add(null);}
-            }
-        }
-
-        for (int i = 0; i < equipments.Count; i++)
-        {
-            try {_equipments.Add(equipments[i].GetData());} catch (Exception e) {_equipments.Add(null);}
-        }
-    }
-
-    public void UpdateStats()
-    {
-        playerDef = FindAnyObjectByType<OverworldUI>().inventory.GetArmor();
-        playerAtk = FindAnyObjectByType<OverworldUI>().inventory.GetATK();
-    }
-    public void ClearInventoryData()
-    {
-        _items.Clear();
-        _equipments.Clear();
-    }
-
 }

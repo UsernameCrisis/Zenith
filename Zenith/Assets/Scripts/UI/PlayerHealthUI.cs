@@ -23,8 +23,7 @@ public class OverworldUI : MonoBehaviour
 
     [Header("Other UI")]
     public GameObject interactUI;
-    public GameObject ItemDescriptionObject;
-    private Vector2 latestMousePos;
+    // ItemDescriptionObject removed to stop errors
 
     void Awake()
     {
@@ -64,48 +63,35 @@ public class OverworldUI : MonoBehaviour
         if (isOpening && inventoryDisplay != null)
         {
             inventoryDisplay.RefreshUI();
-            // inventoryDisplay.GetComponentInChildren<InventoryLeft>()?.SetGearActive();
         }
     }
 
     private void HandleTooltipPosition()
     {
-        Vector2 currentMouse = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
-        if (latestMousePos != currentMouse)
-        {
-            latestMousePos = currentMouse;
-            ItemDescriptionObject.transform.position = latestMousePos
-                - ((latestMousePos.y >= 540) ? new Vector2(0, 180) : new Vector2(0, -180))
-                + ((latestMousePos.x <= 960) ? new Vector2(120, 0) : new Vector2(-120, 0));
-        }
+        // If the inventory is closed, or we don't have a tooltip, don't do anything
+        if (inventoryDisplay == null || inventoryDisplay.tooltipPanel == null) return;
+        if (!inventoryDisplay.tooltipPanel.activeInHierarchy) return;
+
+        // Move the new Tooltip Panel to the mouse position
+        Vector2 mousePos = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
+
+        // Offset it slightly so it's not directly under the cursor
+        Vector2 offset = new Vector2(20, -20);
+        inventoryDisplay.tooltipPanel.transform.position = mousePos + offset;
     }
 
     public void UpdateUI(int current, int max)
     {
-        int previous = (int)hpBar.value;
-
         hpBar.maxValue = max;
         hpBar.value = current;
-
         hpText.text = $"{FormatHP(current)}/{FormatHP(max)}";
 
-        if (current < previous)
-            StartCoroutine(ShakeHPBar());
-
+        if (current < (int)hpBar.value) StartCoroutine(ShakeHPBar());
         StartCoroutine(FlashFill());
     }
 
-    public void ShowHPText()
-    {
-        hpText.enabled = true;
-        Gold.SetActive(true);
-    }
-
-    public void HideHPText()
-    {
-        hpText.enabled = false;
-        Gold.SetActive(false);
-    }
+    public void ShowHPText() { hpText.enabled = true; Gold.SetActive(true); }
+    public void HideHPText() { hpText.enabled = false; Gold.SetActive(false); }
 
     string FormatHP(int value)
     {

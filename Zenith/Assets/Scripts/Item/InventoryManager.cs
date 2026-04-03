@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 [System.Serializable]
 public class ItemStack
@@ -18,6 +19,7 @@ public class ItemStack
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
+    public event Action OnInventoryChanged;
 
     [Header("Inventory Settings")]
     public List<ItemStack> mainInventory = new();
@@ -88,7 +90,38 @@ public class InventoryManager : MonoBehaviour
         }
         UpdateWeight();
         SortInventory();
+
+        OnInventoryChanged?.Invoke();
         return true;
+    }
+
+    public void RemoveItem(BaseItem item, int amount = 1)
+    {
+        ItemStack stack = mainInventory.Find(s => s.itemData == item);
+        if (stack != null)
+        {
+            stack.quantity -= amount;
+            if (stack.quantity <= 0)
+            {
+                mainInventory.Remove(stack);
+            }
+        }
+        UpdateWeight();
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void UseItem(ItemStack stack)
+    {
+        if (stack.itemData == null) return;
+
+        stack.itemData.Use();
+
+        if (stack.itemData.type == ItemType.Consumable)
+        {
+            RemoveItem(stack.itemData, 1);
+        }
+
+        OnInventoryChanged?.Invoke();
     }
 
     public void UpdateWeight()
@@ -108,11 +141,12 @@ public class InventoryManager : MonoBehaviour
         {
             if (mainInventory.Count > 0)
             {
-                int randomIndex = Random.Range(0, mainInventory.Count);
+                int randomIndex = UnityEngine.Random.Range(0, mainInventory.Count);
                 mainInventory.RemoveAt(randomIndex);
             }
         }
         UpdateWeight();
+        OnInventoryChanged?.Invoke();
         Debug.Log("Player died. Lost 50% of inventory items.");
     }
 

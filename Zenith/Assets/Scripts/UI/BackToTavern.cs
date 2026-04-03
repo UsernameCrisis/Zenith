@@ -34,12 +34,12 @@ public class BackToTavern : MonoBehaviour
     {
         if (player == null) return;
 
-        int count = Physics.OverlapSphereNonAlloc(player.transform.position, checkRadius, hitResults, enemyLayer);
+        int count = Physics.OverlapSphereNonAlloc(player.transform.position, checkRadius, hitResults, enemyLayer, QueryTriggerInteraction.Collide);
 
         bool enemyFound = false;
         for (int i = 0; i < count; i++)
         {
-            if (hitResults[i].transform.root.CompareTag("Enemy"))
+            if (hitResults[i].CompareTag("Enemy"))
             {
                 enemyFound = true;
                 break;

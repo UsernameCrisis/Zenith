@@ -27,6 +27,7 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.Log("Hovering over: " + currentStack.itemData.itemName);
         if (parentUI != null && parentUI.tooltipPanel != null)
         {
             var tooltip = parentUI.tooltipPanel.GetComponent<TooltipUI>();

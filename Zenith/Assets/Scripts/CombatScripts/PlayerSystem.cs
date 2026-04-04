@@ -17,10 +17,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     [SerializeField] private CharacterActionMenu actionMenu;
     [SerializeField] private PauseMenu pauseMenu;
     [SerializeField] private TutorialMenu tutorialMenu;
-
     [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
     [SerializeField] private Animator animator;
+    [SerializeField] private bool isForHeuristicAgent = false;
 
     private Vector3 mousePos;
     private GridData objectsData;
@@ -29,6 +29,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private Color defaultColor;
     private bool isInActionMode = false;
     private string currentAction = null;
+    private int currentAgentTeam;
     private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
 
     public bool IsPlayer => true;
@@ -63,10 +64,16 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         inputManager.OnColliderClicked += ColliderClicked;
     }
 
+    public void BeginTurn(GridData gridData, int team)
+    {
+        objectsData = gridData;
+        currentAgentTeam = team;
+        print("inside select agent");
+        inputManager.OnColliderClicked += ColliderClicked;
+    }
+
     void Start()
     {
-        // ExitCharacter(); // hanya untuk menghilangkan grid sementara (karena dalam scene view dinyalakan)
-        // objectsData = populateMap.GetComponent<PopulateMap>().objectsData;
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         defaultColor = cellIndicatorRenderer.material.color;
     }
@@ -99,10 +106,27 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private void ColliderClicked(Collider collider)
     {
-        if (collider.CompareTag("Player"))
+        if (isForHeuristicAgent)
         {
-            SelectCharacter(collider);
-            return;
+            // agak janky ini code
+            if (inputManager.getSelectMode() == true)
+            {
+                GameObject selectedCharTemp = collider.transform.parent.gameObject;
+                Vector3Int currentPos = grid.WorldToCell(selectedCharTemp.transform.position);
+                CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+                if (charObj.Team == currentAgentTeam)
+                {
+                    SelectCharacter(collider);
+                }
+            }
+        } else
+        {
+            if (collider.CompareTag("Player"))
+            {
+                SelectCharacter(collider);
+                return;
+            }
         }
 
         if (isInActionMode)
@@ -329,7 +353,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         animator.SetBool("isMoving", isMoving);
     
         movePreview.ClearAll();
-        // EndAction();
     }
 
     private void SelectCharacter(Collider collider)

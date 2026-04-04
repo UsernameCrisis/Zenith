@@ -583,6 +583,7 @@ MonoBehaviour:
   optionMenu: {fileID: 1419675402}
   cameraMovement: {fileID: 330585548}
   animator: {fileID: 316795212}
+  isForHeuristicAgent: 1
 --- !u!1 &366886310
 GameObject:
   m_ObjectHideFlags: 0
@@ -1421,14 +1422,14 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 030000000a0000000a000000
-    VectorActionSize: 030000000a0000000a000000
+      BranchSizes: 0300000064000000
+    VectorActionSize: 0300000064000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 1
   m_BehaviorName: Combat Behavior
   TeamId: 1
   m_UseChildSensors: 1
@@ -3988,6 +3989,7 @@ MonoBehaviour:
   turnOrderUI: {fileID: 2049846321}
   controlMode: 1
   combatAgent: {fileID: 671312591}
+  currentAgentTeam: 1
   defeatedEnemyNames: []
 --- !u!1001 &1774642235
 PrefabInstance:

@@ -29,6 +29,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private TurnOrderUI turnOrderUI;
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
     [SerializeField] private CombatAgent combatAgent;
+    [SerializeField] private int currentAgentTeam = 1;
 
     private TurnQueue turnQueue;
     private List<CharacterObject> allySlots = new();
@@ -39,6 +40,7 @@ public class TurnManager : MonoBehaviour
         Instance = this;
         gridData = mapPopulator.GetComponent<PopulateMap>().objectsData;
         combatAgent.setGridData(gridData);
+        combatAgent.SetAgentTeam(currentAgentTeam);
     }
 
     private IEnumerator Start()
@@ -61,7 +63,7 @@ public class TurnManager : MonoBehaviour
             CharacterObject c = u.character;
             characters.Add(c);
 
-            if (c.Team == 1)
+            if (c.Team == currentAgentTeam)
                 allySlots.Add(c);
     
             c.OnDied += HandleCharacterDeath;
@@ -108,7 +110,7 @@ public class TurnManager : MonoBehaviour
             if (index >= 0)
             {
                 combatAgent.SetActiveUnitIndex(index);
-                combatAgent.RequestDecision();
+                gridSelect.BeginTurn(gridData, currentAgentTeam);
                 return;
             }
         }
@@ -156,7 +158,6 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
-        print(" halo" +gridData.GetAllEnemies().Count);
         if (currentTurn >= maxTurn)
         {
             if (controlMode == CombatControlMode.MLAgent)

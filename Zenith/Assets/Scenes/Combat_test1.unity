@@ -578,6 +578,7 @@ MonoBehaviour:
   optionMenu: {fileID: 1419675402}
   cameraMovement: {fileID: 330585548}
   animator: {fileID: 316795212}
+  isForHeuristicAgent: 0
 --- !u!1 &366886310
 GameObject:
   m_ObjectHideFlags: 0
@@ -2452,6 +2453,17 @@ MonoBehaviour:
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
   grid: {fileID: 780557240}
   loadFromSave: 0
+  forTrainingAgent: 0
+  useMaxFlow: 0
+  isFullyRandom: 0
+  minTraversablePaths: 2
+  obstacleDensity: 0.15
+  skipValidationChance: 0.25
+  clusterLimit: 2
+  obstacleID: 7
+  teamDist: 6
+  width: 0
+  height: 0
   placedGameObjects: []
 --- !u!1 &1127068153
 GameObject:
@@ -3666,6 +3678,92 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
+--- !u!1 &1666468178
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1666468181}
+  - component: {fileID: 1666468180}
+  - component: {fileID: 1666468179}
+  m_Layer: 0
+  m_Name: ForAgentPlaceholder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1666468179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666468178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ee855032506c554c8b48a6389cd9db8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAgent
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+  _maxTurn: 0
+  _turnmanager: {fileID: 0}
+  grid: {fileID: 0}
+  previewSystem: {fileID: 0}
+  currEp: 0
+  cumulativeReward: 0
+--- !u!114 &1666468180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666468178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Policies.BehaviorParameters
+  m_BrainParameters:
+    VectorObservationSize: 1
+    NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 01000000
+    VectorActionSize: 01000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: My Behavior
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_DeterministicInference: 0
+  m_ObservableAttributeHandling: 0
+--- !u!4 &1666468181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666468178}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1680780485
 GameObject:
   m_ObjectHideFlags: 0
@@ -3846,9 +3944,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 768cf22d85cde0a4e9867e870f2ef962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnManager
+  currentTurn: 1
   mapPopulator: {fileID: 1118025225}
   gridSelect: {fileID: 331495578}
   turnOrderUI: {fileID: 2049846321}
+  controlMode: 0
+  combatAgent: {fileID: 1666468179}
+  defeatedEnemyNames: []
 --- !u!1001 &1774642235
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5124,3 +5226,4 @@ SceneRoots:
   - {fileID: 1607384034}
   - {fileID: 1801900059}
   - {fileID: 1196816044}
+  - {fileID: 1666468181}

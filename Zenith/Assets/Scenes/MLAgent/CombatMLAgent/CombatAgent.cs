@@ -17,11 +17,15 @@ public class CombatAgent : Agent
 
     private List<CharacterObject> allySlots = new();
     private List<CharacterObject> enemySlots = new();
+    private int chosenActionType = 2;
+    private int chosenTileIndex = 55;
+    private int _currentAgentTeam = 1;
     private GridData _gridData;
     private int activeUnitIndex;
     private int mapMin = -5;
     private int mapMax = 5;
     private bool isMoving;
+    private bool hasAction = false;
 
     public override void Initialize()
     {
@@ -34,9 +38,8 @@ public class CombatAgent : Agent
         allySlots.Clear();
         enemySlots.Clear();
 
-        // sementara hard code team 1 untuk agent team 2 untuk enemy
-        var allies = _gridData.GetUnitsByTeam(1);
-        var enemies = _gridData.GetUnitsByTeam(2);
+        var allies = _gridData.GetUnitsByTeam(_currentAgentTeam);
+        var enemies = _gridData.GetUnitsByTeam(_currentAgentTeam == 1 ? 2 : 1);
 
         for (int i = 0; i < 3; i++)
         {
@@ -82,7 +85,7 @@ public class CombatAgent : Agent
                     // empty tile
                     occupation = 0f;
                 else if (tile.PlacedObject is CharacterObject character)
-                    occupation = (character.Team == 1) ? 2f : 3f;
+                    occupation = (character.Team == _currentAgentTeam) ? 2f : 3f;
                 else
                     occupation = 1f; // obstacle
 
@@ -150,6 +153,22 @@ public class CombatAgent : Agent
         sensor.AddObservation(GetAliveEnemies() / 3f); // num enemies alive
     }
 
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        Debug.Log("Inside heuristic0");
+        var discrete = actionsOut.DiscreteActions;
+
+        if (!hasAction)
+        {
+            discrete[0] = 2; // EndTurn
+            discrete[1] = 55;
+            return;
+        }
+
+        discrete[0] = chosenActionType;
+        discrete[1] = chosenTileIndex;
+    }
+
     public override void OnActionReceived(ActionBuffers actions)
     {
         // BELUM CEK ACTION MASKING BISA APA TIDAK
@@ -160,7 +179,7 @@ public class CombatAgent : Agent
         int y = (tileIndex / 10) - 5;
         Vector3Int targetPos = new Vector3Int(x, y, 0);
 
-        var allies = _gridData.GetUnitsByTeam(1); // hard code agent
+        var allies = _gridData.GetUnitsByTeam(_currentAgentTeam);
 
         if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
         {
@@ -193,21 +212,21 @@ public class CombatAgent : Agent
             case 2: // End turn
                 break;
         }
-
+        Debug.Log("end of action recieved");
         _turnmanager.EndTurn();
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        var allies = _gridData.GetUnitsByTeam(1);
+        var allies = _gridData.GetUnitsByTeam(_currentAgentTeam);
 
         if (activeUnitIndex < 0 || activeUnitIndex >= allies.Count)
             return;
 
         var (currentPos, character) = allies[activeUnitIndex];
 
-        var reachable = previewSystem.BFSReachables(currentPos, character.RemainingMoveRange);
-        var attackable = previewSystem.GetAttackableTiles(currentPos, character.AtkRange);
+        HashSet<Vector3Int> reachable = previewSystem.BFSReachables(currentPos, character.RemainingMoveRange);
+        HashSet<Vector3Int> attackable = previewSystem.GetAttackableTiles(currentPos, character.AtkRange);
 
         // MASK ACTION TYPE
         bool canMove = reachable.Count > 0;
@@ -223,13 +242,13 @@ public class CombatAgent : Agent
         // Build allowed positions
         HashSet<int> validTiles = new();
 
-        foreach (var pos in reachable)
+        foreach (Vector3Int pos in reachable)
         {
             int index = (pos.y + 5) * 10 + (pos.x + 5);
             validTiles.Add(index);
         }
     
-        foreach (var pos in attackable)
+        foreach (Vector3Int pos in attackable)
         {
             int index = (pos.y + 5) * 10 + (pos.x + 5);
             validTiles.Add(index);
@@ -259,6 +278,20 @@ public class CombatAgent : Agent
         return alive;
     }
 
+    public void SetManualAction(int actionType, Vector3Int targetPos)
+    {
+        chosenActionType = actionType;
+        chosenTileIndex = (targetPos.y + 5) * 10 + (targetPos.x + 5);
+        hasAction = true;
+
+        RequestDecision();
+    }
+    
+    public void SetAgentTeam(int team)
+    {
+        _currentAgentTeam = team;
+    }
+
     private float GetAliveEnemies()
     {
         int alive = 0;
@@ -279,7 +312,7 @@ public class CombatAgent : Agent
 
     void HandleMove(Vector3Int start, Vector3Int target, CharacterObject character)
     {
-        var path = previewSystem.FindPathAStar(start, target);
+        List<Vector3Int> path = previewSystem.FindPathAStar(start, target);
 
         if (path == null || path.Count == 0)
             return;

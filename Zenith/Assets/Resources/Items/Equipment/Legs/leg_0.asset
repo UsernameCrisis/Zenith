@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: f8e7d77605d1bf5478bea2aa2b33650d, type: 3}
   itemName: Leather Greaves
-  description: Light but worn-down leg armor. Gives little protection to the feet
-    and legs.
+  description: Light but worn-down leg armor. +1 DEF +10 MaxHP
   type: 2
   rarity: 0
   isStackable: 0

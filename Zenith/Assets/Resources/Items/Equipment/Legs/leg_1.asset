@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: f8e96ef7822571d48a05e075247da8c5, type: 3}
   itemName: Iron Greaves
-  description: Well-made iron armor for your legs. Gives moderate protection to the
-    feet and legs.
+  description: Well-made iron armor for your legs. +2 DEF +35 MaxHP
   type: 2
   rarity: 2
   isStackable: 0

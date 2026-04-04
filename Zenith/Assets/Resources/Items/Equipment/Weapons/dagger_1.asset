@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: 73957e0052734704e9f3a6f4c17e462f, type: 3}
   itemName: Dagger
-  description: A swift and nimble blade. Altough not very strong, it allows for quick
-    and fast attacks.
+  description: A swift and nimble blade. +5 ATK -1 SPD
   type: 2
   rarity: 2
   isStackable: 0

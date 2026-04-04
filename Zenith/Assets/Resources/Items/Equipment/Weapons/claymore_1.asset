@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: 13c3cc669954cd44ea2afb4d4a40059d, type: 3}
   itemName: Claymore
-  description: A 2-handed heavy wielding blade. Great for dealing massive amounts
-    of damage, with penalty to the wearer's speed.
+  description: A 2-handed heavy wielding blade. +45 ATK +4 DEF -1 SPD
   type: 2
   rarity: 2
   isStackable: 0

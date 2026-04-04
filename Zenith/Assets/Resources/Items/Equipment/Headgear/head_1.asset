@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: 1cad74e6f7cd0df428a041e2611eadff, type: 3}
   itemName: Iron Helmet
-  description: Regular iron helmet. Made of tough steel, gives good protection for
-    your head.
+  description: Regular iron helmet. +8 DEF +10 MaxHP
   type: 2
   rarity: 2
   isStackable: 0

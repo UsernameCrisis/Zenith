@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: 9315c12df5bc79b44b4c5e1d476a0563, type: 3}
   itemName: Rusty Sword
-  description: A worn-down rusty sword. Doesn't cut well, but get's the job done.
+  description: A worn-down rusty sword. +5 ATK +1 DEF
   type: 2
   rarity: 0
   isStackable: 0

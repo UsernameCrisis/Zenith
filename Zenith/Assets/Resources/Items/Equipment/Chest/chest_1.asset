@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: 663ef29a57f354d4d8050e8614ad97b2, type: 3}
   itemName: Iron Armor
-  description: Standard quality iron armor. Gives moderate protection and extra health.
+  description: Standard quality iron armor. +3 DEF +70 MaxHP
   type: 2
   rarity: 2
   isStackable: 0

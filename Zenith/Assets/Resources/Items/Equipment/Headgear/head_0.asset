@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: 050192942ae63b5478ac0d11a80cd931, type: 3}
   itemName: Leather Helmet
-  description: Worn-down leather helmet. Not much armor, but protects your head well
-    enough.
+  description: Worn-down leather helmet. +4 DEF
   type: 2
   rarity: 1
   isStackable: 0

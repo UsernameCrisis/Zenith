@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   icon: {fileID: 21300000, guid: f7dccbd4f8229bb49a8260b388f89574, type: 3}
   itemName: Leather Armor
-  description: Worn-down leather armor. Gives little bit of protection and extra
-    health.
+  description: Worn-down leather armor. +2 DEF +30 MaxHP
   type: 2
   rarity: 1
   isStackable: 0

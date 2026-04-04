@@ -48,10 +48,12 @@ public class TooltipUI : MonoBehaviour
         Vector2 mousePos = Input.mousePosition;
 
         float pivotY = (mousePos.y > Screen.height / 2) ? 1 : 0;
-        rectTransform.pivot = new Vector2(1, pivotY);
+        float pivotX = (mousePos.x < Screen.width / 2) ? 0 : 1;
 
-        float xOffset = -padding.x;
-        float yOffset = (pivotY == 1 ? -padding.y : padding.y);
+        rectTransform.pivot = new Vector2(pivotX, pivotY);
+
+        float xOffset = (pivotX == 0) ? padding.x : -padding.x;
+        float yOffset = (pivotY == 1) ? -padding.y : padding.y;
 
         transform.position = mousePos + new Vector2(xOffset, yOffset);
     }

@@ -126,12 +126,21 @@ public class InventoryManager : MonoBehaviour
 
     public void UpdateWeight()
     {
-        currentWeight = 0;
+        float newWeight = 0;
+
         foreach (ItemStack stack in mainInventory)
-            currentWeight += stack.itemData.weight * stack.quantity;
+        {
+            if (stack.itemData != null)
+                newWeight += stack.itemData.weight * stack.quantity;
+        }
 
         foreach (var item in equippedItems.Values)
-            currentWeight += item.weight;
+        {
+            if (item != null)
+                newWeight += item.weight;
+        }
+
+        currentWeight = newWeight;
     }
 
     // Your Death Penalty: Loses ~50% of the total stacks (randomized)
@@ -159,9 +168,12 @@ public class InventoryManager : MonoBehaviour
         }
 
         RemoveItem(newItem, 1);
-        equippedItems.Add(newItem.slot, newItem);
+
+        equippedItems[newItem.slot] = newItem;
 
         RefreshTotalStats();
+        UpdateWeight();
+        SortInventory();
         OnInventoryChanged?.Invoke();
     }
 
@@ -169,10 +181,12 @@ public class InventoryManager : MonoBehaviour
     {
         if (equippedItems.TryGetValue(slot, out EquipmentItem itemToUnequip))
         {
-            AddItem(itemToUnequip, 1);
             equippedItems.Remove(slot);
 
+            AddItem(itemToUnequip, 1);
+
             RefreshTotalStats();
+            UpdateWeight();
             OnInventoryChanged?.Invoke();
         }
     }

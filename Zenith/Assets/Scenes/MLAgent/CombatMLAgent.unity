@@ -571,6 +571,8 @@ MonoBehaviour:
   mouseIndicator: {fileID: 366886310}
   cellIndicator: {fileID: 423842676}
   inputManager: {fileID: 281358870}
+  combatAgent: {fileID: 671312591}
+  combatExecutor: {fileID: 784646986}
   grid: {fileID: 780557240}
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
   gridVisualization: {fileID: 1127068153}
@@ -1376,6 +1378,7 @@ GameObject:
   - component: {fileID: 671312593}
   - component: {fileID: 671312592}
   - component: {fileID: 671312591}
+  - component: {fileID: 671312594}
   m_Layer: 0
   m_Name: CombatAgent
   m_TagString: Untagged
@@ -1400,9 +1403,11 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 2147483647
   _maxTurn: 5000
-  _turnmanager: {fileID: 1686085151}
   grid: {fileID: 780557240}
+  isManualMode: 1
   previewSystem: {fileID: 857286124}
+  combatExecutor: {fileID: 784646986}
+  playerSystem: {fileID: 331495578}
   currEp: 0
   cumulativeReward: 0
 --- !u!114 &671312592
@@ -1432,7 +1437,7 @@ MonoBehaviour:
   m_BehaviorType: 1
   m_BehaviorName: Combat Behavior
   TeamId: 1
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
@@ -1451,6 +1456,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &671312594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671312590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Demonstrations.DemonstrationRecorder
+  Record: 0
+  NumStepsToRecord: 10
+  DemonstrationName: Testing
+  DemonstrationDirectory: D:/Unity/Unity Projects/Zenith/Zenith/Zenith/Assets\Demonstrations
 --- !u!1 &762959249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1783,6 +1804,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 784646985}
+  - component: {fileID: 784646986}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -1814,6 +1836,21 @@ Transform:
   - {fileID: 1686085150}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &784646986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784646984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4090ad026c457dd47bbe18071b2989cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatExecutor
+  grid: {fileID: 780557240}
+  movePreview: {fileID: 857286124}
+  animator: {fileID: 0}
 --- !u!1 &800820801
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 {
     [SerializeField] GameObject mouseIndicator, cellIndicator;
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private CombatAgent combatAgent;
+    [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] private Grid grid;
     [SerializeField] private ObjectDatabaseSO database;
     [SerializeField] private GameObject gridVisualization;
@@ -29,7 +31,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private Color defaultColor;
     private bool isInActionMode = false;
     private string currentAction = null;
-    private int currentAgentTeam;
+    private CharacterObject currentTurnUnit;
+    
     private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
 
     public bool IsPlayer => true;
@@ -44,6 +47,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         pauseMenu.OnButtonSelected += HandlePauseMenu;
         optionMenu.OnButtonSelected += HandleOptionMenu;
         tutorialMenu.OnButtonSelected += HandleTutorialMenu;
+        if (isForHeuristicAgent)
+        {
+            combatAgent.OnTurnEnded += ExitCharacter;
+        }
     }
 
     void OnDisable()
@@ -55,6 +62,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         pauseMenu.OnButtonSelected -= HandlePauseMenu;
         optionMenu.OnButtonSelected -= HandleOptionMenu;
         tutorialMenu.OnButtonSelected -= HandleTutorialMenu;
+        if (isForHeuristicAgent)
+        {
+            combatAgent.OnTurnEnded -= ExitCharacter;
+        }
     }
     
     public void BeginTurn(Vector3Int pos, GridData gridData)
@@ -64,10 +75,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         inputManager.OnColliderClicked += ColliderClicked;
     }
 
-    public void BeginTurn(GridData gridData, int team)
+    public void BeginTurn(GridData gridData, CharacterObject unit)
     {
         objectsData = gridData;
-        currentAgentTeam = team;
+        currentTurnUnit = unit;
         print("inside select agent");
         inputManager.OnColliderClicked += ColliderClicked;
     }
@@ -115,10 +126,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                 Vector3Int currentPos = grid.WorldToCell(selectedCharTemp.transform.position);
                 CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
 
-                if (charObj.Team == currentAgentTeam)
-                {
+                if (charObj == currentTurnUnit)
                     SelectCharacter(collider);
-                }
+                else
+                    print("Not this unit's turn!");
             }
         } else
         {
@@ -147,12 +158,28 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         {
             case "Move":
                 if (collider.CompareTag("Grid") && movePreview.IsTileReachable(clickedGrid))
-                    MoveCharacter(clickedGrid);
+                {
+                    if (isForHeuristicAgent)
+                    {
+                        combatAgent.SetManualAction(0, clickedGrid);
+                    }
+                        
+                    else
+                        combatExecutor.ExecuteMove(charObj, startPos, clickedGrid, objectsData);
+                    EndAction();
+                }
+                    
                 break;
 
             case "Attack":
                 if (collider.CompareTag("Enemy") && movePreview.IsTileAttackable(clickedGrid) && charObj.canStillAttack())
-                    HandleAttack(clickedGrid);
+                {
+                    if (isForHeuristicAgent)
+                        combatAgent.SetManualAction(1, clickedGrid);
+                    else
+                        combatExecutor.ExecuteAttack(charObj, startPos, clickedGrid, objectsData);
+                    EndAction();
+                }
                 else
                     Debug.Log("Enemy out of range!");
                 break;
@@ -186,7 +213,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         }
         else if (action == "EndTurn")
         {
-            EndTurn();
+            if (isForHeuristicAgent)
+                combatAgent.SetManualAction(2, startPos);
+            else
+                EndTurn();
         }
         actionMenu.Hide();
     }
@@ -260,6 +290,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         if (selectedChar != null)
         {
             ExitCharacter();
+            inputManager.OnColliderClicked += ColliderClicked;
             return;
         }
 
@@ -279,81 +310,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         isPaused = true;
         Time.timeScale = 0;
     }
-    
-    private void HandleAttack(Vector3Int targetPos)
-    {
-        if (objectsData == null) return;
-
-        Vector3Int attackerPos = grid.WorldToCell(selectedChar.transform.position);
-        CharacterObject charObj = objectsData.GetTileAt(attackerPos)?.PlacedObject as CharacterObject;
-
-        if (attackerPos == targetPos)
-            return; // cannot attack self
-
-        objectsData.AttackObject(attackerPos, targetPos);
-        charObj.DisableAttack();
-        movePreview.ClearAll();
-        EndAction();
-    }
-
-    private void MoveCharacter(Vector3Int targetPos)
-    {
-        Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
-        CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
-        
-        if (charObj == null)
-            return;
-
-        List<Vector3Int> path = movePreview.FindPathAStar(currentPos, targetPos);
-        int distanceMoved = path.Count;
-
-        if (distanceMoved > charObj.RemainingMoveRange)
-        {
-            Debug.Log("Not enough movement points!");
-            return;
-        }
-
-        if (objectsData.CanPlaceObjectAt(targetPos))
-        {
-            StartCoroutine(WalkPath(path, currentPos, charObj, selectedChar.transform));
-        }
-        movePreview.ClearAll();
-        EndAction();
-    }
-
-    private IEnumerator WalkPath(List<Vector3Int> path, Vector3Int currPos, 
-                                CharacterObject charObj, Transform charTransform)
-    {
-        isMoving = true;
-        animator.SetBool("isMoving", isMoving);
-        for (int i = 0; i < path.Count; i++)
-        {
-            Vector3 start = charTransform.position;
-            Vector3 end = grid.CellToWorld(path[i]);
-            
-            float t = 0f;
-            float speed = 2f;
-    
-            while (t < 1f)
-            {
-                if (charTransform == null)
-                    yield break;
-
-                t += Time.deltaTime * speed;
-                charTransform.position = Vector3.Lerp(start, end, t);
-                yield return null;
-            }
-        }
-        Vector3Int finalPos = path[path.Count - 1];
-        objectsData.MoveObject(currPos, finalPos);
-    
-        int distanceMoved = path.Count;
-        charObj.UseMovement(distanceMoved);
-        isMoving = false;
-        animator.SetBool("isMoving", isMoving);
-    
-        movePreview.ClearAll();
-    }
 
     private void SelectCharacter(Collider collider)
     {
@@ -364,10 +320,9 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         cameraMovement.FocusOnCharacter(selectedChar.transform); 
 
         inputManager.SetSelectMode(false);
-
     }
 
-    private void ExitCharacter()
+    public void ExitCharacter()
     {
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
@@ -379,6 +334,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         currentAction = null;
 
         inputManager.SetSelectMode(true);
+        inputManager.OnColliderClicked -= ColliderClicked;
 
         if (cellIndicatorRenderer != null)
             cellIndicatorRenderer.material.color = defaultColor;
@@ -390,7 +346,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         charObj.ResetMovement();
         charObj.EnableAttack();
         ExitCharacter();
-        inputManager.OnColliderClicked -= ColliderClicked;
+        
         TurnManager.Instance.EndTurn();
     }
 

@@ -110,7 +110,7 @@ public class TurnManager : MonoBehaviour
             if (index >= 0)
             {
                 combatAgent.SetActiveUnitIndex(index);
-                gridSelect.BeginTurn(gridData, currentAgentTeam);
+                gridSelect.BeginTurn(gridData, current);
                 return;
             }
         }

@@ -76,7 +76,7 @@ MonoBehaviour:
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 2
-    <Prefab>k__BackingField: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
+    <Prefab>k__BackingField: {fileID: 920729524746998805, guid: e8b2cca6cfebbe64bb761a7105b0abc2, type: 3}
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Enemy2_Team1
     <ID>k__BackingField: 5
@@ -89,7 +89,7 @@ MonoBehaviour:
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 1
-    <Prefab>k__BackingField: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
+    <Prefab>k__BackingField: {fileID: 704811883864513440, guid: f72ec13739bdb69499405fe5ffb84a6e, type: 3}
     <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
   - <Name>k__BackingField: Enemy3_Team1
     <ID>k__BackingField: 6
@@ -102,7 +102,7 @@ MonoBehaviour:
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 1
-    <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: d427d3ca2c039d245b7d74d564dd9ee3, type: 3}
+    <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: dfb39ca92d3f0fa4e8faecafaf40d24c, type: 3}
     <Portrait>k__BackingField: {fileID: 1466295960, guid: 6b6aea6b09ae650479d233ca540ba809, type: 3}
   - <Name>k__BackingField: Wall Obstacle
     <ID>k__BackingField: 7

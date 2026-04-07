@@ -4,13 +4,16 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class CombatAgent : Agent
 {
     [SerializeField] private float _maxTurn;
-    [SerializeField] private TurnManager _turnmanager;
     [SerializeField] private Grid grid;
+    [SerializeField] private bool isManualMode = false;
     [SerializeField] private MovementPreview previewSystem;
+    [SerializeField] private CombatExecutor combatExecutor;
+    [SerializeField] private PlayerSystem playerSystem;
 
     [HideInInspector] public int currEp = 0;
     [HideInInspector] public float cumulativeReward = 0f;
@@ -24,8 +27,8 @@ public class CombatAgent : Agent
     private int activeUnitIndex;
     private int mapMin = -5;
     private int mapMax = 5;
-    private bool isMoving;
     private bool hasAction = false;
+    public Action OnTurnEnded;
 
     public override void Initialize()
     {
@@ -67,7 +70,7 @@ public class CombatAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-
+        Debug.Log("OBS CALLED");
         // fallback if the active unit is null
         CharacterObject active = allySlots[activeUnitIndex];
         Vector3Int currPos = active != null ? active.Position : Vector3Int.zero;
@@ -90,6 +93,7 @@ public class CombatAgent : Agent
                     occupation = 1f; // obstacle
 
                 sensor.AddObservation(occupation / 3f);
+                Debug.Log("Grid loop");
             }
         }
 
@@ -147,7 +151,7 @@ public class CombatAgent : Agent
             sensor.AddObservation(i == activeUnitIndex ? 1f : 0f);
 
         // TURN INFO
-        sensor.AddObservation(_turnmanager.currentTurn / _maxTurn);
+        sensor.AddObservation(TurnManager.Instance.currentTurn / _maxTurn);
 
         sensor.AddObservation(GetAliveAllies() / 3f); // num allies alive
         sensor.AddObservation(GetAliveEnemies() / 3f); // num enemies alive
@@ -167,10 +171,12 @@ public class CombatAgent : Agent
 
         discrete[0] = chosenActionType;
         discrete[1] = chosenTileIndex;
+        hasAction = false;
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
+        Debug.Log("ACTION RECEIVED");
         // BELUM CEK ACTION MASKING BISA APA TIDAK
         int actionType = actions.DiscreteActions[0];
         int tileIndex = actions.DiscreteActions[1]; 
@@ -183,7 +189,7 @@ public class CombatAgent : Agent
 
         if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
         {
-            _turnmanager.EndTurn();
+            TurnManager.Instance.EndTurn();
             return;
         }
 
@@ -197,7 +203,8 @@ public class CombatAgent : Agent
                     AddReward(-0.5f);
                     break;
                 }
-                HandleMove(currentPos, targetPos, character); 
+                combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
+                StartCoroutine(WaitForMoveThenContinue());
                 break;
 
             case 1:
@@ -206,14 +213,14 @@ public class CombatAgent : Agent
                     AddReward(-0.5f);
                     break;
                 }
-                HandleAttack(currentPos, targetPos, character);
+                combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
+                OnActionFinished();
                 break;
 
-            case 2: // End turn
+            case 2:
+                HandleEndTurn(character);
                 break;
         }
-        Debug.Log("end of action recieved");
-        _turnmanager.EndTurn();
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -254,7 +261,7 @@ public class CombatAgent : Agent
             validTiles.Add(index);
         }
     
-        // ✅ ALWAYS include current position as fallback
+        // ALWAYS include current position as fallback
         int currentIndex = (currentPos.y + 5) * 10 + (currentPos.x + 5);
         validTiles.Add(currentIndex);
     
@@ -310,70 +317,40 @@ public class CombatAgent : Agent
         activeUnitIndex = index;
     }
 
-    void HandleMove(Vector3Int start, Vector3Int target, CharacterObject character)
+    private IEnumerator WaitForMoveThenContinue()
     {
-        List<Vector3Int> path = previewSystem.FindPathAStar(start, target);
+        while (combatExecutor.IsMoving)
+            yield return null;
 
-        if (path == null || path.Count == 0)
-            return;
-
-        if (path.Count > character.RemainingMoveRange)
-        {
-            Debug.Log("Not enough movement points!");
-            return;
-        }
-            
-        if (_gridData.CanPlaceObjectAt(target))
-        {
-            StartCoroutine(WalkPath(path, start, character));
-        }
+        OnActionFinished(); // continue same turn
     }
 
-    void HandleAttack(Vector3Int attackerPos, Vector3Int targetPos, CharacterObject character)
+    private void HandleEndTurn(CharacterObject character)
     {
-        if (attackerPos == targetPos)
-            return;
+        character.ResetMovement();
+        character.EnableAttack();
+        Debug.Log("inside handle end turn");
+        if (isManualMode)
+        {
+            OnTurnEnded?.Invoke();
+        }
+        
 
-        _gridData.AttackObject(attackerPos, targetPos);
+        TurnManager.Instance.EndTurn();
     }
 
-    public IEnumerator WalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject character)
+    private void OnActionFinished()
     {
-        if (path == null || path.Count == 0)
-            yield break;
+        // reset action mode if needed
+        // (optional if agent doesn't use UI)
 
-        Transform enemyTransform =
-            _gridData.GetTileAt(currPos).PlacedGameObject.transform;
-
-        isMoving = true;
-
-        for (int i = 0; i < path.Count; i++)
-        {
-            Vector3 start = enemyTransform.position;
-            Vector3 end = grid.CellToWorld(path[i]);
-
-            float t = 0f;
-            float speed = 2f;
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime * speed;
-                enemyTransform.position = Vector3.Lerp(start, end, t);
-                yield return null;
-            }
-        }
-
-        Vector3Int finalPos = path[^1];
-        // latestPos = finalPos;
-
-        _gridData.MoveObject(currPos, finalPos);
-
-        character.UseMovement(path.Count);
-        isMoving = false;
+        if (!isManualMode)
+            RequestDecision();
     }
 
     public void setGridData(GridData data)
     {
+        Debug.Log("set grid data");
         _gridData = data;
     }
 }

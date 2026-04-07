@@ -566,6 +566,7 @@ MonoBehaviour:
   mouseIndicator: {fileID: 366886310}
   cellIndicator: {fileID: 423842676}
   inputManager: {fileID: 281358870}
+  combatExecutor: {fileID: 784646986}
   grid: {fileID: 780557240}
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
   gridVisualization: {fileID: 1127068153}
@@ -1692,6 +1693,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 784646985}
+  - component: {fileID: 784646986}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -1723,6 +1725,21 @@ Transform:
   - {fileID: 1686085150}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &784646986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784646984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4090ad026c457dd47bbe18071b2989cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatExecutor
+  grid: {fileID: 780557240}
+  movePreview: {fileID: 857286124}
+  animator: {fileID: 0}
 --- !u!1 &800820801
 GameObject:
   m_ObjectHideFlags: 0
@@ -3713,9 +3730,9 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   _maxTurn: 0
-  _turnmanager: {fileID: 0}
   grid: {fileID: 0}
   previewSystem: {fileID: 0}
+  combatExecutor: {fileID: 0}
   currEp: 0
   cumulativeReward: 0
 --- !u!114 &1666468180
@@ -3950,6 +3967,7 @@ MonoBehaviour:
   turnOrderUI: {fileID: 2049846321}
   controlMode: 0
   combatAgent: {fileID: 1666468179}
+  currentAgentTeam: 1
   defeatedEnemyNames: []
 --- !u!1001 &1774642235
 PrefabInstance:

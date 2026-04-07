@@ -48,8 +48,6 @@ public class InputManager : MonoBehaviour
                 OnColliderClicked?.Invoke(clickedCollider);
             }
         }
-            
-        
     }
 
     private void HandleHoverDetection()

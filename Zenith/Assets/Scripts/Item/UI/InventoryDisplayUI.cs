@@ -12,6 +12,14 @@ public class InventoryDisplayUI : MonoBehaviour
 
     public void RefreshUI()
     {
+        if (InventoryManager.Instance == null) return;
+
+        if (contentParent == null)
+        {
+            Debug.LogError("InventoryDisplayUI: contentParent is missing!");
+            return;
+        }
+
         foreach (Transform child in contentParent)
         {
             Destroy(child.gameObject);
@@ -33,8 +41,11 @@ public class InventoryDisplayUI : MonoBehaviour
 
     void OnEnable()
     {
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged += RefreshUI;
+        }
         RefreshUI();
-        InventoryManager.Instance.OnInventoryChanged += RefreshUI;
     }
 
     void OnDisable()

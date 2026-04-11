@@ -30,6 +30,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
     [SerializeField] private CombatAgent combatAgent;
     [SerializeField] private int currentAgentTeam = 1;
+    [SerializeField] private bool useAnimation = true;
 
     private TurnQueue turnQueue;
     private List<CharacterObject> allySlots = new();
@@ -70,7 +71,7 @@ public class TurnManager : MonoBehaviour
         }
 
         turnQueue = new TurnQueue(characters, 10); // Sementara simulate 10 turn ahead
-        print(turnQueue.allUnits.Count);
+        print("Total units: " + turnQueue.allUnits.Count);
     }
     
     public void StartTurn()
@@ -97,7 +98,7 @@ public class TurnManager : MonoBehaviour
         {
             if (current.IsPlayer)
             {
-                gridSelect.BeginTurn(pos, gridData);
+                gridSelect.BeginTurn(gridData);
                 return;
             }
         }
@@ -124,7 +125,7 @@ public class TurnManager : MonoBehaviour
             return;
         }
         print("enemy is playing");
-        ai.BeginTurn(pos, gridData);
+        ai.BeginTurn(gridData);
     }
 
     void AdvanceATB(CharacterObject active)
@@ -145,6 +146,11 @@ public class TurnManager : MonoBehaviour
 
     private void HandleCharacterDeath(CharacterObject character)
     {
+        if (character.Team == currentAgentTeam)
+            combatAgent.AddReward(-0.5f);
+        else
+            combatAgent.AddReward(0.5f);
+
         turnQueue.Remove(character);
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
 
@@ -162,7 +168,7 @@ public class TurnManager : MonoBehaviour
         {
             if (controlMode == CombatControlMode.MLAgent)
             {
-                combatAgent.AddReward(-0.2f);
+                combatAgent.AddReward(-0.05f);
                 combatAgent.EndEpisode();
             }
             return;
@@ -170,11 +176,6 @@ public class TurnManager : MonoBehaviour
         turnQueue.PopNext();
         currentTurn++;
         StartTurn();
-    }
-
-    private bool AreEnemiesRemaining()
-    {
-        return gridData.GetAllEnemies().Count > 0;
     }
 
     int GetAllySlotIndex(CharacterObject unit)
@@ -187,11 +188,12 @@ public class TurnManager : MonoBehaviour
 
         return -1;
     }
+    public bool GetUseAnimation() => useAnimation;
 
     void CheckBattleEnd()
     {
-        int aliveAllies = gridData.GetTeamNPC().Count;
-        int aliveEnemies = gridData.GetAllEnemies().Count;
+        int aliveAllies = gridData.GetUnitsByTeam(currentAgentTeam).Count;
+        int aliveEnemies = gridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1).Count;
 
         if (aliveEnemies == 0)
         {
@@ -199,7 +201,7 @@ public class TurnManager : MonoBehaviour
 
             if (controlMode == CombatControlMode.MLAgent)
             {
-                combatAgent.AddReward(1f);
+                combatAgent.AddReward(10f);
                 combatAgent.EndEpisode();
             }
             else
@@ -229,7 +231,7 @@ public class TurnManager : MonoBehaviour
 
             if (controlMode == CombatControlMode.MLAgent)
             {
-                combatAgent.AddReward(-1f);
+                combatAgent.AddReward(-10f);
                 combatAgent.EndEpisode();
             }
         }

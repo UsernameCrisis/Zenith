@@ -5,9 +5,9 @@ using BehaviourTrees;
 public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 {
     protected GridData gridData;
-    protected Vector3Int latestPos;
     protected Vector3Int targetPos;
     protected BehaviourTree tree;
+    [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] protected Grid grid;
     [SerializeField] protected MovementPreview previewSystem;
     public bool IsPlayer => false;
@@ -17,16 +17,16 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         grid = FindAnyObjectByType<Grid>();
         previewSystem = FindAnyObjectByType<MovementPreview>();
+        combatExecutor = FindAnyObjectByType<CombatExecutor>();
     }
 
-    public void BeginTurn(Vector3Int pos, GridData gridData)
+    public void BeginTurn(GridData gridData)
     {
         this.gridData = gridData;
-        latestPos = pos;
 
         tree = new BehaviourTree(GetTreeName());
         tree.AddChild(BuildTree());
-
+        
         StartCoroutine(RunTree());
     }
 
@@ -48,7 +48,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     public void EndTurn()
     {
-        CharacterObject enemyChar = gridData.GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+        CharacterObject enemyChar = gridData.GetTileAt(GetCurrentPosition())?.PlacedObject as CharacterObject;
         enemyChar.ResetMovement();
         TurnManager.Instance.EndTurn();
     }
@@ -125,7 +125,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         float distanceScore = dist * 10f;
     
         // Optional
-        float moveCost = Manhattan(latestPos, tile);
+        float moveCost = Manhattan(GetCurrentPosition(), tile);
         return distanceScore;
     }
 
@@ -155,41 +155,6 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         return best;
     }
 
-    public IEnumerator EnemyWalkPath(List<Vector3Int> path, Vector3Int currPos, CharacterObject enemyChar)
-    {
-        if (path == null || path.Count == 0)
-            yield break;
-
-        Transform enemyTransform =
-            gridData.GetTileAt(currPos).PlacedGameObject.transform;
-
-        isMoving = true;
-
-        for (int i = 0; i < path.Count; i++)
-        {
-            Vector3 start = enemyTransform.position;
-            Vector3 end = grid.CellToWorld(path[i]);
-
-            float t = 0f;
-            float speed = 2f;
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime * speed;
-                enemyTransform.position = Vector3.Lerp(start, end, t);
-                yield return null;
-            }
-        }
-
-        Vector3Int finalPos = path[^1];
-        latestPos = finalPos;
-
-        gridData.MoveObject(currPos, finalPos);
-
-        enemyChar.UseMovement(path.Count);
-        isMoving = false;
-    }
-
     public bool HasLineOfSight(Vector3Int start, Vector3Int end)
     {
         List<Vector3Int> line = GetLine(start, end);
@@ -205,6 +170,20 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         }
 
         return true;
+    }
+    
+    public Vector3Int GetCurrentPosition()
+    {
+        Vector3Int gridPos = grid.WorldToCell(transform.position);
+        TileData tile = gridData.GetTileAt(gridPos);
+
+        if (tile?.PlacedObject is CharacterObject)
+        {
+            return gridPos;
+        }
+    
+        Debug.LogError("AI is not on a valid tile!");
+        return gridPos;
     }
     
     public List<Vector3Int> GetLine(Vector3Int start, Vector3Int end)
@@ -239,13 +218,10 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
     }
-   
     public GridData getGridData() {return gridData;}
     public void setTargetPos(Vector3Int pos) {targetPos = pos;}
     public Vector3Int getTargetPos() {return targetPos;}
     public MovementPreview getPreview() {return previewSystem;}
-    public Vector3Int getLatestPos() {return latestPos;}
-    public void setLatestPos(Vector3Int pos) {latestPos = pos;}
-
+    public CombatExecutor GetCombatExecutor() => combatExecutor;
     protected abstract Node BuildTree();
 }

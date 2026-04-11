@@ -68,7 +68,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         }
     }
     
-    public void BeginTurn(Vector3Int pos, GridData gridData)
+    public void BeginTurn(GridData gridData)
     {
         objectsData = gridData;
         print("inside select");

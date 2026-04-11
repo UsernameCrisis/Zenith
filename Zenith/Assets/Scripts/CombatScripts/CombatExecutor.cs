@@ -15,10 +15,10 @@ public class CombatExecutor : MonoBehaviour
         if (character == null) return;
 
         List<Vector3Int> path = movePreview.FindPathAStar(startPos, targetPos);
-
+        
         if (path == null || path.Count == 0)
             return;
-
+            
         if (path.Count > character.RemainingMoveRange)
         {
             Debug.Log("Not enough movement points!");
@@ -27,8 +27,11 @@ public class CombatExecutor : MonoBehaviour
 
         if (!gridData.CanPlaceObjectAt(targetPos))
             return;
-
-        StartCoroutine(WalkPath(path, startPos, character, gridData));
+        print("before start coroutine or move");
+        if (TurnManager.Instance.GetUseAnimation())
+            StartCoroutine(WalkPath(path, startPos, character, gridData));
+        else
+            Move(path, startPos, character, gridData);
     }
 
     public void ExecuteAttack(CharacterObject attacker, Vector3Int attackerPos, Vector3Int targetPos, GridData gridData)
@@ -78,6 +81,23 @@ public class CombatExecutor : MonoBehaviour
 
         if (animator != null)
             animator.SetBool("isMoving", false);
+
+        movePreview.ClearAll();
+    }
+
+    private void Move(List<Vector3Int> path, Vector3Int startPos, CharacterObject character, GridData gridData)
+    {
+        Vector3Int finalPos = path[^1];
+
+        // Move instantly in grid logic
+        gridData.MoveObject(startPos, finalPos);
+
+        // Update world position immediately
+        Transform charTransform = gridData.GetTileAt(finalPos).PlacedGameObject.transform;
+        charTransform.position = grid.CellToWorld(finalPos);
+
+        // Consume movement
+        character.UseMovement(path.Count);
 
         movePreview.ClearAll();
     }

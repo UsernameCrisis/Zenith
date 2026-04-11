@@ -55,7 +55,6 @@ public class PopulateMap : MonoBehaviour
         int targetObstacles = Mathf.RoundToInt(totalTiles * obstacleDensity);
         int placed = 0;
         int attempts = totalTiles * 3;
-        print("tes");
 
         for (int i = 0; i < attempts && placed < targetObstacles; i++)
         {
@@ -73,7 +72,6 @@ public class PopulateMap : MonoBehaviour
 
             if (isFullyRandom)
             {
-                print("inside cluster");
                 int neighborObstacles = CountObstacleNeighbors(pos);
                 if (neighborObstacles > clusterLimit)
                     continue;
@@ -85,21 +83,17 @@ public class PopulateMap : MonoBehaviour
 
             if (!skipValidation)
             {
-                print("isnside validation");
                 int pathCount = useMaxFlow ? MaxFlow(team1Center, team2Center, width, height)
                                             : CountPaths(team1Center, team2Center);
-                print("after path count");
                 if (pathCount < minTraversablePaths)
                 {
                     objectsData.RemoveObjectAt(pos);
 
                     Destroy(placedGameObjects[^1]);
                     placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
-                    print("after remove object");
                     continue;
                 }
             }
-            print("before placed++");
             placed++;
         }
     }

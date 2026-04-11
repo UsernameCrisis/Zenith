@@ -566,6 +566,7 @@ MonoBehaviour:
   mouseIndicator: {fileID: 366886310}
   cellIndicator: {fileID: 423842676}
   inputManager: {fileID: 281358870}
+  combatAgent: {fileID: 1666468179}
   combatExecutor: {fileID: 784646986}
   grid: {fileID: 780557240}
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
@@ -1978,6 +1979,10 @@ PrefabInstance:
       propertyPath: previewSystem
       value: 
       objectReference: {fileID: 857286124}
+    - target: {fileID: 7842879562643823708, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
+      propertyPath: combatExecutor
+      value: 
+      objectReference: {fileID: 784646986}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3731,8 +3736,10 @@ MonoBehaviour:
   MaxStep: 0
   _maxTurn: 0
   grid: {fileID: 0}
+  isManualMode: 0
   previewSystem: {fileID: 0}
   combatExecutor: {fileID: 0}
+  playerSystem: {fileID: 0}
   currEp: 0
   cumulativeReward: 0
 --- !u!114 &1666468180
@@ -3968,6 +3975,7 @@ MonoBehaviour:
   controlMode: 0
   combatAgent: {fileID: 1666468179}
   currentAgentTeam: 1
+  useAnimation: 1
   defeatedEnemyNames: []
 --- !u!1001 &1774642235
 PrefabInstance:
@@ -4029,6 +4037,10 @@ PrefabInstance:
       propertyPath: previewSystem
       value: 
       objectReference: {fileID: 857286124}
+    - target: {fileID: 6708055557406165516, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
+      propertyPath: combatExecutor
+      value: 
+      objectReference: {fileID: 784646986}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5219,6 +5231,10 @@ PrefabInstance:
       propertyPath: previewSystem
       value: 
       objectReference: {fileID: 857286124}
+    - target: {fileID: 8650806634094081094, guid: d427d3ca2c039d245b7d74d564dd9ee3, type: 3}
+      propertyPath: combatExecutor
+      value: 
+      objectReference: {fileID: 784646986}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

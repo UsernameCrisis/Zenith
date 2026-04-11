@@ -41,11 +41,14 @@ public class GridData
     {
         if (!CanPlaceObjectAt(end))
             return;
+
+        if (!placedObjects.TryGetValue(start, out TileData tempData))
+            return;
         
-        TileData tempData = placedObjects[start];
+        RemoveObjectAt(start, true);
         tempData.occupiedPos = end; // Update position in the actual grid data
         placedObjects[end] = tempData;
-        RemoveObjectAt(start, true);
+        
 
         if (tempData.PlacedObject is CharacterObject character)
         {
@@ -229,8 +232,10 @@ public class GridData
                 teamList.RemoveAll(x => x.character == character);
             }
         }
-
-        data.PlacedObject?.OnRemoved();
+        if (!isMoving)
+        {
+            data.PlacedObject?.OnRemoved();
+        }
         placedObjects.Remove(gridPos);
         
     }

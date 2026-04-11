@@ -176,6 +176,7 @@ public class CombatAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
+        AddReward(-0.01f);
         Debug.Log("ACTION RECEIVED");
         // BELUM CEK ACTION MASKING BISA APA TIDAK
         int actionType = actions.DiscreteActions[0];
@@ -200,9 +201,10 @@ public class CombatAgent : Agent
             case 0:
                 if (!previewSystem.BFSReachables(currentPos, character.RemainingMoveRange).Contains(targetPos))
                 {
-                    AddReward(-0.5f);
+                    AddReward(-0.1f);
                     break;
                 }
+                // AddReward(0.05f);
                 combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
                 StartCoroutine(WaitForMoveThenContinue());
                 break;
@@ -210,10 +212,11 @@ public class CombatAgent : Agent
             case 1:
                 if (!previewSystem.GetAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
                 {
-                    AddReward(-0.5f);
+                    AddReward(-0.1f);
                     break;
                 }
                 combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
+                AddReward(0.05f);
                 OnActionFinished();
                 break;
 
@@ -350,7 +353,6 @@ public class CombatAgent : Agent
 
     public void setGridData(GridData data)
     {
-        Debug.Log("set grid data");
         _gridData = data;
     }
 }

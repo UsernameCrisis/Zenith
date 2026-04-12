@@ -98,6 +98,14 @@ public class CharacterObject : PlacedObject
         RemainingMoveRange = MaxMoveRange;
     }
 
+    public void ResetState()
+    {
+        HP = MaxHp;
+        CurrentATB = 0f;
+        RemainingMoveRange = MaxMoveRange;
+        canAttack = true;
+    }
+
     public void UseMovement(int distance)
     {
         RemainingMoveRange = Mathf.Max(0, RemainingMoveRange - distance);

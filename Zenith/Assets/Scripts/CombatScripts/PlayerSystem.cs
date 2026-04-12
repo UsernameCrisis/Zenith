@@ -32,6 +32,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private bool isInActionMode = false;
     private string currentAction = null;
     private CharacterObject currentTurnUnit;
+    private TurnManager turnManager;
     
     private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
 
@@ -85,6 +86,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     void Start()
     {
+        turnManager = GetComponentInParent<TurnManager>();
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         defaultColor = cellIndicatorRenderer.material.color;
     }
@@ -347,7 +349,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         charObj.EnableAttack();
         ExitCharacter();
         
-        TurnManager.Instance.EndTurn();
+        turnManager.EndTurn();
     }
 
     private void EndAction()

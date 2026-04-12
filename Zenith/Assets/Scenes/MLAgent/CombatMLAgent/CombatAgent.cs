@@ -9,11 +9,11 @@ using System;
 public class CombatAgent : Agent
 {
     [SerializeField] private float _maxTurn;
-    [SerializeField] private Grid grid;
     [SerializeField] private bool isManualMode = false;
     [SerializeField] private MovementPreview previewSystem;
     [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] private PlayerSystem playerSystem;
+    [SerializeField] private TurnManager turnManager;
 
     [HideInInspector] public int currEp = 0;
     [HideInInspector] public float cumulativeReward = 0f;
@@ -38,6 +38,7 @@ public class CombatAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        turnManager.ResetEnv();
         allySlots.Clear();
         enemySlots.Clear();
 
@@ -70,7 +71,6 @@ public class CombatAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        Debug.Log("OBS CALLED");
         // fallback if the active unit is null
         CharacterObject active = allySlots[activeUnitIndex];
         Vector3Int currPos = active != null ? active.Position : Vector3Int.zero;
@@ -93,7 +93,6 @@ public class CombatAgent : Agent
                     occupation = 1f; // obstacle
 
                 sensor.AddObservation(occupation / 3f);
-                Debug.Log("Grid loop");
             }
         }
 
@@ -151,7 +150,7 @@ public class CombatAgent : Agent
             sensor.AddObservation(i == activeUnitIndex ? 1f : 0f);
 
         // TURN INFO
-        sensor.AddObservation(TurnManager.Instance.currentTurn / _maxTurn);
+        sensor.AddObservation(turnManager.currentTurn / _maxTurn);
 
         sensor.AddObservation(GetAliveAllies() / 3f); // num allies alive
         sensor.AddObservation(GetAliveEnemies() / 3f); // num enemies alive
@@ -159,7 +158,6 @@ public class CombatAgent : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        Debug.Log("Inside heuristic0");
         var discrete = actionsOut.DiscreteActions;
 
         if (!hasAction)
@@ -177,7 +175,6 @@ public class CombatAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         AddReward(-0.01f);
-        Debug.Log("ACTION RECEIVED");
         // BELUM CEK ACTION MASKING BISA APA TIDAK
         int actionType = actions.DiscreteActions[0];
         int tileIndex = actions.DiscreteActions[1]; 
@@ -190,7 +187,7 @@ public class CombatAgent : Agent
 
         if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
         {
-            TurnManager.Instance.EndTurn();
+            turnManager.EndTurn();
             return;
         }
 
@@ -339,7 +336,7 @@ public class CombatAgent : Agent
         }
         
 
-        TurnManager.Instance.EndTurn();
+        turnManager.EndTurn();
     }
 
     private void OnActionFinished()

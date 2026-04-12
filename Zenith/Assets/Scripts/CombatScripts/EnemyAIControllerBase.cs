@@ -12,12 +12,18 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     [SerializeField] protected MovementPreview previewSystem;
     public bool IsPlayer => false;
     public bool isMoving;
+    private TurnManager turnManager;
 
     void Awake()
     {
         grid = FindAnyObjectByType<Grid>();
         previewSystem = FindAnyObjectByType<MovementPreview>();
         combatExecutor = FindAnyObjectByType<CombatExecutor>();
+        
+    }
+    void Start()
+    {
+        turnManager = GetComponentInParent<TurnManager>();
     }
 
     public void BeginTurn(GridData gridData)
@@ -50,7 +56,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         CharacterObject enemyChar = gridData.GetTileAt(GetCurrentPosition())?.PlacedObject as CharacterObject;
         enemyChar.ResetMovement();
-        TurnManager.Instance.EndTurn();
+        turnManager.EndTurn();
     }
 
     public Vector3Int FindClosest(Vector3Int enemyPos, List<(Vector3Int pos, CharacterObject)> character)

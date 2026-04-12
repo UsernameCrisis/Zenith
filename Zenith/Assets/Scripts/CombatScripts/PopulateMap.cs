@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class PopulateMap : MonoBehaviour
 {
     [SerializeField] private ObjectDatabaseSO database;
+    [SerializeField] private Transform spawnedObjectContainer;
     [SerializeField] private Grid grid;
     [SerializeField] private bool loadFromSave = true;
     [SerializeField] private bool forTrainingAgent = false;
@@ -19,6 +20,7 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private int width, height;
     private int minX, maxX, minY, maxY, offsetX, offsetY;
     private Vector3Int team1Center, team2Center;
+    private TurnManager turnManager;
 
     public GridData objectsData;
     public List<GameObject> placedGameObjects = new();
@@ -26,20 +28,27 @@ public class PopulateMap : MonoBehaviour
     void Awake()
     {
         objectsData = new();
-    }
-    void Start()
-    {
+        
         offsetX = width / 2;
         offsetY = height / 2;
 
         minX = -offsetX; maxX = offsetX - 1; minY = -offsetY; maxY = offsetY - 1;
+    }
+    void Start()
+    {
+        turnManager = GetComponentInParent<TurnManager>();
+    }
+
+    public void Generate()
+    {
+        ClearMap();
+
         if (loadFromSave)
         {
             PopulateFromGridJSON();
         }
-        else if (forTrainingAgent == true)
+        else if (forTrainingAgent)
         {
-            // PopulateFromGridJSON();
             SpawnTeams();
             SpawnRandomObstacles();
         }
@@ -58,7 +67,6 @@ public class PopulateMap : MonoBehaviour
 
         for (int i = 0; i < attempts && placed < targetObstacles; i++)
         {
-            print("inside for loop" + i);
             Vector3Int pos = GetRandomEmptyTile();
 
             if (!IsInsideBounds(pos))
@@ -465,14 +473,13 @@ public class PopulateMap : MonoBehaviour
         //     data.setDamage(GameManager.Instance.playerAtk);
         //     data.setDefense(GameManager.Instance.playerMaxHP);
         // }
-        GameObject newObject = Instantiate(data.Prefab);
+        GameObject newObject = Instantiate(data.Prefab, spawnedObjectContainer);
         newObject.transform.position = grid.CellToWorld(gridPos);
         placedGameObjects.Add(newObject);
         PlacedObject placedObj = CreatePlacedObjectFromData(data);
 
         if (placedObj is CharacterObject character)
         {
-            character.OnDied += HandleCharacterDeath;
             CharacterView view = newObject.GetComponent<CharacterView>();
             if (view != null)
             {
@@ -487,27 +494,19 @@ public class PopulateMap : MonoBehaviour
         objectsData.AddObjectAt(gridPos, placedObj, placedObjectIndex, newObject);
     }
 
-    private void HandleCharacterDeath(CharacterObject character)
+    public void HandleCharacterDeath(CharacterObject character)
     {
         Vector3Int? pos = objectsData.GetPositionOf(character);
         if (pos == null)
             return;
 
         TileData tile = objectsData.GetTileAt(pos.Value);
-        if (tile.PlacedGameObject.CompareTag("Player"))
+        
+        if (!forTrainingAgent)
         {
-            SceneManager.LoadScene("Tavern");
-        } 
-        else if (tile.PlacedGameObject.CompareTag("Enemy"))
-        {
-            //IMPORTANT sementara kan aku manual pasang enemynya jadi namanya agak aneh, nanti kedepan aku ubah ke otomatis sesuai dengan nama enemy dari listnya
-            TurnManager.Instance.defeatedEnemyNames.Add(tile.PlacedGameObject.name); 
-        } 
-        else if (tile.PlacedGameObject.CompareTag("Allies"))
-        {
-            // Do something for allies
+            HandleDeathPlayerOnly(character, tile);
         }
-    
+
         if (tile.PlacedGameObject != null)
             Destroy(tile.PlacedGameObject);
 
@@ -515,6 +514,22 @@ public class PopulateMap : MonoBehaviour
         objectsData.RemoveObjectAt(pos.Value);
     }
     
+    private void HandleDeathPlayerOnly(CharacterObject character, TileData tile)
+    {
+        if (tile.PlacedGameObject.CompareTag("Player"))
+        {
+            SceneManager.LoadScene("Tavern");
+        } 
+        else if (tile.PlacedGameObject.CompareTag("Enemy"))
+        {
+            turnManager.defeatedEnemyNames.Add(tile.PlacedGameObject.name); 
+        } 
+        else if (tile.PlacedGameObject.CompareTag("Allies"))
+        {
+            // Do something for allies
+        }
+    }
+
     private PlacedObject CreatePlacedObjectFromData(ObjectData data)
     {
         switch (data.Type)
@@ -530,6 +545,19 @@ public class PopulateMap : MonoBehaviour
             default:
                 return new StaticObject(data.Name);
         }
+    }
+    
+    public void ClearMap()
+    {
+        // Destroy all spawned GameObjects
+        foreach (var obj in placedGameObjects)
+        {
+            if (obj != null)
+                Destroy(obj);
+        }
+
+        placedGameObjects.Clear();
+        objectsData.Clear();
     }
 
     private bool IsInsideBounds(Vector3Int pos)

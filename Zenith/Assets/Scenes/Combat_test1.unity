@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!1 &281358869
+--- !u!1 &236680603
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -313,8 +313,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 281358871}
-  - component: {fileID: 281358870}
+  - component: {fileID: 236680605}
+  - component: {fileID: 236680604}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -322,13 +322,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &281358870
+--- !u!114 &236680604
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 281358869}
+  m_GameObject: {fileID: 236680603}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9ff5e1d5003ac8e40b4b8d9ab3949eec, type: 3}
@@ -344,13 +344,13 @@ MonoBehaviour:
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 4096
---- !u!4 &281358871
+--- !u!4 &236680605
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 281358869}
+  m_GameObject: {fileID: 236680603}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -565,7 +565,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridSelectSystem
   mouseIndicator: {fileID: 366886310}
   cellIndicator: {fileID: 423842676}
-  inputManager: {fileID: 281358870}
+  inputManager: {fileID: 236680604}
   combatAgent: {fileID: 1666468179}
   combatExecutor: {fileID: 784646986}
   grid: {fileID: 780557240}
@@ -883,6 +883,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 493923339}
   m_CullTransparentMesh: 1
+--- !u!1 &511479805
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 511479806}
+  m_Layer: 0
+  m_Name: SpawnObjectContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &511479806
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511479805}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 784646985}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &543234298
 GameObject:
   m_ObjectHideFlags: 0
@@ -1695,6 +1726,7 @@ GameObject:
   m_Component:
   - component: {fileID: 784646985}
   - component: {fileID: 784646986}
+  - component: {fileID: 784646987}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -1715,7 +1747,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 281358871}
+  - {fileID: 236680605}
   - {fileID: 331495577}
   - {fileID: 366886311}
   - {fileID: 762959250}
@@ -1723,7 +1755,7 @@ Transform:
   - {fileID: 1118025224}
   - {fileID: 1127068157}
   - {fileID: 857286123}
-  - {fileID: 1686085150}
+  - {fileID: 511479806}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &784646986
@@ -1741,6 +1773,27 @@ MonoBehaviour:
   grid: {fileID: 780557240}
   movePreview: {fileID: 857286124}
   animator: {fileID: 0}
+--- !u!114 &784646987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784646984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768cf22d85cde0a4e9867e870f2ef962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TurnManager
+  currentTurn: 1
+  mapPopulator: {fileID: 1118025225}
+  gridSelect: {fileID: 331495578}
+  turnOrderUI: {fileID: 2049846321}
+  controlMode: 0
+  combatAgent: {fileID: 1666468179}
+  currentAgentTeam: 1
+  useAnimation: 1
+  defeatedEnemyNames: []
 --- !u!1 &800820801
 GameObject:
   m_ObjectHideFlags: 0
@@ -2473,6 +2526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
+  spawnedObjectContainer: {fileID: 511479806}
   grid: {fileID: 780557240}
   loadFromSave: 0
   forTrainingAgent: 0
@@ -3740,6 +3794,7 @@ MonoBehaviour:
   previewSystem: {fileID: 0}
   combatExecutor: {fileID: 0}
   playerSystem: {fileID: 0}
+  turnManager: {fileID: 784646987}
   currEp: 0
   cumulativeReward: 0
 --- !u!114 &1666468180
@@ -3781,7 +3836,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666468178}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3924,59 +3979,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1680780485}
   m_CullTransparentMesh: 1
---- !u!1 &1686085149
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1686085150}
-  - component: {fileID: 1686085151}
-  m_Layer: 0
-  m_Name: TurnManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1686085150
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686085149}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 784646985}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1686085151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686085149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 768cf22d85cde0a4e9867e870f2ef962, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TurnManager
-  currentTurn: 1
-  mapPopulator: {fileID: 1118025225}
-  gridSelect: {fileID: 331495578}
-  turnOrderUI: {fileID: 2049846321}
-  controlMode: 0
-  combatAgent: {fileID: 1666468179}
-  currentAgentTeam: 1
-  useAnimation: 1
-  defeatedEnemyNames: []
 --- !u!1001 &1774642235
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5247,6 +5249,7 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
+  - {fileID: 1666468181}
   - {fileID: 784646985}
   - {fileID: 171043264}
   - {fileID: 1660523644}
@@ -5260,4 +5263,3 @@ SceneRoots:
   - {fileID: 1607384034}
   - {fileID: 1801900059}
   - {fileID: 1196816044}
-  - {fileID: 1666468181}

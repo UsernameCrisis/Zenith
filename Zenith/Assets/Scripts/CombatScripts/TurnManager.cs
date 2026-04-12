@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public enum CombatState
 {
@@ -18,8 +17,6 @@ public enum CombatControlMode
 
 public class TurnManager : MonoBehaviour
 {
-    
-    public static TurnManager Instance;
     public CombatState State { get; private set; } = CombatState.Playing;
     private GridData gridData;
     private int maxTurn = 50;
@@ -36,25 +33,12 @@ public class TurnManager : MonoBehaviour
     private List<CharacterObject> allySlots = new();
     public List<string> defeatedEnemyNames = new();
 
-    void Awake()
+    void Start()
     {
-        Instance = this;
-        gridData = mapPopulator.GetComponent<PopulateMap>().objectsData;
-        combatAgent.setGridData(gridData);
-        combatAgent.SetAgentTeam(currentAgentTeam);
-    }
-
-    private IEnumerator Start()
-    {
-        yield return null;
-        InitializeTurnQueue();
-        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
-        StartTurn();
+        ResetEnv();
     }
     private void InitializeTurnQueue()
     {
-        currentTurn = 1;
-        
         var units = gridData.GetAllUnits();
 
         List<CharacterObject> characters = new();
@@ -128,6 +112,38 @@ public class TurnManager : MonoBehaviour
         ai.BeginTurn(gridData);
     }
 
+    public void ResetEnv()
+    {
+        Cleanup();
+
+        State = CombatState.Playing;
+        currentTurn = 1;
+        allySlots.Clear();
+        defeatedEnemyNames.Clear();
+        mapPopulator.Generate();
+
+        gridData = mapPopulator.objectsData;
+        combatAgent.setGridData(gridData);
+        combatAgent.SetAgentTeam(currentAgentTeam);
+
+        InitializeTurnQueue();
+        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
+        StartTurn();
+    }
+
+    void Cleanup()
+    {
+        if (gridData == null) return;
+        var units = gridData.GetAllUnits();
+
+        foreach (var unit in units)
+        {
+            CharacterObject characterObject = unit.character;
+            if (characterObject != null)
+                characterObject.OnDied -= HandleCharacterDeath;
+        }
+    }
+
     void AdvanceATB(CharacterObject active)
     {
         if (active.Speed <= 0f)
@@ -154,6 +170,8 @@ public class TurnManager : MonoBehaviour
         turnQueue.Remove(character);
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
 
+        mapPopulator.HandleCharacterDeath(character);
+
         CheckBattleEnd();
         
         if (turnQueue.GetCurrent() == character)
@@ -168,11 +186,12 @@ public class TurnManager : MonoBehaviour
         {
             if (controlMode == CombatControlMode.MLAgent)
             {
-                combatAgent.AddReward(-0.05f);
+                combatAgent.AddReward(-10f);
                 combatAgent.EndEpisode();
             }
             return;
         }
+        combatAgent.AddReward(-0.05f);
         turnQueue.PopNext();
         currentTurn++;
         StartTurn();
@@ -201,6 +220,7 @@ public class TurnManager : MonoBehaviour
 
             if (controlMode == CombatControlMode.MLAgent)
             {
+                print("MENANG");
                 combatAgent.AddReward(10f);
                 combatAgent.EndEpisode();
             }
@@ -236,7 +256,6 @@ public class TurnManager : MonoBehaviour
             }
         }
     }
-
 
     // void ShowScene(Scene scene)
     // {

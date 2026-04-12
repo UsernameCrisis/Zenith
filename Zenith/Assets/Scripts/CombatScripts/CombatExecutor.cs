@@ -4,11 +4,19 @@ using System.Collections.Generic;
 
 public class CombatExecutor : MonoBehaviour
 {
-    [SerializeField] private Grid grid;
-    [SerializeField] private MovementPreview movePreview;
     [SerializeField] private Animator animator;
     private bool isMoving = false;
+    private TurnManager turnManager;
+    private MovementPreview movePreview;
+    private Grid grid;
     public bool IsMoving => isMoving;
+
+    void Start()
+    {
+        grid = GetComponentInChildren<Grid>();
+        movePreview = GetComponentInChildren<MovementPreview>();
+        turnManager = GetComponent<TurnManager>();
+    }
 
     public void ExecuteMove(CharacterObject character, Vector3Int startPos, Vector3Int targetPos, GridData gridData)
     {
@@ -28,7 +36,7 @@ public class CombatExecutor : MonoBehaviour
         if (!gridData.CanPlaceObjectAt(targetPos))
             return;
         print("before start coroutine or move");
-        if (TurnManager.Instance.GetUseAnimation())
+        if (turnManager.GetUseAnimation())
             StartCoroutine(WalkPath(path, startPos, character, gridData));
         else
             Move(path, startPos, character, gridData);

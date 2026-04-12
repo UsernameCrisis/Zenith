@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -238,6 +237,12 @@ public class GridData
         }
         placedObjects.Remove(gridPos);
         
+    }
+
+    public void Clear()
+    {
+        placedObjects.Clear();
+        teamUnits.Clear();
     }
 }
 

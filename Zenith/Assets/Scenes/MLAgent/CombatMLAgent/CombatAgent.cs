@@ -8,7 +8,6 @@ using System;
 
 public class CombatAgent : Agent
 {
-    [SerializeField] private float _maxTurn;
     [SerializeField] private bool isManualMode = false;
     [SerializeField] private MovementPreview previewSystem;
     [SerializeField] private CombatExecutor combatExecutor;
@@ -27,6 +26,7 @@ public class CombatAgent : Agent
     private int activeUnitIndex;
     private int mapMin = -5;
     private int mapMax = 5;
+    private float _maxTurn;
     private bool hasAction = false;
     public Action OnTurnEnded;
 
@@ -39,6 +39,7 @@ public class CombatAgent : Agent
     public override void OnEpisodeBegin()
     {
         turnManager.ResetEnv();
+        _maxTurn = turnManager.GetMaxTurn();
         allySlots.Clear();
         enemySlots.Clear();
 
@@ -196,7 +197,7 @@ public class CombatAgent : Agent
         switch (actionType)
         {
             case 0:
-                if (!previewSystem.BFSReachables(currentPos, character.RemainingMoveRange).Contains(targetPos))
+                if (!previewSystem.GetMovementSystem().ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
                 {
                     AddReward(-0.1f);
                     break;
@@ -207,7 +208,7 @@ public class CombatAgent : Agent
                 break;
 
             case 1:
-                if (!previewSystem.GetAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
+                if (!previewSystem.GetMovementSystem().ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
                 {
                     AddReward(-0.1f);
                     break;
@@ -232,8 +233,8 @@ public class CombatAgent : Agent
 
         var (currentPos, character) = allies[activeUnitIndex];
 
-        HashSet<Vector3Int> reachable = previewSystem.BFSReachables(currentPos, character.RemainingMoveRange);
-        HashSet<Vector3Int> attackable = previewSystem.GetAttackableTiles(currentPos, character.AtkRange);
+        HashSet<Vector3Int> reachable = previewSystem.GetMovementSystem().ComputeReachableTiles(currentPos, character.RemainingMoveRange);
+        HashSet<Vector3Int> attackable = previewSystem.GetMovementSystem().ComputeAttackableTiles(currentPos, character.AtkRange);
 
         // MASK ACTION TYPE
         bool canMove = reachable.Count > 0;
@@ -351,5 +352,10 @@ public class CombatAgent : Agent
     public void setGridData(GridData data)
     {
         _gridData = data;
+    }
+
+    public bool GetIsManualMode()
+    {
+        return isManualMode;
     }
 }

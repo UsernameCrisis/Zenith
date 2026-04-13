@@ -22,7 +22,7 @@ public class CombatExecutor : MonoBehaviour
     {
         if (character == null) return;
 
-        List<Vector3Int> path = movePreview.FindPathAStar(startPos, targetPos);
+        List<Vector3Int> path = movePreview.GetMovementSystem().FindPathAStar(startPos, targetPos);
         
         if (path == null || path.Count == 0)
             return;

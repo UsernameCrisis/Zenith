@@ -19,9 +19,9 @@ public class TurnManager : MonoBehaviour
 {
     public CombatState State { get; private set; } = CombatState.Playing;
     private GridData gridData;
-    private int maxTurn = 50;
+    private PopulateMap mapPopulator;
     [HideInInspector] public int currentTurn = 1;
-    [SerializeField] private PopulateMap mapPopulator;
+    [SerializeField] private int maxTurn = 50;
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
@@ -95,7 +95,10 @@ public class TurnManager : MonoBehaviour
             if (index >= 0)
             {
                 combatAgent.SetActiveUnitIndex(index);
-                gridSelect.BeginTurn(gridData, current);
+                if (combatAgent.GetIsManualMode())
+                    gridSelect.BeginTurn(gridData, current);
+                else
+                    combatAgent.RequestDecision();
                 return;
             }
         }
@@ -120,6 +123,8 @@ public class TurnManager : MonoBehaviour
         currentTurn = 1;
         allySlots.Clear();
         defeatedEnemyNames.Clear();
+
+        mapPopulator = GetComponentInChildren<PopulateMap>();
         mapPopulator.Generate();
 
         gridData = mapPopulator.objectsData;
@@ -207,6 +212,8 @@ public class TurnManager : MonoBehaviour
 
         return -1;
     }
+
+    public int GetMaxTurn() => maxTurn;
     public bool GetUseAnimation() => useAnimation;
 
     void CheckBattleEnd()
@@ -221,6 +228,7 @@ public class TurnManager : MonoBehaviour
             if (controlMode == CombatControlMode.MLAgent)
             {
                 print("MENANG");
+                gridSelect.ExitCharacter();
                 combatAgent.AddReward(10f);
                 combatAgent.EndEpisode();
             }

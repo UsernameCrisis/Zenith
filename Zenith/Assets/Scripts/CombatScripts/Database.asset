@@ -28,7 +28,7 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: 1952440101, guid: 646e9486f53bfee44a8064ce61d283bf, type: 3}
   - <Name>k__BackingField: Enemy1
     <ID>k__BackingField: 1
-    <HP>k__BackingField: 10
+    <HP>k__BackingField: 100
     <Damage>k__BackingField: 12
     <Speed>k__BackingField: 10
     <Defense>k__BackingField: 3
@@ -41,7 +41,7 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Enemy2
     <ID>k__BackingField: 2
-    <HP>k__BackingField: 10
+    <HP>k__BackingField: 100
     <Damage>k__BackingField: 15
     <Speed>k__BackingField: 8
     <Defense>k__BackingField: 5
@@ -54,7 +54,7 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
   - <Name>k__BackingField: Enemy3
     <ID>k__BackingField: 3
-    <HP>k__BackingField: 10
+    <HP>k__BackingField: 100
     <Damage>k__BackingField: 8
     <Speed>k__BackingField: 14
     <Defense>k__BackingField: 1

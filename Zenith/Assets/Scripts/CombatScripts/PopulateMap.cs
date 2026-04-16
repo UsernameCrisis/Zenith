@@ -108,7 +108,6 @@ public class PopulateMap : MonoBehaviour
 
     private int MaxFlow(Vector3Int start, Vector3Int goal, int width, int height)
     {
-        Debug.Log("Using Max Flow");
         int n = width * height;
         int[,] capacity = new int[n, n];
 
@@ -246,7 +245,6 @@ public class PopulateMap : MonoBehaviour
 
     private int CountPaths(Vector3Int start, Vector3Int goal)
     {
-        Debug.Log("Using BFS");
         HashSet<Vector3Int> blocked = new();
         int paths = 0;
 

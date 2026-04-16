@@ -11,10 +11,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     [SerializeField] private CombatAgent combatAgent;
     [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] private Grid grid;
-    [SerializeField] private ObjectDatabaseSO database;
     [SerializeField] private GameObject gridVisualization;
     [SerializeField] AudioSource source; // gunakan untuk suara
-    [SerializeField] private GameObject populateMap;
     [SerializeField] private MovementPreview movePreview;
     [SerializeField] private CharacterActionMenu actionMenu;
     [SerializeField] private PauseMenu pauseMenu;
@@ -33,9 +31,9 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private string currentAction = null;
     private CharacterObject currentTurnUnit;
     private TurnManager turnManager;
-    
+    private bool isTurnComplete = false;
     private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
-
+    public bool IsTurnComplete() => isTurnComplete;
     public bool IsPlayer => true;
     private bool isMoving = false;
 
@@ -50,7 +48,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         tutorialMenu.OnButtonSelected += HandleTutorialMenu;
         if (isForHeuristicAgent)
         {
-            combatAgent.OnTurnEnded += ExitCharacter;
+            combatAgent.OnTurnEnded += HandleAgentTurnEnded;
         }
     }
 
@@ -65,13 +63,14 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         tutorialMenu.OnButtonSelected -= HandleTutorialMenu;
         if (isForHeuristicAgent)
         {
-            combatAgent.OnTurnEnded -= ExitCharacter;
+            combatAgent.OnTurnEnded -= HandleAgentTurnEnded;
         }
     }
     
     public void BeginTurn(GridData gridData)
     {
         objectsData = gridData;
+        isTurnComplete = false;
         print("inside select");
         inputManager.OnColliderClicked += ColliderClicked;
     }
@@ -80,6 +79,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     {
         objectsData = gridData;
         currentTurnUnit = unit;
+        isTurnComplete = false;
         print("inside select agent");
         inputManager.OnColliderClicked += ColliderClicked;
     }
@@ -218,7 +218,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
             if (isForHeuristicAgent)
                 combatAgent.SetManualAction(2, startPos);
             else
+            {
                 EndTurn();
+            }
+                
         }
         actionMenu.Hide();
     }
@@ -341,6 +344,12 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         if (cellIndicatorRenderer != null)
             cellIndicatorRenderer.material.color = defaultColor;
     }
+
+    private void HandleAgentTurnEnded()
+    {
+        ExitCharacter();
+        isTurnComplete = true;
+    }
     public void EndTurn()
     {
         Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
@@ -349,7 +358,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         charObj.EnableAttack();
         ExitCharacter();
         
-        turnManager.EndTurn();
+        isTurnComplete = true;
     }
 
     private void EndAction()
@@ -362,6 +371,12 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
         actionMenu.Show(screenPos);
+    }
+
+    public void ForceComplete()
+    {
+        isTurnComplete = true;
+        ExitCharacter();
     }
 
     private void HideHover(Collider collider)

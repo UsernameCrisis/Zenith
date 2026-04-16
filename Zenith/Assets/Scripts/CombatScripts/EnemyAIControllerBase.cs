@@ -7,18 +7,21 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     protected GridData gridData;
     protected Vector3Int targetPos;
     protected BehaviourTree tree;
-    [SerializeField] private CombatExecutor combatExecutor;
-    [SerializeField] protected Grid grid;
-    [SerializeField] protected MovementPreview previewSystem;
+    private CombatExecutor combatExecutor;
+    protected Grid grid;
+    protected MovementPreview previewSystem;
     public bool IsPlayer => false;
+    protected bool isTurnComplete = false;
+    public bool IsTurnComplete() => isTurnComplete;
     public bool isMoving;
     private TurnManager turnManager;
 
     void Awake()
     {
-        grid = FindAnyObjectByType<Grid>();
-        previewSystem = FindAnyObjectByType<MovementPreview>();
-        combatExecutor = FindAnyObjectByType<CombatExecutor>();
+        Transform parent = transform.parent;
+        grid = parent.parent.GetComponentInChildren<Grid>();
+        previewSystem = GetComponentInParent<MovementPreview>();
+        combatExecutor = GetComponentInParent<CombatExecutor>();
         
     }
     void Start()
@@ -29,6 +32,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     public void BeginTurn(GridData gridData)
     {
         this.gridData = gridData;
+        isTurnComplete = false;
 
         tree = new BehaviourTree(GetTreeName());
         tree.AddChild(BuildTree());
@@ -48,15 +52,19 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
             status = tree.Process();
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         EndTurn();
     }
 
     public void EndTurn()
     {
         CharacterObject enemyChar = gridData.GetTileAt(GetCurrentPosition())?.PlacedObject as CharacterObject;
-        enemyChar.ResetMovement();
-        turnManager.EndTurn();
+        if (enemyChar != null)
+        {
+            enemyChar.ResetMovement();
+            enemyChar.EnableAttack();
+        }
+        isTurnComplete = true;
     }
 
     public Vector3Int FindClosest(Vector3Int enemyPos, List<(Vector3Int pos, CharacterObject)> character)
@@ -190,6 +198,10 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     
         Debug.LogError("AI is not on a valid tile!");
         return gridPos;
+    }
+    public void ForceComplete()
+    {
+        isTurnComplete = true;
     }
     
     public List<Vector3Int> GetLine(Vector3Int start, Vector3Int end)

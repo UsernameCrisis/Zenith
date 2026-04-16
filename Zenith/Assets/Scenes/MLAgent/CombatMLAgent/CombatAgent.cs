@@ -6,17 +6,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class CombatAgent : Agent
+public class CombatAgent : Agent, ITurnActor
 {
     [SerializeField] private bool isManualMode = false;
     [SerializeField] private MovementPreview previewSystem;
     [SerializeField] private CombatExecutor combatExecutor;
-    [SerializeField] private PlayerSystem playerSystem;
     [SerializeField] private TurnManager turnManager;
+    [SerializeField] private Renderer groundRenderer;
 
     [HideInInspector] public int currEp = 0;
     [HideInInspector] public float cumulativeReward = 0f;
 
+    private Color defaultGroundColor;
+    private Coroutine flashGroundCoroutine;
     private List<CharacterObject> allySlots = new();
     private List<CharacterObject> enemySlots = new();
     private int chosenActionType = 2;
@@ -28,31 +30,62 @@ public class CombatAgent : Agent
     private int mapMax = 5;
     private float _maxTurn;
     private bool hasAction = false;
+    private bool hasMoved;
+    private bool hasAttacked;
+    private bool isTurnComplete = false;
     public Action OnTurnEnded;
+
+    public bool IsPlayer => false;
+
+    public bool IsTurnComplete() => isTurnComplete;
 
     public override void Initialize()
     {
         currEp = 0;
         cumulativeReward = 0f;
+        if (groundRenderer != null)
+        {
+            defaultGroundColor = groundRenderer.material.color;
+        }
+    }
+
+    public void BeginTurn()
+    {
+        isTurnComplete = false;
+        hasMoved = false;
+        hasAttacked = false;
+
+        RequestDecision();
     }
 
     public override void OnEpisodeBegin()
     {
+        if (groundRenderer != null && cumulativeReward != 0f)
+        {
+            Color flashColor = (cumulativeReward > 0f) ? Color.green : Color.red;
+
+            if (flashGroundCoroutine != null)
+            {
+                StopCoroutine(flashGroundCoroutine);
+            }
+            flashGroundCoroutine = StartCoroutine(FlashGround(flashColor, 3f));
+        }
+        currEp++;
+        cumulativeReward = 0f;
         turnManager.ResetEnv();
         _maxTurn = turnManager.GetMaxTurn();
-        allySlots.Clear();
+        // allySlots.Clear();
         enemySlots.Clear();
 
-        var allies = _gridData.GetUnitsByTeam(_currentAgentTeam);
-        var enemies = _gridData.GetUnitsByTeam(_currentAgentTeam == 1 ? 2 : 1);
-
-        for (int i = 0; i < 3; i++)
+        if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count || allySlots[activeUnitIndex] == null)
         {
-            if (i < allies.Count)
-                allySlots.Add(allies[i].character);
-            else
-                allySlots.Add(null);
+            activeUnitIndex = allySlots.FindIndex(u => u != null);
+            Debug.Log("<color=red>WARNING:</color> null slot is selected, changing to another unit!");
+            if (activeUnitIndex == -1)
+                activeUnitIndex = 0;
         }
+
+        var enemies = _gridData.GetUnitsByTeam(_currentAgentTeam == 1 ? 2 : 1);
 
         for (int i = 0; i < 3; i++)
         {
@@ -72,8 +105,17 @@ public class CombatAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        
         // fallback if the active unit is null
-        CharacterObject active = allySlots[activeUnitIndex];
+        CharacterObject active = null;
+
+        if (activeUnitIndex >= 0 && activeUnitIndex < allySlots.Count)
+        {
+            Debug.Log("obs called");
+            active = allySlots[activeUnitIndex];
+        }
+            
+
         Vector3Int currPos = active != null ? active.Position : Vector3Int.zero;
 
         // GRID
@@ -175,6 +217,20 @@ public class CombatAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
+        CharacterObject current = turnManager.turnQueue.GetCurrent();
+
+        if (current == null || current.Team != _currentAgentTeam)
+        {
+            Debug.LogWarning("Ignoring action (not agent turn)");
+            return;
+        }
+
+        if (turnManager.TurnAlreadyEnded)
+        {
+            Debug.LogWarning("Ignoring action (turn already ended)");
+            return;
+        }
+
         AddReward(-0.01f);
         // BELUM CEK ACTION MASKING BISA APA TIDAK
         int actionType = actions.DiscreteActions[0];
@@ -184,15 +240,15 @@ public class CombatAgent : Agent
         int y = (tileIndex / 10) - 5;
         Vector3Int targetPos = new Vector3Int(x, y, 0);
 
-        var allies = _gridData.GetUnitsByTeam(_currentAgentTeam);
-
         if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
         {
-            turnManager.EndTurn();
+            Debug.LogError("Invalid active unit index!");
+            ForceComplete();
             return;
         }
 
-        var (currentPos, character) = allies[activeUnitIndex];
+        CharacterObject character = allySlots[activeUnitIndex];
+        Vector3Int currentPos = character.Position;
 
         switch (actionType)
         {
@@ -200,45 +256,63 @@ public class CombatAgent : Agent
                 if (!previewSystem.GetMovementSystem().ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
                 {
                     AddReward(-0.1f);
-                    break;
+                    RequestDecision();
+                    return;
                 }
                 // AddReward(0.05f);
+                hasMoved = true;
                 combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
-                StartCoroutine(WaitForMoveThenContinue());
+                Debug.Log("moving");
+                StartCoroutine(WaitForMoveThenDecideOrEnd(character));
                 break;
 
             case 1:
                 if (!previewSystem.GetMovementSystem().ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
                 {
                     AddReward(-0.1f);
-                    break;
+                    RequestDecision();
+                    return;
                 }
-                combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
                 AddReward(0.05f);
-                OnActionFinished();
+                hasAttacked = true;
+                combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
+                Debug.Log("attack");
+                DecideOrEnd(character);
                 break;
 
             case 2:
-                HandleEndTurn(character);
+                Debug.Log("end turn action");
+                EndTurn(character);
+                break;
+            default:
+                Debug.Log("DEFAULT TRIGGERED");
                 break;
         }
+        
+        cumulativeReward = GetCumulativeReward();
+        Debug.Log("Act called");
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        var allies = _gridData.GetUnitsByTeam(_currentAgentTeam);
-
-        if (activeUnitIndex < 0 || activeUnitIndex >= allies.Count)
+        if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
             return;
 
-        var (currentPos, character) = allies[activeUnitIndex];
+        CharacterObject character = allySlots[activeUnitIndex];
+        if (character == null || character.HP <= 0)
+        { 
+            print("null or dead character is selected");
+            return;
+        }
+
+        Vector3Int currentPos = character.Position;
 
         HashSet<Vector3Int> reachable = previewSystem.GetMovementSystem().ComputeReachableTiles(currentPos, character.RemainingMoveRange);
         HashSet<Vector3Int> attackable = previewSystem.GetMovementSystem().ComputeAttackableTiles(currentPos, character.AtkRange);
 
         // MASK ACTION TYPE
-        bool canMove = reachable.Count > 0;
-        bool canAttack = attackable.Count > 0;
+        bool canMove = reachable.Count > 0 && !hasMoved;
+        bool canAttack = attackable.Count > 0 && !hasAttacked;
 
         if (!canMove)
             actionMask.SetActionEnabled(0, 0, false); // disable MOVE
@@ -250,16 +324,22 @@ public class CombatAgent : Agent
         // Build allowed positions
         HashSet<int> validTiles = new();
 
-        foreach (Vector3Int pos in reachable)
+        if (canMove)
         {
-            int index = (pos.y + 5) * 10 + (pos.x + 5);
-            validTiles.Add(index);
+            foreach (Vector3Int pos in reachable)
+            {
+                int index = (pos.y + 5) * 10 + (pos.x + 5);
+                validTiles.Add(index);
+            }
         }
     
-        foreach (Vector3Int pos in attackable)
+        if (canAttack)
         {
-            int index = (pos.y + 5) * 10 + (pos.x + 5);
-            validTiles.Add(index);
+            foreach (Vector3Int pos in attackable)
+            {
+                int index = (pos.y + 5) * 10 + (pos.x + 5);
+                validTiles.Add(index);
+            }
         }
     
         // ALWAYS include current position as fallback
@@ -318,35 +398,77 @@ public class CombatAgent : Agent
         activeUnitIndex = index;
     }
 
-    private IEnumerator WaitForMoveThenContinue()
+    private IEnumerator WaitForMoveThenDecideOrEnd(CharacterObject character)
     {
         while (combatExecutor.IsMoving)
+        {
             yield return null;
-
-        OnActionFinished(); // continue same turn
+        }
+        DecideOrEnd(character);
     }
 
-    private void HandleEndTurn(CharacterObject character)
+    private IEnumerator FlashGround(Color targetColor, float duration)
     {
+        float elapsedTime = 0f;
+
+        groundRenderer.material.color = targetColor;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            groundRenderer.material.color = Color.Lerp(targetColor, defaultGroundColor, elapsedTime / duration);
+            yield return null;
+        }
+    }
+    private void EndTurn(CharacterObject character)
+    {
+        if (turnManager.TurnAlreadyEnded)
+        {
+            Debug.LogWarning("HandleEndTurn called twice!");
+            return;
+        }
+
+        if (turnManager.turnQueue.GetCurrent() != character)
+        {
+            Debug.LogError($"EndTurn called for non-current unit: {character.Name}");
+            return;
+        }
+        turnManager.TurnAlreadyEnded = true;
         character.ResetMovement();
         character.EnableAttack();
-        Debug.Log("inside handle end turn");
+        hasMoved = false;
+        hasAttacked = false;
+        Debug.Log("Agent turn finished");
         if (isManualMode)
         {
             OnTurnEnded?.Invoke();
         }
-        
-
-        turnManager.EndTurn();
+        isTurnComplete = true;
     }
 
-    private void OnActionFinished()
+    private void DecideOrEnd(CharacterObject character)
     {
-        // reset action mode if needed
-        // (optional if agent doesn't use UI)
+        if (turnManager.TurnAlreadyEnded)
+            return;
+
+        bool canMove = !hasMoved && character.RemainingMoveRange > 0;
+        bool canAttack = !hasAttacked;
+
+        Debug.Log("canmove: "+canMove);
+        Debug.Log("canattack: "+canAttack);
 
         if (!isManualMode)
-            RequestDecision();
+        {
+            if (!canMove && !canAttack)
+                EndTurn(character);
+            else
+                RequestDecision();
+        }
+    }
+
+    public void ForceComplete()
+    {
+        isTurnComplete = true;
     }
 
     public void setGridData(GridData data)
@@ -358,4 +480,22 @@ public class CombatAgent : Agent
     {
         return isManualMode;
     }
+    public void SetAllySlots(List<CharacterObject> slots)
+    {
+        allySlots = slots;
+    }
+
+    private bool IsValidUnit(int index)
+    {
+        return index >= 0 && index < allySlots.Count &&
+                allySlots[index] != null && allySlots[index].HP > 0;
+    }
+
+    public void BeginTurn(GridData gridData)
+    {
+        _gridData = gridData;
+        BeginTurn();
+    }
+
+    public void EndTurn() {}
 }

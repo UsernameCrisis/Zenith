@@ -6,9 +6,11 @@ public class CombatExecutor : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     private bool isMoving = false;
+    private bool isAttacking = false;
     private TurnManager turnManager;
     private MovementPreview movePreview;
     private Grid grid;
+    public bool IsAttacking => isAttacking;
     public bool IsMoving => isMoving;
 
     void Start()
@@ -46,9 +48,11 @@ public class CombatExecutor : MonoBehaviour
     {
         if (attacker == null) return;
         if (attackerPos == targetPos) return;
+        isAttacking = true;
 
         gridData.AttackObject(attackerPos, targetPos);
         attacker.DisableAttack();
+        isAttacking = false;
 
         movePreview.ClearAll();
     }
@@ -82,7 +86,7 @@ public class CombatExecutor : MonoBehaviour
 
         Vector3Int finalPos = path[^1];
 
-        gridData.MoveObject(startPos, finalPos);
+        gridData.MoveObject(startPos, finalPos, grid);
         character.UseMovement(path.Count);
 
         isMoving = false;
@@ -98,7 +102,7 @@ public class CombatExecutor : MonoBehaviour
         Vector3Int finalPos = path[^1];
 
         // Move instantly in grid logic
-        gridData.MoveObject(startPos, finalPos);
+        gridData.MoveObject(startPos, finalPos, grid);
 
         // Update world position immediately
         Transform charTransform = gridData.GetTileAt(finalPos).PlacedGameObject.transform;

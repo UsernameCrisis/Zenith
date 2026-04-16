@@ -11,6 +11,7 @@ public class GridData
     {
         if (placedObjects.ContainsKey(gridPos))
             throw new Exception($"{gridPos} already occupied");
+        placedObject.OnPlaced(gridPos);
         TileData data = new TileData(gridPos, placedObject, placedObjectIndex)
         {
             PlacedGameObject = obj
@@ -36,7 +37,7 @@ public class GridData
         return true;
     }
 
-    public void MoveObject(Vector3Int start, Vector3Int end)
+    public void MoveObject(Vector3Int start, Vector3Int end, Grid grid)
     {
         if (!CanPlaceObjectAt(end))
             return;
@@ -65,7 +66,7 @@ public class GridData
 
         tempData.PlacedObject.OnPlaced(end); // Update position variable inside placed object
         if (tempData.PlacedGameObject != null)
-            tempData.PlacedGameObject.transform.position = new Vector3(end.x, 0, end.y);
+            tempData.PlacedGameObject.transform.position = grid.CellToWorld(end);
     }
 
     public void AttackObject(Vector3Int attackerPos, Vector3Int targetPos)

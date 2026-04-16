@@ -32,6 +32,9 @@ public class TurnQueue
 
         while (order.Count < bufferSize)
         {
+            if (units.Count == 0)
+                break;
+
             CharacterObject next = null;
             float minTime = float.MaxValue;
             foreach (var u in units)
@@ -66,14 +69,21 @@ public class TurnQueue
 
     public CharacterObject GetCurrent()
     {
-        return queue.Count > 0 ? queue[0] : null;
+        if (queue == null || queue.Count == 0)
+            return null;
+
+        return queue[0];
     }
 
 
     public CharacterObject PopNext()
     {
+        Debug.Log($"PopNext → queue count before: {queue.Count}");
         if (queue.Count == 0)
             RefillFull();
+        
+        if (queue.Count == 0)
+            return null;
 
         CharacterObject next = queue[0];
         queue.RemoveAt(0);
@@ -109,9 +119,9 @@ public class TurnQueue
     {
         allUnits.Remove(character);
         queue.RemoveAll(c => c == character);
-
+        Debug.Log($"After remove → allUnits: {allUnits.Count}, queue: {queue.Count}");
         if (queue.Count <= visibleCount)
-            EnsureBuffer();
+            RefillFull();
     }
 
 }

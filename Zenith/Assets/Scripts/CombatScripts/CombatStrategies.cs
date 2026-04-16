@@ -2,8 +2,6 @@ using System;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-using NUnit.Framework;
-
 
 namespace BehaviourTrees
 {
@@ -133,6 +131,7 @@ namespace BehaviourTrees
     public class Attack : IStrategy
     {
         EnemyAIControllerBase ai;
+        private bool startedAttack = false;
 
         public Attack(EnemyAIControllerBase ai)
         {
@@ -145,10 +144,24 @@ namespace BehaviourTrees
             CharacterObject enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
             if (enemyChar is null)
                 return Node.Status.Failure;
+            CombatExecutor executor = ai.GetCombatExecutor();
+            if (startedAttack)
+            {
+                if (executor.IsAttacking)
+                    return Node.Status.Running;
+                startedAttack = false;
+                return Node.Status.Success;
+            }
 
-            ai.GetCombatExecutor().ExecuteAttack(enemyChar, latestPos, ai.getTargetPos(), ai.getGridData());
-            return Node.Status.Success;
+            executor.ExecuteAttack(enemyChar, latestPos, ai.getTargetPos(), ai.getGridData());
+            startedAttack = true;
+            return Node.Status.Running;
         } 
+
+        public void Reset()
+        {
+            startedAttack = false;
+        }
     }
 
     public class MoveToRandomTile : MoveStrategyBase
@@ -251,10 +264,14 @@ namespace BehaviourTrees
                 return Node.Status.Success;
 
             executor.ExecuteMove(enemyChar, latestPos, bestMove, gridData);
-            ai.getPreview().ClearAll();
 
             startedMovement = true;
             return Node.Status.Running;
+        }
+
+        public void Reset()
+        {
+            startedMovement = false;
         }
 
         protected abstract Vector3Int SelectTargetTile(

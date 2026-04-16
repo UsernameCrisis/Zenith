@@ -141,7 +141,6 @@ public class CombatCameraMovement : MonoBehaviour
             .SetEase(Ease.OutQuint);
     }
 
-     
     private void RefreshCharacterList()
     {
         characters.Clear();

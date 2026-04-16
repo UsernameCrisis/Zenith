@@ -29,19 +29,22 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private int currentAgentTeam = 1;
     [SerializeField] private bool useAnimation = true;
 
-    private TurnQueue turnQueue;
-    private List<CharacterObject> allySlots = new();
+    public TurnQueue turnQueue;
+    private List<CharacterObject> allySlots = new List<CharacterObject>(3);
     public List<string> defeatedEnemyNames = new();
+    public bool TurnAlreadyEnded { get;  set; } = false;
+    private ITurnActor actor;
 
     void Start()
     {
-        ResetEnv();
+        
     }
     private void InitializeTurnQueue()
     {
         var units = gridData.GetAllUnits();
 
         List<CharacterObject> characters = new();
+        allySlots = new List<CharacterObject>(3);
 
         foreach (var u in units)
         {
@@ -54,41 +57,40 @@ public class TurnManager : MonoBehaviour
             c.OnDied += HandleCharacterDeath;
         }
 
+        while (allySlots.Count < 3)
+            allySlots.Add(null);
+
         turnQueue = new TurnQueue(characters, 10); // Sementara simulate 10 turn ahead
         print("Total units: " + turnQueue.allUnits.Count);
     }
     
     public void StartTurn()
     {
+        StartCoroutine(RunTurn());
+    }
+    private IEnumerator RunTurn()
+    {
+        TurnAlreadyEnded = false;
+        actor = null;
+        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         CharacterObject current = turnQueue.GetCurrent();
+
         if (current == null || gridData.GetPositionOf(current) == null)
         {
-            EndTurn();
-            return;
+            Debug.LogWarning("No unit in queue!");
+            yield return EndTurnRoutine();
+            yield break;
         }
+
         AdvanceATB(current);
-        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
-        Vector3Int? posNullable = gridData.GetPositionOf(current);
+        Vector3Int pos = gridData.GetPositionOf(current).Value;
 
-        if (posNullable == null)
+        if (controlMode == CombatControlMode.Player && current.IsPlayer)
         {
-            Debug.LogError("ERROR: Character not found on grid! " + current.Name);
-            return;
+            gridSelect.BeginTurn(gridData);
+            actor = gridSelect;
         }
-
-        Vector3Int pos = posNullable.Value;
-        // PLAYER MODE
-        if (controlMode == CombatControlMode.Player)
-        {
-            if (current.IsPlayer)
-            {
-                gridSelect.BeginTurn(gridData);
-                return;
-            }
-        }
-
-        // AGENT MODE
-        if (controlMode == CombatControlMode.MLAgent && current.Team == 1)
+        else if (controlMode == CombatControlMode.MLAgent && current.Team == currentAgentTeam)
         {
             int index = GetAllySlotIndex(current);
 
@@ -96,23 +98,55 @@ public class TurnManager : MonoBehaviour
             {
                 combatAgent.SetActiveUnitIndex(index);
                 if (combatAgent.GetIsManualMode())
+                {
                     gridSelect.BeginTurn(gridData, current);
+                    actor = gridSelect;
+                }
                 else
-                    combatAgent.RequestDecision();
-                return;
+                {
+                    combatAgent.BeginTurn(gridData);
+                    actor = combatAgent;
+                }
             }
         }
-
-        TileData tile = gridData.GetTileAt(pos);
-        EnemyAIControllerBase ai = tile.PlacedGameObject.GetComponent<EnemyAIControllerBase>();
-        
-        if (ai == null)
+        else
         {
-            EndTurn();
-            return;
+            TileData tile = gridData.GetTileAt(current.Position);
+            actor = tile.PlacedGameObject.GetComponent<ITurnActor>();
+            if (actor != null)
+                actor.BeginTurn(gridData);
         }
-        print("enemy is playing");
-        ai.BeginTurn(gridData);
+
+        if (actor == null)
+        {
+            print("actor is null");
+            yield return EndTurnRoutine();
+            yield break;
+        }
+        print("before wait until");
+        yield return new WaitUntil(() => actor.IsTurnComplete());
+        print("turn completed");
+        yield return EndTurnRoutine();
+    }
+
+    private IEnumerator EndTurnRoutine()
+    {
+        TurnAlreadyEnded = true;
+        if (controlMode == CombatControlMode.MLAgent)
+        {
+            if (currentTurn >= maxTurn)
+            {
+                combatAgent.AddReward(-10f);
+                combatAgent.EndEpisode();
+                yield break;
+            }
+            combatAgent.AddReward(-0.01f);
+            currentTurn++;
+        }
+        turnQueue.PopNext();
+        
+        yield return null;
+        StartTurn();
     }
 
     public void ResetEnv()
@@ -133,6 +167,7 @@ public class TurnManager : MonoBehaviour
 
         InitializeTurnQueue();
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
+        combatAgent.SetAllySlots(allySlots);
         StartTurn();
     }
 
@@ -168,38 +203,56 @@ public class TurnManager : MonoBehaviour
     private void HandleCharacterDeath(CharacterObject character)
     {
         if (character.Team == currentAgentTeam)
-            combatAgent.AddReward(-0.5f);
+        {
+            if (controlMode == CombatControlMode.MLAgent)
+                combatAgent.AddReward(-0.5f);
+            int index = allySlots.IndexOf(character);
+            if (index != -1)
+            {
+                allySlots[index] = null;
+            }
+        }
         else
-            combatAgent.AddReward(0.5f);
+            if (controlMode == CombatControlMode.MLAgent)
+                combatAgent.AddReward(0.5f);
+
+        bool wasCurrent = turnQueue.GetCurrent() == character;
+
+        ITurnActor deadActor = null;
+
+        if (wasCurrent)
+        {
+            Vector3Int? pos = gridData.GetPositionOf(character);
+
+            if (pos != null)
+            {
+                TileData tile = gridData.GetTileAt(pos.Value);
+                if (tile?.PlacedGameObject != null)
+                {
+                    print("deadactor");
+                    deadActor = tile.PlacedGameObject.GetComponent<ITurnActor>();
+                }
+            }
+        }
 
         turnQueue.Remove(character);
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
-
         mapPopulator.HandleCharacterDeath(character);
+        bool episodeEnded = CheckBattleEnd();
 
-        CheckBattleEnd();
-        
-        if (turnQueue.GetCurrent() == character)
+        if (wasCurrent && !episodeEnded)
         {
-            EndTurn();
-        }
-    }
-
-    public void EndTurn()
-    {
-        if (currentTurn >= maxTurn)
-        {
-            if (controlMode == CombatControlMode.MLAgent)
+            Debug.Log("Current unit died, forcing turn completion");
+            if (deadActor != null)
             {
-                combatAgent.AddReward(-10f);
-                combatAgent.EndEpisode();
+                if (deadActor is CombatAgent agent)
+                    agent.ForceComplete();
+                else if (deadActor is EnemyAIControllerBase enemy)
+                    enemy.ForceComplete();
+                // PlayerSystem later
             }
-            return;
         }
-        combatAgent.AddReward(-0.05f);
-        turnQueue.PopNext();
-        currentTurn++;
-        StartTurn();
+        
     }
 
     int GetAllySlotIndex(CharacterObject unit)
@@ -216,7 +269,7 @@ public class TurnManager : MonoBehaviour
     public int GetMaxTurn() => maxTurn;
     public bool GetUseAnimation() => useAnimation;
 
-    void CheckBattleEnd()
+    bool CheckBattleEnd()
     {
         int aliveAllies = gridData.GetUnitsByTeam(currentAgentTeam).Count;
         int aliveEnemies = gridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1).Count;
@@ -231,6 +284,7 @@ public class TurnManager : MonoBehaviour
                 gridSelect.ExitCharacter();
                 combatAgent.AddReward(10f);
                 combatAgent.EndEpisode();
+                return true;
             }
             else
             {
@@ -250,6 +304,7 @@ public class TurnManager : MonoBehaviour
                 // PERLU TAMBAH END SCREEN 
                 
                 GameManager.Instance.EndCombat();
+                return true;
             }
         }
 
@@ -261,8 +316,11 @@ public class TurnManager : MonoBehaviour
             {
                 combatAgent.AddReward(-10f);
                 combatAgent.EndEpisode();
+                return true;
             }
+            return true;
         }
+        return false;
     }
 
     // void ShowScene(Scene scene)

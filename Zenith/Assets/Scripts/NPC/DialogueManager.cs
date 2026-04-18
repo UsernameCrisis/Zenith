@@ -25,10 +25,12 @@ public class DialogueManager : MonoBehaviour
     public float typingSpeed = 0.02f;
 
     private DialogueData currentDialogue;
+    private string currentNPCID;
     private int index;
     private bool isTyping;
     private bool isDialogueActive;
     private Coroutine typeRoutine;
+
 
     private Vector2 leftTargetPos;
     private Vector2 rightTargetPos;
@@ -47,10 +49,11 @@ public class DialogueManager : MonoBehaviour
         isDialogueActive = false;
     }
 
-    public void StartDialogue(DialogueData data)
+    public void StartDialogue(DialogueData data, string npcID)
     {
         if (isDialogueActive) return;
 
+        currentNPCID = npcID;
         currentDialogue = data;
         index = 0;
         isDialogueActive = true;

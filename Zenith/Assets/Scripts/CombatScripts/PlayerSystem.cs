@@ -352,6 +352,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     }
     public void EndTurn()
     {
+        if (selectedChar == null) return;
         Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
         CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
         charObj.ResetMovement();

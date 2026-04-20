@@ -175,7 +175,8 @@ public class PopulateMap : MonoBehaviour
                     }
                 }
             }
-
+            if (source == sink)
+                return int.MaxValue;
             if (parent[sink] == -1)
                 break;
 
@@ -341,12 +342,31 @@ public class PopulateMap : MonoBehaviour
     private void SpawnTeams()
     {
         team1Center = GetRandomEmptyTile();
-
+        if (team1Center.x == int.MinValue)
+        {
+            Debug.LogError("SpawnTeams: could not find empty tile for team 1!");
+            return;
+        }
+    
+        int maxAttempts = 200;
+        int attempts = 0;
         do
         {
             team2Center = GetRandomEmptyTile();
+            attempts++;
+
+            if (attempts >= maxAttempts)
+            {
+                Debug.LogWarning("SpawnTeams: could not satisfy team distance, using closest available.");
+                break;
+            }
         }
-        while (Vector3Int.Distance(team1Center, team2Center) < teamDist);
+        while (team2Center.x != int.MinValue && Vector3Int.Distance(team1Center, team2Center) < teamDist);
+        if (team2Center.x == int.MinValue)
+        {
+            Debug.LogError("SpawnTeams: could not find empty tile for team 2!");
+            return;
+        }
 
         SpawnTeam(team1Center, 4, 6); // team 1 IDs
         SpawnTeam(team2Center, 1, 3); // team 2 IDs
@@ -356,13 +376,14 @@ public class PopulateMap : MonoBehaviour
     {
         int units = 3;
         int attempts = 0;
+        int maxAttempts = 200;
 
-        while (units > 0 && attempts < 50)
+        while (units > 0 && attempts < maxAttempts)
         {
             attempts++;
 
-            int dx = Random.Range(-1, 2);
-            int dy = Random.Range(-1, 2);
+            int dx = Random.Range(-2, 3);
+            int dy = Random.Range(-2, 3);
 
             Vector3Int pos = new Vector3Int(center.x + dx, center.y + dy, 0);
 
@@ -378,6 +399,8 @@ public class PopulateMap : MonoBehaviour
 
             units--;
         }
+        if (units > 0)
+            Debug.LogWarning($"SpawnTeam: only spawned {3 - units}/3 units after {maxAttempts} attempts.");
     }
 
     private Vector3Int GetRandomEmptyTile()
@@ -396,7 +419,15 @@ public class PopulateMap : MonoBehaviour
                 return pos;
         }
 
-        return Vector3Int.zero;
+        for (int x = minX; x <= maxX; x++)
+            for (int y = minY; y <= maxY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (objectsData.GetTileAt(pos) == null)
+                    return pos;
+            }
+        Debug.LogError("GetRandomEmptyTile: no empty tile found!");
+        return new Vector3Int(int.MinValue, int.MinValue, 0);
     }
 
     private void PopulateManually()

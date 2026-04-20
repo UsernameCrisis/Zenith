@@ -111,7 +111,7 @@ public class CombatAgent : Agent, ITurnActor
 
         if (activeUnitIndex >= 0 && activeUnitIndex < allySlots.Count)
         {
-            Debug.Log("obs called");
+            // Debug.Log("obs called");
             active = allySlots[activeUnitIndex];
         }
             
@@ -262,7 +262,7 @@ public class CombatAgent : Agent, ITurnActor
                 // AddReward(0.05f);
                 hasMoved = true;
                 combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
-                Debug.Log("moving");
+                // Debug.Log("moving");
                 StartCoroutine(WaitForMoveThenDecideOrEnd(character));
                 break;
 
@@ -276,12 +276,12 @@ public class CombatAgent : Agent, ITurnActor
                 AddReward(0.05f);
                 hasAttacked = true;
                 combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
-                Debug.Log("attack");
+                // Debug.Log("attack");
                 DecideOrEnd(character);
                 break;
 
             case 2:
-                Debug.Log("end turn action");
+                // Debug.Log("end turn action");
                 EndTurn(character);
                 break;
             default:
@@ -290,7 +290,7 @@ public class CombatAgent : Agent, ITurnActor
         }
         
         cumulativeReward = GetCumulativeReward();
-        Debug.Log("Act called");
+        // Debug.Log("Act called");
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -450,7 +450,11 @@ public class CombatAgent : Agent, ITurnActor
     {
         if (turnManager.TurnAlreadyEnded)
             return;
-
+        if (character == null || character.HP <= 0)
+        {
+            ForceComplete();
+            return;
+        }
         bool canMove = !hasMoved && character.RemainingMoveRange > 0;
         bool canAttack = !hasAttacked;
 
@@ -491,7 +495,7 @@ public class CombatAgent : Agent, ITurnActor
                 allySlots[index] != null && allySlots[index].HP > 0;
     }
 
-    public void BeginTurn(GridData gridData)
+    public void BeginTurn(GridData gridData, CharacterObject character)
     {
         _gridData = gridData;
         BeginTurn();

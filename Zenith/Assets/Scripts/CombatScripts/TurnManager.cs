@@ -30,10 +30,12 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private bool useAnimation = true;
 
     public TurnQueue turnQueue;
+    private bool isTurnRunning = false;
     private List<CharacterObject> allySlots = new List<CharacterObject>(3);
     public List<string> defeatedEnemyNames = new();
     public bool TurnAlreadyEnded { get;  set; } = false;
     private ITurnActor actor;
+    private Coroutine turnLoopCoroutine;
 
     void Start()
     {
@@ -65,25 +67,59 @@ public class TurnManager : MonoBehaviour
     }
     
     public void StartTurn()
-    {
+    {   
+        if (isTurnRunning)
+        {
+            Debug.LogError("StartTurn called while turn is already running!");
+            return;
+        }
+        
         StartCoroutine(RunTurn());
+    }
+    public void StartTurnLoop()
+    {
+        print("starting");
+        if (turnLoopCoroutine != null)
+            StopCoroutine(turnLoopCoroutine);
+
+        turnLoopCoroutine = StartCoroutine(TurnLoop());
+    }
+    private IEnumerator TurnLoop()
+    {
+        isTurnRunning = false;
+        while (State == CombatState.Playing)
+        {
+            yield return RunTurn();
+        }
     }
     private IEnumerator RunTurn()
     {
+        if (isTurnRunning)
+        {
+            Debug.LogError("Turn already running!");
+            yield break;
+        }
+        isTurnRunning = true;
         TurnAlreadyEnded = false;
         actor = null;
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
-        CharacterObject current = turnQueue.GetCurrent();
-
-        if (current == null || gridData.GetPositionOf(current) == null)
+        
+        while (turnQueue.GetCurrent() != null && gridData.GetPositionOf(turnQueue.GetCurrent()) == null)
         {
-            Debug.LogWarning("No unit in queue!");
-            yield return EndTurnRoutine();
+            Debug.LogWarning($"Skipping dead/missing unit: {turnQueue.GetCurrent()?.Name}");
+            turnQueue.PopNext();
+        }
+
+        CharacterObject current = turnQueue.GetCurrent();
+        if (current == null)
+        {
+            Debug.LogWarning("No current unit, skipping turn");
+            turnQueue.PopNext();
+            isTurnRunning = false;
             yield break;
         }
 
         AdvanceATB(current);
-        Vector3Int pos = gridData.GetPositionOf(current).Value;
 
         if (controlMode == CombatControlMode.Player && current.IsPlayer)
         {
@@ -104,9 +140,10 @@ public class TurnManager : MonoBehaviour
                 }
                 else
                 {
-                    combatAgent.BeginTurn(gridData);
+                    combatAgent.BeginTurn(gridData, current);
                     actor = combatAgent;
                 }
+                // print("agent is playing");
             }
         }
         else
@@ -114,19 +151,35 @@ public class TurnManager : MonoBehaviour
             TileData tile = gridData.GetTileAt(current.Position);
             actor = tile.PlacedGameObject.GetComponent<ITurnActor>();
             if (actor != null)
-                actor.BeginTurn(gridData);
+                actor.BeginTurn(gridData, current);
+            // print("ai is playing");
         }
 
         if (actor == null)
         {
             print("actor is null");
-            yield return EndTurnRoutine();
+            turnQueue.PopNext();
+            isTurnRunning = false;
             yield break;
         }
-        print("before wait until");
-        yield return new WaitUntil(() => actor.IsTurnComplete());
-        print("turn completed");
+
+        float timeout = 20f;
+        float timer = 0f;
+        
+        yield return null;
+        // print("before wait until");
+        yield return new WaitUntil(() =>
+        {
+            timer += Time.deltaTime;
+            return actor == null || actor.IsTurnComplete() || timer > timeout;
+        });
+        if (timer > timeout)
+        {
+            Debug.LogError("Turn timeout! Forcing completion.");
+        }
+        // print("turn completed");
         yield return EndTurnRoutine();
+        isTurnRunning = false;
     }
 
     private IEnumerator EndTurnRoutine()
@@ -134,10 +187,11 @@ public class TurnManager : MonoBehaviour
         TurnAlreadyEnded = true;
         if (controlMode == CombatControlMode.MLAgent)
         {
-            if (currentTurn >= maxTurn)
+            if (currentTurn > maxTurn)
             {
                 combatAgent.AddReward(-10f);
-                combatAgent.EndEpisode();
+                isTurnRunning = false;
+                StartCoroutine(EndEpisodeNextFrame());
                 yield break;
             }
             combatAgent.AddReward(-0.01f);
@@ -146,29 +200,34 @@ public class TurnManager : MonoBehaviour
         turnQueue.PopNext();
         
         yield return null;
-        StartTurn();
     }
 
     public void ResetEnv()
     {
         Cleanup();
-
+        GetComponent<CombatExecutor>().ResetState();
+        if (turnLoopCoroutine != null)
+        {
+            StopCoroutine(turnLoopCoroutine);
+            turnLoopCoroutine = null;
+        }
+        isTurnRunning = false;
         State = CombatState.Playing;
         currentTurn = 1;
         allySlots.Clear();
         defeatedEnemyNames.Clear();
-
         mapPopulator = GetComponentInChildren<PopulateMap>();
         mapPopulator.Generate();
 
         gridData = mapPopulator.objectsData;
         combatAgent.setGridData(gridData);
         combatAgent.SetAgentTeam(currentAgentTeam);
+        
 
         InitializeTurnQueue();
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         combatAgent.SetAllySlots(allySlots);
-        StartTurn();
+        StartTurnLoop();
     }
 
     void Cleanup()
@@ -180,7 +239,10 @@ public class TurnManager : MonoBehaviour
         {
             CharacterObject characterObject = unit.character;
             if (characterObject != null)
+            {
                 characterObject.OnDied -= HandleCharacterDeath;
+                print("cleanup unsubscribe");
+            }
         }
     }
 
@@ -236,6 +298,7 @@ public class TurnManager : MonoBehaviour
         }
 
         turnQueue.Remove(character);
+        Debug.Log($"Removing from queue: {character.Name}");
         turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         mapPopulator.HandleCharacterDeath(character);
         bool episodeEnded = CheckBattleEnd();
@@ -283,7 +346,7 @@ public class TurnManager : MonoBehaviour
                 print("MENANG");
                 gridSelect.ExitCharacter();
                 combatAgent.AddReward(10f);
-                combatAgent.EndEpisode();
+                StartCoroutine(EndEpisodeNextFrame());
                 return true;
             }
             else
@@ -315,12 +378,18 @@ public class TurnManager : MonoBehaviour
             if (controlMode == CombatControlMode.MLAgent)
             {
                 combatAgent.AddReward(-10f);
-                combatAgent.EndEpisode();
+                StartCoroutine(EndEpisodeNextFrame());
                 return true;
             }
             return true;
         }
         return false;
+    }
+
+    private IEnumerator EndEpisodeNextFrame()
+    {
+        yield return null; // wait one frame for all current coroutines to finish
+        combatAgent.EndEpisode();
     }
 
     // void ShowScene(Scene scene)

@@ -5,6 +5,7 @@ public class TurnQueue
 {
     public List<CharacterObject> allUnits;
     public List<CharacterObject> queue = new();
+    private Dictionary<CharacterObject, float> simulationMeters = new();
     private int visibleCount = 5;
     private int bufferSize = 10;
 
@@ -13,36 +14,42 @@ public class TurnQueue
         this.allUnits = units;
         this.bufferSize = bufferSize;
         this.visibleCount = visibleCount;
+        foreach (var u in units)
+            simulationMeters[u] = u.CurrentATB;
         RefillFull();
     }
 
     private void RefillFull()
     {
         queue.Clear();
-        queue.AddRange(GenerateTurnOrder(allUnits, bufferSize));
+        queue.AddRange(GenerateTurnOrder(bufferSize));
     }
 
-    public List<CharacterObject> GenerateTurnOrder(List<CharacterObject> units, int bufferSize)
+    public List<CharacterObject> GenerateTurnOrder(int bufferSize)
     {
         List<CharacterObject> order = new List<CharacterObject>();
-        Dictionary<CharacterObject, float> meters = new Dictionary<CharacterObject, float>();
-
-        foreach (var u in units)
-            meters[u] = u.CurrentATB;
+        int safetyLimit = bufferSize *Mathf.Max(allUnits.Count, 1)  * 100;
+        int iterations = 0;
 
         while (order.Count < bufferSize)
         {
-            if (units.Count == 0)
+            if (iterations++ > safetyLimit)
+            {
+                Debug.LogError("GenerateTurnOrded hit safety limit, infinite loop detected!");
+                break;
+            }
+
+            if (allUnits.Count == 0)
                 break;
 
             CharacterObject next = null;
             float minTime = float.MaxValue;
-            foreach (var u in units)
+            foreach (var u in allUnits)
             {
                 if (u.Speed <= 0f)
                     continue;
 
-                float timeToAct = Mathf.Max(0f, 100f - meters[u]) / u.Speed;
+                float timeToAct = Mathf.Max(0f, 100f - simulationMeters[u]) / u.Speed;
                 if (timeToAct < minTime)
                 {
                     minTime = timeToAct;
@@ -57,10 +64,10 @@ public class TurnQueue
             if (next == null)
                 break;
 
-            foreach (var u in units)
-                meters[u] += u.Speed * minTime;
+            foreach (var u in allUnits)
+                simulationMeters[u] += u.Speed * minTime;
                 
-            meters[next] -= 100f;
+            simulationMeters[next] -= 100f;
             order.Add(next);
         }
 
@@ -91,7 +98,7 @@ public class TurnQueue
         // EnsureBuffer();
         if (queue.Count <= visibleCount)
         {
-            RefillFull();
+            EnsureBuffer();
         }
 
         return next;
@@ -106,7 +113,7 @@ public class TurnQueue
         if (needed <= 0)
             return;
 
-        var more = GenerateTurnOrder(allUnits, needed);
+        var more = GenerateTurnOrder(needed);
         queue.AddRange(more);
     }
 
@@ -118,10 +125,11 @@ public class TurnQueue
     public void Remove(CharacterObject character)
     {
         allUnits.Remove(character);
+        simulationMeters.Remove(character);
         queue.RemoveAll(c => c == character);
         Debug.Log($"After remove → allUnits: {allUnits.Count}, queue: {queue.Count}");
-        if (queue.Count <= visibleCount)
-            RefillFull();
+        // if (queue.Count <= visibleCount)
+        //     RefillFull();
     }
 
 }

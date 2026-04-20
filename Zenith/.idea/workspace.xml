@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7d4df8a5-48ca-4ea7-a7ad-a1129b6690ab" name="Changes" comment="" />
+    <list default="true" id="7d4df8a5-48ca-4ea7-a7ad-a1129b6690ab" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/TestMLAgent_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/TestMLAgent_timers.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/Testing/Prefabs/Environment.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/Testing/Prefabs/Environment.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatStrategies.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatStrategies.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIControllerBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIControllerBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ITurnActor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ITurnActor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnQueue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnQueue.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -18,7 +32,8 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true"
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main-new"
   }
 }]]></component>
   <component name="SharedIndexes">

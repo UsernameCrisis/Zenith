@@ -8,13 +8,15 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     protected Vector3Int targetPos;
     protected BehaviourTree tree;
     private CombatExecutor combatExecutor;
+    private CharacterObject myCharacter;
     protected Grid grid;
     protected MovementPreview previewSystem;
     public bool IsPlayer => false;
     protected bool isTurnComplete = false;
     public bool IsTurnComplete() => isTurnComplete;
     public bool isMoving;
-    private TurnManager turnManager;
+    protected TurnManager turnManager;
+    public TurnManager getTurnManager() => turnManager;
 
     void Awake()
     {
@@ -22,20 +24,28 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         grid = parent.parent.GetComponentInChildren<Grid>();
         previewSystem = GetComponentInParent<MovementPreview>();
         combatExecutor = GetComponentInParent<CombatExecutor>();
-        
+        turnManager = GetComponentInParent<TurnManager>();
     }
     void Start()
     {
-        turnManager = GetComponentInParent<TurnManager>();
+        
     }
 
-    public void BeginTurn(GridData gridData)
+    public void BeginTurn(GridData gridData, CharacterObject character)
     {
         this.gridData = gridData;
+        myCharacter = character;
         isTurnComplete = false;
 
         tree = new BehaviourTree(GetTreeName());
-        tree.AddChild(BuildTree());
+        Node root = BuildTree();
+        if (root == null)
+        {
+            Debug.LogError("BuildTree returned null!");
+            isTurnComplete = true;
+            return;
+        }
+        tree.AddChild(root);
         
         StartCoroutine(RunTree());
     }
@@ -44,13 +54,39 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     protected IEnumerator RunTree()
     {
-        var status = tree.Process();
+        if (tree == null)
+        {
+            Debug.LogError("Tree is null!");
+            yield break;
+        }
+        Node.Status status;
+        try
+        {
+            status = tree.Process();
+        } catch (System.Exception e)
+        {
+            Debug.LogError($"Tree process crash: {e}");
+            yield break;
+        }
+        
 
         while (status == Node.Status.Running)
         {
+            if (turnManager == null || turnManager.State != CombatState.Playing)
+                yield break;
             yield return null;
-            status = tree.Process();
+            try
+            {
+                status = tree.Process();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Tree process crash (loop): {e}");
+                yield break;
+            }
         }
+        if (turnManager == null || turnManager.State != CombatState.Playing)
+            yield break;
 
         yield return new WaitForSeconds(0.2f);
         EndTurn();
@@ -58,6 +94,12 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     public void EndTurn()
     {
+        if (gridData == null)
+        {
+            Debug.LogError("gridData is null in EndTurn!");
+            isTurnComplete = true;
+            return;
+        }
         CharacterObject enemyChar = gridData.GetTileAt(GetCurrentPosition())?.PlacedObject as CharacterObject;
         if (enemyChar != null)
         {
@@ -188,16 +230,11 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     
     public Vector3Int GetCurrentPosition()
     {
-        Vector3Int gridPos = grid.WorldToCell(transform.position);
-        TileData tile = gridData.GetTileAt(gridPos);
+        if (myCharacter != null)
+            return myCharacter.Position;
 
-        if (tile?.PlacedObject is CharacterObject)
-        {
-            return gridPos;
-        }
-    
-        Debug.LogError("AI is not on a valid tile!");
-        return gridPos;
+        Debug.LogError("AI character not found!");
+        return grid.WorldToCell(transform.position);
     }
     public void ForceComplete()
     {
@@ -242,4 +279,8 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     public MovementPreview getPreview() {return previewSystem;}
     public CombatExecutor GetCombatExecutor() => combatExecutor;
     protected abstract Node BuildTree();
+    void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
 }

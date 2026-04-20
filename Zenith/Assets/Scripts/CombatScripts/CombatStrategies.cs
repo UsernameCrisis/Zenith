@@ -87,6 +87,8 @@ namespace BehaviourTrees
         {
             var latestPos = ai.GetCurrentPosition();
             var enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+            if (enemyChar == null)
+                return Node.Status.Failure;
             bool inRange = ai.IsInRange(latestPos, ai.getTargetPos(), enemyChar.AtkRange);
 
             return inRange ? Node.Status.Success : Node.Status.Failure;
@@ -168,8 +170,9 @@ namespace BehaviourTrees
     {
         public MoveToRandomTile(EnemyAIControllerBase ai) : base(ai) {}
 
-        protected override Vector3Int SelectTargetTile(Vector3Int current, HashSet<Vector3Int> reachable, CharacterObject character)
+        protected override Vector3Int SelectTargetTile(Vector3Int current, HashSet<Vector3Int> reachableTile, CharacterObject character)
         {
+            HashSet<Vector3Int> reachable = new HashSet<Vector3Int>(ai.getPreview().GetReachableTiles());
             reachable.Remove(current);
 
             if (reachable.Count == 0)
@@ -196,7 +199,6 @@ namespace BehaviourTrees
 
             int dist = Mathf.Abs(current.x - targetPos.x) + Mathf.Abs(current.y - targetPos.y);
 
-            // Already in good position → don't move
             if (dist >= minRange && dist <= maxRange &&
                 ai.HasLineOfSight(current, targetPos))
             {
@@ -261,7 +263,11 @@ namespace BehaviourTrees
             Vector3Int bestMove = SelectTargetTile(latestPos, reachable, enemyChar);
             
             if (bestMove == latestPos)
+            {
+                startedMovement = false;
                 return Node.Status.Success;
+            }
+                
 
             executor.ExecuteMove(enemyChar, latestPos, bestMove, gridData);
 

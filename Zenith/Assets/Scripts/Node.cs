@@ -217,7 +217,12 @@ namespace BehaviourTrees
             this.strategy = strategy;
         }
 
-        public override Status Process() => strategy.Process();
+        public override Status Process() 
+        {
+            var result = strategy.Process();
+            // Debug.Log($"Leaf {name} → {result}");
+            return result;
+        }
     }
 
     public class Node

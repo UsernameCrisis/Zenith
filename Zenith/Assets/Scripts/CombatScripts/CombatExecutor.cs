@@ -37,7 +37,7 @@ public class CombatExecutor : MonoBehaviour
 
         if (!gridData.CanPlaceObjectAt(targetPos))
             return;
-        print("before start coroutine or move");
+        // print("before start coroutine or move");
         if (turnManager.GetUseAnimation())
             StartCoroutine(WalkPath(path, startPos, character, gridData));
         else
@@ -112,5 +112,12 @@ public class CombatExecutor : MonoBehaviour
         character.UseMovement(path.Count);
 
         movePreview.ClearAll();
+    }
+
+    public void ResetState()
+    {
+        isMoving = false;
+        isAttacking = false;
+        StopAllCoroutines();
     }
 }

@@ -1,31 +1,57 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerTrigger : MonoBehaviour
 {
+    [Header("Blocking UI")]
+    [Tooltip("UI panels that should block interaction when active.")]
+    public List<GameObject> blockingUIPanels = new List<GameObject>();
+
     [HideInInspector] public GameObject InteractUI;
     public GameObject CurrentInteractable;
     public GameObject CurrentOpenInteractable;
     [HideInInspector] public TMP_Text _interactText;
 
+    private bool IsAnyUIActive()
+    {
+        foreach (GameObject panel in blockingUIPanels)
+        {
+            if (panel != null && panel.activeInHierarchy)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     void OnTriggerEnter(Collider other)
     {
         if (InteractUI == null || _interactText == null) FindMissingComponents();
 
         if (other.CompareTag("Interactable") && CurrentInteractable == null)
         {
-            InteractUI.SetActive(true);
             CurrentInteractable = other.gameObject;
 
-            var interactable = CurrentInteractable.GetComponent<InteractableObject>();
-            if (interactable != null)
+            if (!IsAnyUIActive())
             {
-                _interactText.text = interactable.InteractText;
+                ShowInteractPrompt();
             }
 
             CurrentOpenInteractable = null;
+        }
+    }
+
+    private void ShowInteractPrompt()
+    {
+        if (InteractUI == null) return;
+
+        InteractUI.SetActive(true);
+        var interactable = CurrentInteractable.GetComponent<InteractableObject>();
+        if (interactable != null && _interactText != null)
+        {
+            _interactText.text = interactable.InteractText;
         }
     }
 
@@ -56,7 +82,19 @@ public class PlayerTrigger : MonoBehaviour
     {
         if (CurrentInteractable == null) return;
 
-        if (InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
+        if (IsAnyUIActive())
+        {
+            if (InteractUI.activeInHierarchy) InteractUI.SetActive(false);
+        }
+        else
+        {
+            if (!InteractUI.activeInHierarchy && CurrentInteractable != null)
+            {
+                ShowInteractPrompt();
+            }
+        }
+
+        if (!IsAnyUIActive() && InputSystem.actions.FindAction("Interact").WasPressedThisFrame())
         {
             CurrentOpenInteractable = CurrentInteractable;
 

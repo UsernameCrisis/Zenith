@@ -1,15 +1,26 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections;
 
 public class DialogueManager : MonoBehaviour
 {
+    [Header("External References")]
+    public PlayerMovement player;
+
     [Header("UI Containers")]
     public GameObject dialoguePanel;
+    public GameObject optionsPanel;
     public RectTransform leftPortraitRect;
     public RectTransform rightPortraitRect;
     public RectTransform textPanelRect;
+
+    [Header("Interaction Buttons")]
+    public GameObject talkButton;
+    public GameObject giftButton;
+    public GameObject shopButton;
+    public GameObject partyButton;
 
     [Header("UI Content")]
     public Image leftPortrait;
@@ -29,8 +40,9 @@ public class DialogueManager : MonoBehaviour
     private int index;
     private bool isTyping;
     private bool isDialogueActive;
+    private bool isShowingOptions;
+    private bool canInteract = true;
     private Coroutine typeRoutine;
-
 
     private Vector2 leftTargetPos;
     private Vector2 rightTargetPos;
@@ -46,18 +58,30 @@ public class DialogueManager : MonoBehaviour
     private void Start()
     {
         dialoguePanel.SetActive(false);
+        optionsPanel.SetActive(false);
         isDialogueActive = false;
+        isShowingOptions = false;
+    }
+
+    public bool IsDialogueActive()
+    {
+        return isDialogueActive || isShowingOptions || !canInteract;
     }
 
     public void StartDialogue(DialogueData data, string npcID)
     {
-        if (isDialogueActive) return;
+        if (isDialogueActive || isShowingOptions || !canInteract) return;
+
+        if (player != null) player.canMove(false);
 
         currentNPCID = npcID;
         currentDialogue = data;
         index = 0;
         isDialogueActive = true;
+        isShowingOptions = false;
+
         dialoguePanel.SetActive(true);
+        optionsPanel.SetActive(false);
 
         leftPortraitRect.anchoredPosition = leftTargetPos + new Vector2(-offscreenOffset, 0);
         rightPortraitRect.anchoredPosition = rightTargetPos + new Vector2(offscreenOffset, 0);
@@ -85,8 +109,42 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            EndDialogue();
+            ShowInteractionOptions();
         }
+    }
+
+    private void ShowInteractionOptions()
+    {
+        isDialogueActive = false;
+        isShowingOptions = true;
+        optionsPanel.SetActive(true);
+
+        if (currentNPCID.ToLower() == "merchant")
+        {
+            shopButton.SetActive(true);
+            partyButton.SetActive(false);
+        }
+        else
+        {
+            shopButton.SetActive(false);
+            partyButton.SetActive(true);
+        }
+
+        talkButton.SetActive(true);
+        giftButton.SetActive(true);
+    }
+
+    public void CloseAllDialogue()
+    {
+        isShowingOptions = false;
+        isDialogueActive = false;
+        dialoguePanel.SetActive(false);
+        optionsPanel.SetActive(false);
+        dialogueText.text = "";
+
+        if (player != null) player.canMove(true);
+
+        StartCoroutine(InteractionCooldown());
     }
 
     private void DisplayLine()
@@ -146,11 +204,11 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void EndDialogue()
+    private IEnumerator InteractionCooldown()
     {
-        isDialogueActive = false;
-        dialoguePanel.SetActive(false);
-        dialogueText.text = "";
+        canInteract = false;
+        yield return new WaitForSeconds(0.2f);
+        canInteract = true;
     }
 
     void Update()
@@ -160,6 +218,16 @@ public class DialogueManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0))
             {
                 NextLine();
+            }
+        }
+        else if (isShowingOptions)
+        {
+            bool keyPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E);
+            bool clickedEmptySpace = Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject();
+
+            if (keyPressed || clickedEmptySpace)
+            {
+                CloseAllDialogue();
             }
         }
     }

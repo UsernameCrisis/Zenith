@@ -164,7 +164,7 @@ public class InventoryManager : MonoBehaviour
     {
         if (equippedItems.ContainsKey(newItem.slot))
         {
-            UnequipItem(newItem.slot);
+            ForceUnequip(newItem.slot);
         }
 
         RemoveItem(newItem, 1);
@@ -177,18 +177,27 @@ public class InventoryManager : MonoBehaviour
         OnInventoryChanged?.Invoke();
     }
 
-    public void UnequipItem(EquipmentItem.EquipSlot slot)
+    private void ForceUnequip(EquipmentItem.EquipSlot slot)
     {
-        if (equippedItems.TryGetValue(slot, out EquipmentItem itemToUnequip))
+        if (equippedItems.TryGetValue(slot, out EquipmentItem item))
         {
             equippedItems.Remove(slot);
 
-            AddItem(itemToUnequip, 1);
-
-            RefreshTotalStats();
-            UpdateWeight();
-            OnInventoryChanged?.Invoke();
+            ItemStack existingStack = mainInventory.Find(s => s.itemData == item);
+            if (item.isStackable && existingStack != null)
+                existingStack.quantity++;
+            else
+                mainInventory.Add(new ItemStack(item, 1));
         }
+    }
+
+    public void UnequipItem(EquipmentItem.EquipSlot slot)
+    {
+        ForceUnequip(slot);
+
+        RefreshTotalStats();
+        UpdateWeight();
+        OnInventoryChanged?.Invoke();
     }
 
     public void RefreshTotalStats()

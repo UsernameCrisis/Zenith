@@ -6289,6 +6289,7 @@ GameObject:
   m_Component:
   - component: {fileID: 994263222}
   - component: {fileID: 994263221}
+  - component: {fileID: 994263223}
   m_Layer: 0
   m_Name: InventoryManager
   m_TagString: Untagged
@@ -6326,6 +6327,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &994263223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994263220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 419153f122e62324393fe7c655d37e4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryTester
+  potion: {fileID: 11400000, guid: 4ed8259167e43044f8bbde5598d2befd, type: 2}
+  sword: {fileID: 11400000, guid: 46431d98c0beb66408852188815cee76, type: 2}
+  junk: {fileID: 11400000, guid: 13d5515d049e0144da4f469c5228807d, type: 2}
 --- !u!1 &1033326032
 GameObject:
   m_ObjectHideFlags: 0

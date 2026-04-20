@@ -11,15 +11,35 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private EquipmentItem currentItem;
     private TooltipUI tooltip;
 
+    void OnEnable()
+    {
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged -= RefreshSlot;
+            InventoryManager.Instance.OnInventoryChanged += RefreshSlot;
+        }
+
+        RefreshSlot();
+    }
+
+    void OnDisable()
+    {
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnInventoryChanged -= RefreshSlot;
+        }
+    }
+
     void Start()
     {
         tooltip = FindAnyObjectByType<TooltipUI>(FindObjectsInactive.Include);
-        InventoryManager.Instance.OnInventoryChanged += RefreshSlot;
-        RefreshSlot();
     }
 
     public void RefreshSlot()
     {
+        if (this == null || itemIcon == null || InventoryManager.Instance == null)
+            return;
+
         if (InventoryManager.Instance.equippedItems.TryGetValue(slotType, out EquipmentItem item))
         {
             currentItem = item;

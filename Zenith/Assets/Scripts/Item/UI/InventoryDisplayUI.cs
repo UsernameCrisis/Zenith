@@ -12,21 +12,18 @@ public class InventoryDisplayUI : MonoBehaviour
 
     public void RefreshUI()
     {
-        if (InventoryManager.Instance == null) return;
-
-        if (contentParent == null)
-        {
-            Debug.LogError("InventoryDisplayUI: contentParent is missing!");
+        if (this == null || InventoryManager.Instance == null || contentParent == null)
             return;
-        }
 
         foreach (Transform child in contentParent)
         {
-            Destroy(child.gameObject);
+            if (child != null) Destroy(child.gameObject);
         }
 
         foreach (ItemStack stack in InventoryManager.Instance.mainInventory)
         {
+            if (stack == null || stack.itemData == null) continue;
+
             GameObject newRow = Instantiate(rowPrefab, contentParent);
             newRow.GetComponent<InventorySlot>().Setup(stack, this);
         }
@@ -43,6 +40,7 @@ public class InventoryDisplayUI : MonoBehaviour
     {
         if (InventoryManager.Instance != null)
         {
+            InventoryManager.Instance.OnInventoryChanged -= RefreshUI;
             InventoryManager.Instance.OnInventoryChanged += RefreshUI;
         }
         RefreshUI();
@@ -51,7 +49,9 @@ public class InventoryDisplayUI : MonoBehaviour
     void OnDisable()
     {
         if (InventoryManager.Instance != null)
+        {
             InventoryManager.Instance.OnInventoryChanged -= RefreshUI;
+        }
     }
 
     public void ShowTooltip(BaseItem item) { /* Tooltip logic here later */ }

@@ -6312,6 +6312,7 @@ MonoBehaviour:
   mainInventory: []
   maxWeight: 200
   currentWeight: 0
+  database: {fileID: 11400000, guid: 8f219ee562f9e744383a361ab6cf2afc, type: 2}
 --- !u!4 &994263222
 Transform:
   m_ObjectHideFlags: 0

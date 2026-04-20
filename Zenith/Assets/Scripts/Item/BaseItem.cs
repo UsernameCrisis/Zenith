@@ -5,7 +5,10 @@ public enum ItemRarity { Common, Uncommon, Rare, Epic, Legendary }
 
 public abstract class BaseItem : ScriptableObject
 {
-    [Header("Visuals & Identity")]
+    [Header("Identity")]
+    public string itemID;
+
+    [Header("Visuals")]
     public Sprite icon;
     public string itemName;
     [TextArea] public string description;
@@ -21,4 +24,9 @@ public abstract class BaseItem : ScriptableObject
     public float weight;
 
     public abstract void Use();
+
+    private void OnValidate()
+    {
+        itemID = name;
+    }
 }

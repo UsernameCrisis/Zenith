@@ -149,19 +149,118 @@ public class MovementSystem
         return ReconstructPath(cameFrom, start, goal);
     }
 
+    public List<Vector3Int> FindPathAStarUnconstrained(Vector3Int start, Vector3Int goal)
+    {
+        PriorityQueue<Vector3Int> openSet = new();
+        openSet.Enqueue(start, 0);
+
+        Dictionary<Vector3Int, Vector3Int> cameFrom = new();
+        Dictionary<Vector3Int, int> costSoFar = new();
+        cameFrom[start] = start;
+        costSoFar[start] = 0;
+
+        while (openSet.Count > 0)
+        {
+            Vector3Int current = openSet.Dequeue();
+            if (current == goal) break;
+
+            foreach (var dir in directions)
+            {
+                Vector3Int next = current + dir;
+
+                if (!gridData.IsWithinBounds(next)) continue;
+
+                // Block static obstacles; allow empty tiles and character-occupied tiles
+                TileData tile = gridData.GetTileAt(next);
+                if (tile != null && tile.PlacedObject != null && tile.PlacedObject is not CharacterObject)
+                    continue;
+
+                bool occupiedByCharacter = next != goal && tile?.PlacedObject is CharacterObject;
+                int stepCost = occupiedByCharacter ? 5 : 1;
+
+                int newCost = costSoFar[current] + stepCost;
+                if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
+                {
+                    costSoFar[next] = newCost;
+                    openSet.Enqueue(next, newCost + Heuristic(next, goal));
+                    cameFrom[next] = current;
+                }
+            }
+        }
+
+        return ReconstructPath(cameFrom, start, goal);
+    }
+
+    public int PathCost(Vector3Int start, Vector3Int goal)
+    {
+        List<Vector3Int> path = FindPathAStarUnconstrained(start, goal);
+        return path.Count == 0 ? int.MaxValue : path.Count;
+    }
+
     public bool HasLineOfSight(Vector3Int start, Vector3Int end)
     {
-        List<Vector3Int> line = GetLine(start, end);
+        int x0 = start.x, y0 = start.y;
+        int x1 = end.x,   y1 = end.y;
 
-        for (int i = 1; i < line.Count - 1; i++)
+        int dx = x1 - x0;
+        int dy = y1 - y0;
+
+        int stepX = dx == 0 ? 0 : (dx > 0 ? 1 : -1);
+        int stepY = dy == 0 ? 0 : (dy > 0 ? 1 : -1);
+
+        int absDx = Mathf.Abs(dx);
+        int absDy = Mathf.Abs(dy);
+
+        int errAcc = absDx - absDy;
+        int cx = x0, cy = y0;
+
+        while (cx != x1 || cy != y1)
         {
-            TileData tile = gridData.GetTileAt(line[i]);
-            if (tile == null) continue;
-            if (tile.PlacedObject != null && tile.PlacedObject is not CharacterObject)
+            int e2 = 2 * errAcc;
+
+            bool moveX = e2 > -absDy;
+            bool moveY = e2 <  absDx;
+
+            if (moveX && moveY)
+            {
+                Vector3Int cornerA = new Vector3Int(cx + stepX, cy, 0);
+                Vector3Int cornerB = new Vector3Int(cx, cy + stepY, 0);
+
+                bool blockedA = IsObstacleTile(cornerA);
+                bool blockedB = IsObstacleTile(cornerB);
+
+                if (blockedA && blockedB)
+                    return false;
+
+                errAcc += absDx - absDy;
+                cx += stepX;
+                cy += stepY;
+            }
+            else if (moveX)
+            {
+                errAcc -= absDy;
+                cx += stepX;
+            }
+            else
+            {
+                errAcc += absDx;
+                cy += stepY;
+            }
+
+            if (cx == x1 && cy == y1)
+                break;
+
+            if (IsObstacleTile(new Vector3Int(cx, cy, 0)))
                 return false;
         }
 
         return true;
+    }
+
+    private bool IsObstacleTile(Vector3Int pos)
+    {
+        TileData tile = gridData.GetTileAt(pos);
+        return tile != null && tile.PlacedObject != null && tile.PlacedObject is not CharacterObject;
     }
 
     // HELPERS
@@ -181,32 +280,6 @@ public class MovementSystem
 
         path.Reverse();
         return path;
-    }
-
-    private List<Vector3Int> GetLine(Vector3Int start, Vector3Int end)
-    {
-        List<Vector3Int> line = new();
-
-        int x0 = start.x, y0 = start.y;
-        int x1 = end.x,   y1 = end.y;
-
-        int dx = Mathf.Abs(x1 - x0);
-        int dy = Mathf.Abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int err = dx - dy;
-
-        while (true)
-        {
-            line.Add(new Vector3Int(x0, y0, 0));
-            if (x0 == x1 && y0 == y1) break;
-
-            int e2 = 2 * err;
-            if (e2 > -dy) { err -= dy; x0 += sx; }
-            if (e2 < dx)  { err += dx; y0 += sy; }
-        }
-
-        return line;
     }
 
     private int Heuristic(Vector3Int a, Vector3Int b) => Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);

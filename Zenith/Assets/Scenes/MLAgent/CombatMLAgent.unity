@@ -2531,11 +2531,10 @@ MonoBehaviour:
   grid: {fileID: 780557240}
   loadFromSave: 0
   forTrainingAgent: 1
-  useMaxFlow: 0
-  isFullyRandom: 1
+  useMaxFlow: 1
+  isFullyRandom: 0
   minTraversablePaths: 3
   obstacleDensity: 0.2
-  skipValidationChance: 0.25
   clusterLimit: 2
   obstacleID: 7
   teamDist: 6

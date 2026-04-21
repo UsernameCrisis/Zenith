@@ -13,7 +13,6 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private bool isFullyRandom = false;
     [SerializeField] private int minTraversablePaths = 2;
     [SerializeField] private float obstacleDensity = 0.15f;
-    [SerializeField] private float skipValidationChance = 0.25f;
     [SerializeField] private int clusterLimit = 2;
     [SerializeField] private int obstacleID = 7;
     [SerializeField] private int teamDist = 6;
@@ -75,7 +74,7 @@ public class PopulateMap : MonoBehaviour
             if (objectsData.GetTileAt(pos) != null)
                 continue;
 
-            if (pos == team1Center || pos == team2Center)
+            if (Vector3Int.Distance(pos, team1Center) <= 2 || Vector3Int.Distance(pos, team2Center) <= 2)
                 continue;
 
             if (isFullyRandom)
@@ -85,22 +84,17 @@ public class PopulateMap : MonoBehaviour
                     continue;
             }
 
-            bool skipValidation = isFullyRandom && Random.value < skipValidationChance;
-
             PlaceObject(pos, obstacleID, placedGameObjects.Count - 1);
-
-            if (!skipValidation)
-            {
-                int pathCount = useMaxFlow ? MaxFlow(team1Center, team2Center, width, height)
+            int pathCount = useMaxFlow ? MaxFlow(team1Center, team2Center, width, height)
                                             : CountPaths(team1Center, team2Center);
-                if (pathCount < minTraversablePaths)
-                {
-                    objectsData.RemoveObjectAt(pos);
+            
+            if (pathCount < minTraversablePaths)
+            {
+                objectsData.RemoveObjectAt(pos);
 
-                    Destroy(placedGameObjects[^1]);
-                    placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
-                    continue;
-                }
+                Destroy(placedGameObjects[^1]);
+                placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
+                continue;
             }
             placed++;
         }
@@ -109,88 +103,110 @@ public class PopulateMap : MonoBehaviour
     private int MaxFlow(Vector3Int start, Vector3Int goal, int width, int height)
     {
         int n = width * height;
-        int[,] capacity = new int[n, n];
+        int totalNodes = 2 * n; 
 
-        Vector3Int[] dirs =
+        Dictionary<int, Dictionary<int, int>> cap = new();
+
+        void AddEdge(int u, int v, int c)
         {
-            Vector3Int.up,
-            Vector3Int.down,
-            Vector3Int.left,
-            Vector3Int.right
-        };
+            if (!cap.ContainsKey(u)) cap[u] = new Dictionary<int, int>();
+            if (!cap.ContainsKey(v)) cap[v] = new Dictionary<int, int>();
+            cap[u][v] = cap[u].GetValueOrDefault(v) + c;
+            if (!cap[v].ContainsKey(u)) cap[v][u] = 0; // reverse edge starts at 0
+        }
 
-        Shuffle(dirs);
+        Vector3Int[] dirs = { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right };
 
         for (int x = 0; x < width; x++)
+        {
             for (int y = 0; y < height; y++)
             {
                 Vector3Int pos = new Vector3Int(x + minX, y + minY, 0);
+                if (!IsWalkable(pos)) continue;
 
-                if (!IsWalkable(pos))
-                    continue;
+                int idx = NodeIndex(x, y, width);
+                int inNode  = idx;
+                int outNode = idx + n;
 
-                int u = NodeIndex(x, y, width);
+                bool isEndpoint = pos == start || pos == goal;
+                AddEdge(inNode, outNode, isEndpoint ? int.MaxValue : 1);
 
                 foreach (var d in dirs)
                 {
                     Vector3Int npos = pos + d;
-
-                    if (!IsWalkable(npos))
-                        continue;
+                    if (!IsWalkable(npos)) continue;
 
                     int nx = npos.x - minX;
                     int ny = npos.y - minY;
+                    int nIdx = NodeIndex(nx, ny, width);
 
-                    int v = NodeIndex(nx, ny, width);
-
-                    capacity[u, v] = 1;
+                    AddEdge(outNode, nIdx, 1); // OUT(current) → IN(neighbour), capacity 1
                 }
             }
+        }
 
-        int source = NodeIndex(start.x - minX, start.y - minY, width);
-        int sink = NodeIndex(goal.x - minX, goal.y - minY, width);
+        int srcIdx  = NodeIndex(start.x - minX, start.y - minY, width);
+        int sinkIdx = NodeIndex(goal.x  - minX, goal.y  - minY, width);
+
+        int source = srcIdx;
+        int sink   = sinkIdx + n;
+
+        if (source == sink) return int.MaxValue;
 
         int flow = 0;
 
+        // Edmonds-Karp (BFS augmenting paths)
         while (true)
         {
-            //BFS
-            int[] parent = new int[n];
-            for (int i = 0; i < n; i++) parent[i] = -1;
-
+            // BFS to find augmenting path
+            Dictionary<int, int> parent = new();
             Queue<int> q = new();
             q.Enqueue(source);
             parent[source] = source;
 
-            while (q.Count > 0 && parent[sink] == -1)
+            while (q.Count > 0 && !parent.ContainsKey(sink))
             {
                 int u = q.Dequeue();
+                if (!cap.ContainsKey(u)) continue;
 
-                for (int v = 0; v < n; v++)
+                foreach (var kvp in cap[u])
                 {
-                    if (parent[v] == -1 && capacity[u, v] > 0)
+                    int v = kvp.Key;
+                    if (!parent.ContainsKey(v) && kvp.Value > 0)
                     {
                         parent[v] = u;
                         q.Enqueue(v);
                     }
                 }
             }
-            if (source == sink)
-                return int.MaxValue;
-            if (parent[sink] == -1)
-                break;
 
-            int vtx = sink;
+            if (!parent.ContainsKey(sink))
+                break; // no augmenting path
 
-            while (vtx != source)
+            // Find bottleneck capacity along path
+            int pathFlow = int.MaxValue;
+            int cur = sink;
+            while (cur != source)
             {
-                int u = parent[vtx];
-                capacity[u, vtx]--;
-                capacity[vtx, u]++;
-                vtx = u;
+                int prev = parent[cur];
+                pathFlow = Mathf.Min(pathFlow, cap[prev][cur]);
+                cur = prev;
             }
 
-            flow++;
+            // Update capacities along path
+            cur = sink;
+            while (cur != source)
+            {
+                int prev = parent[cur];
+                cap[prev][cur] -= pathFlow;
+                cap[cur][prev] = cap[cur].GetValueOrDefault(prev) + pathFlow;
+                cur = prev;
+            }
+
+            flow += pathFlow;
+
+            if (flow >= minTraversablePaths)
+                return flow;
         }
 
         return flow;
@@ -382,8 +398,8 @@ public class PopulateMap : MonoBehaviour
         {
             attempts++;
 
-            int dx = Random.Range(-2, 3);
-            int dy = Random.Range(-2, 3);
+            int dx = Random.Range(-1, 2);
+            int dy = Random.Range(-1, 2);
 
             Vector3Int pos = new Vector3Int(center.x + dx, center.y + dy, 0);
 

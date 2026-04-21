@@ -22,6 +22,11 @@ public class DialogueManager : MonoBehaviour
     public GameObject shopButton;
     public GameObject partyButton;
 
+    [Header("AI Chat Settings")]
+    public GameObject chatInputPanel;
+    public TMP_InputField chatInputField;
+    public OllamaChatProvider ollamaProvider;
+
     [Header("UI Content")]
     public Image leftPortrait;
     public Image rightPortrait;
@@ -61,6 +66,14 @@ public class DialogueManager : MonoBehaviour
         optionsPanel.SetActive(false);
         isDialogueActive = false;
         isShowingOptions = false;
+
+        chatInputField.onSelect.AddListener(delegate { BlockInteractions(true); });
+        chatInputField.onDeselect.AddListener(delegate { BlockInteractions(false); });
+    }
+
+    private void BlockInteractions(bool isTyping)
+    {
+        canInteract = !isTyping;
     }
 
     public bool IsDialogueActive()
@@ -211,8 +224,47 @@ public class DialogueManager : MonoBehaviour
         canInteract = true;
     }
 
+    public void OnTalkButtonPressed()
+    {
+        optionsPanel.SetActive(false);
+        chatInputPanel.SetActive(true);
+        chatInputField.ActivateInputField();
+    }
+
+    public void SendChatToAI()
+    {
+        string userText = chatInputField.text;
+        if (string.IsNullOrEmpty(userText)) return;
+
+        chatInputPanel.SetActive(false);
+        chatInputField.text = "";
+
+        nameText.text = currentNPCID;
+        dialogueText.text = "...";
+
+        string formattedPrompt = $"Instructions: You are {currentNPCID}, a friendly character in an RPG. " +
+                                 $"Respond to the player's message in one short sentence.\n" +
+                                 $"Player: {userText}\n" +
+                                 $"{currentNPCID}:";
+
+        StartCoroutine(ollamaProvider.SendChatRequest(formattedPrompt, (aiResponse) => {
+            DisplayAIResponse(aiResponse);
+        }));
+    }
+
+    private void DisplayAIResponse(string text)
+    {
+        isDialogueActive = true;
+        isShowingOptions = false;
+
+        if (typeRoutine != null) StopCoroutine(typeRoutine);
+        typeRoutine = StartCoroutine(TypeText(text));
+    }
+
     void Update()
     {
+        if (chatInputField != null && chatInputField.isFocused) return;
+
         if (isDialogueActive)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0))

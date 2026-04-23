@@ -28,6 +28,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private CombatAgent combatAgent;
     [SerializeField] private int currentAgentTeam = 1;
     [SerializeField] private bool useAnimation = true;
+    [SerializeField] private bool showTurnOrderUI = true;
 
     public TurnQueue turnQueue;
     private bool isTurnRunning = false;
@@ -102,7 +103,8 @@ public class TurnManager : MonoBehaviour
         isTurnRunning = true;
         TurnAlreadyEnded = false;
         actor = null;
-        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
+        if (showTurnOrderUI)
+            turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         
         while (turnQueue.GetCurrent() != null && gridData.GetPositionOf(turnQueue.GetCurrent()) == null)
         {
@@ -225,7 +227,8 @@ public class TurnManager : MonoBehaviour
         
 
         InitializeTurnQueue();
-        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
+        if (showTurnOrderUI)
+            turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         combatAgent.SetAllySlots(allySlots);
         StartTurnLoop();
     }
@@ -299,7 +302,8 @@ public class TurnManager : MonoBehaviour
 
         turnQueue.Remove(character);
         Debug.Log($"Removing from queue: {character.Name}");
-        turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
+        if (showTurnOrderUI)
+            turnOrderUI.Refresh(turnQueue.GetVisibleTurns());
         mapPopulator.HandleCharacterDeath(character);
         bool episodeEnded = CheckBattleEnd();
 

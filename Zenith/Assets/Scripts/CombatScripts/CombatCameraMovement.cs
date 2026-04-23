@@ -21,6 +21,7 @@ public class CombatCameraMovement : MonoBehaviour
     [SerializeField] private float defaultMoveSpeed = 70f;
     [SerializeField] private float speedMultiplier = 2f;
     [SerializeField] private float defaultX = 0f, defaultY = 3.251f, defaultZ = -5f;
+    [SerializeField] private bool enableFading = true;
     void Awake()
     {
         moveSpeed = defaultMoveSpeed;
@@ -35,7 +36,8 @@ public class CombatCameraMovement : MonoBehaviour
     IEnumerator Start()
     {
         yield return null; // Menggunakan ini untuk skip 1 frame karena belum selesai populasi map
-        RefreshCharacterList();
+        if (enableFading)
+            RefreshCharacterList();
     }
 
     void Update()
@@ -55,7 +57,8 @@ public class CombatCameraMovement : MonoBehaviour
         pos.x = Mathf.Clamp(pos.x, minX, maxX);
         pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
         transform.position = pos;
-        MakeTransparent();
+        if (enableFading)
+            MakeTransparent();
     }
 
     void FixedUpdate()

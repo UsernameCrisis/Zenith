@@ -88,7 +88,6 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         if (turnManager == null || turnManager.State != CombatState.Playing)
             yield break;
 
-        yield return new WaitForSeconds(0.2f);
         EndTurn();
     }
 

@@ -35,7 +35,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
     public bool IsTurnComplete() => isTurnComplete;
     public bool IsPlayer => true;
-    private bool isMoving = false;
 
     void OnEnable()
     {
@@ -149,7 +148,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void HandleActionClick(Collider collider)
     {
         if (selectedChar == null || currentAction == null) return;
-        if (isMoving) return;
+        if (combatExecutor.IsMoving) return;
 
         Vector3Int clickedGrid = grid.WorldToCell(mousePos);
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
@@ -194,7 +193,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private void HandleActionMenu(string action)
     {
-        if (isMoving) return;
+        if (combatExecutor.IsMoving) return;
         currentAction = action;
         isInActionMode = true;
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);

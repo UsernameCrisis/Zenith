@@ -798,8 +798,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4d19817e317bc641b850c637fc41a05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OllamaChatProvider
-  url: http://localhost:11434/api/generate
-  model: phi:latest
+  defaultUrl: http://localhost:11434/api/generate
+  defaultConvModel: phi:latest
+  defaultCombatModel: phi:latest
+  activeUrl: 
+  conversationModel: 
+  combatModel: 
 --- !u!224 &130648845 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6239633227508468034, guid: b74f29195a382104f964a941b525b82a, type: 3}
@@ -2996,7 +3000,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractableNPC
   InteractText: Talk
   npcID: warrior
-  conversation: {fileID: 11400000, guid: a553a26d7a65448498fc0a9f7a374b30, type: 2}
+  conversation: {fileID: 11400000, guid: c17949ca927dfad4a915a4696d79e8dc, type: 2}
   dialogueManager: {fileID: 119795966}
 --- !u!1 &356497676
 GameObject:
@@ -6775,7 +6779,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
   mainInventory: []
-  maxWeight: 200
+  maxWeight: 80
   currentWeight: 0
   database: {fileID: 11400000, guid: 8f219ee562f9e744383a361ab6cf2afc, type: 2}
 --- !u!4 &994263222
@@ -11765,7 +11769,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractableNPC
   InteractText: Talk
   npcID: cleric
-  conversation: {fileID: 11400000, guid: be762442ef6e5894caffae6ec6ba41b2, type: 2}
+  conversation: {fileID: 11400000, guid: 55ea59275cf05154eb3206a7309471c8, type: 2}
   dialogueManager: {fileID: 119795966}
 --- !u!1001 &1751241700
 PrefabInstance:
@@ -13213,7 +13217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractableNPC
   InteractText: Talk
   npcID: merchant
-  conversation: {fileID: 11400000, guid: 2cada69c12a571947a4780562162027a, type: 2}
+  conversation: {fileID: 11400000, guid: 1b2050b5e8ad704458a8c6f17e409252, type: 2}
   dialogueManager: {fileID: 119795966}
 --- !u!1 &1961692710
 GameObject:

@@ -3,28 +3,55 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static OllamaInspectorTester;
 
 public class OllamaChatProvider : MonoBehaviour
 {
-    [Header("Server Settings")]
-    public string url = "http://localhost:11434/api/generate";
-    public string model = "phi:latest";
+    [Header("Default Settings (Fallback)")]
+    [SerializeField] private string defaultUrl = "http://localhost:11434/api/generate";
+    [SerializeField] private string defaultConvModel = "phi:latest";
+    [SerializeField] private string defaultCombatModel = "phi:latest";
 
-    public IEnumerator SendChatRequest(string userPrompt, Action<string> onResponseReceived)
+    [Header("Current Runtime Settings")]
+    public string activeUrl;
+    public string conversationModel;
+    public string combatModel;
+
+    private void Awake()
     {
+        LoadSettings();
+    }
+
+    public void LoadSettings()
+    {
+        activeUrl = PlayerPrefs.GetString("Ollama_URL", defaultUrl);
+        conversationModel = PlayerPrefs.GetString("Ollama_ConvModel", defaultConvModel);
+        combatModel = PlayerPrefs.GetString("Ollama_CombatModel", defaultCombatModel);
+    }
+
+    public void SaveSettings(string newUrl, string newConv, string newCombat)
+    {
+        PlayerPrefs.SetString("Ollama_URL", newUrl);
+        PlayerPrefs.SetString("Ollama_ConvModel", newConv);
+        PlayerPrefs.SetString("Ollama_CombatModel", newCombat);
+        PlayerPrefs.Save();
+
+        LoadSettings();
+    }
+
+    public IEnumerator SendChatRequest(string userPrompt, Action<string> onResponseReceived, bool isCombat = false)
+    {
+        string modelToUse = isCombat ? combatModel : conversationModel;
+
         OllamaRequest data = new OllamaRequest
         {
-            model = this.model,
+            model = modelToUse,
             prompt = userPrompt,
             stream = false
         };
 
         string json = JsonUtility.ToJson(data);
 
-        Debug.Log("Sending JSON: " + json);
-
-        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        using (UnityWebRequest request = new UnityWebRequest(activeUrl, "POST"))
         {
             byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -35,28 +62,28 @@ public class OllamaChatProvider : MonoBehaviour
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                string rawResponse = request.downloadHandler.text;
-                Debug.Log($"Raw JSON from Ollama: {rawResponse}");
-
                 try
                 {
-                    OllamaResponse res = JsonUtility.FromJson<OllamaResponse>(rawResponse);
+                    OllamaResponse res = JsonUtility.FromJson<OllamaResponse>(request.downloadHandler.text);
                     onResponseReceived?.Invoke(res.response);
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
-                    Debug.LogError($"Failed to parse JSON: {e.Message}");
-                    onResponseReceived?.Invoke("...I understood you, but my thoughts are messy.");
+                    Debug.LogError($"JSON Parse Error: {e.Message}");
+                    onResponseReceived?.Invoke("...My thoughts are messy.");
                 }
+            }
+            else
+            {
+                Debug.LogError($"Ollama Error: {request.error}");
+                onResponseReceived?.Invoke("Connection to the brain failed.");
             }
         }
     }
 
     [Serializable]
-    public class OllamaRequest
-    {
-        public string model;
-        public string prompt;
-        public bool stream;
-    }
+    public class OllamaRequest { public string model; public string prompt; public bool stream; }
+
+    [Serializable]
+    public class OllamaResponse { public string response; }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public struct DialogueLine
 {
-    public string name;
+    public string name; 
     public Sprite characterPortrait;
     public bool isPlayer;
     [TextArea(3, 10)]

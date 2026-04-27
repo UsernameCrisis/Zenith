@@ -21,10 +21,10 @@ public class GUI_CombatAgent : MonoBehaviour
 
     private void OnGUI()
     {
-        string debugEp = "Episode: " + _combatAgent.currEp + " - Step: " + _combatAgent.StepCount;
-        string debugRew = "Reward: " + _combatAgent.cumulativeReward.ToString();
+        string debugEp = "Episode: " + _combatAgent.CurrEp + " - Step: " + _combatAgent.StepCount;
+        string debugRew = "Reward: " + _combatAgent.CumulativeReward.ToString();
 
-        GUIStyle rewardStyle = _combatAgent.cumulativeReward < 0 ? _negativeStyle : _positiveStyle;
+        GUIStyle rewardStyle = _combatAgent.CumulativeReward < 0 ? _negativeStyle : _positiveStyle;
 
         GUI.Label(new Rect(20, 20, 500, 30), debugEp, _defaultStyle);
         GUI.Label(new Rect(20, 60, 500, 30), debugRew, rewardStyle);

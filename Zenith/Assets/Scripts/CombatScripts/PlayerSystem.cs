@@ -33,6 +33,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private TurnManager turnManager;
     private bool isTurnComplete = false;
     private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
+    private bool isMoving = false;
+
     public bool IsTurnComplete() => isTurnComplete;
     public bool IsPlayer => true;
 
@@ -65,23 +67,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
             combatAgent.OnTurnEnded -= HandleAgentTurnEnded;
         }
     }
-    
-    public void BeginTurn(GridData gridData)
-    {
-        objectsData = gridData;
-        isTurnComplete = false;
-        print("inside select");
-        inputManager.OnColliderClicked += ColliderClicked;
-    }
-
-    public void BeginTurn(GridData gridData, CharacterObject unit)
-    {
-        objectsData = gridData;
-        currentTurnUnit = unit;
-        isTurnComplete = false;
-        print("inside select agent");
-        inputManager.OnColliderClicked += ColliderClicked;
-    }
 
     void Start()
     {
@@ -101,27 +86,56 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         if (selectedChar != null && gridVisualization.activeSelf)
         {
             Vector3Int hoverTile = grid.WorldToCell(mousePos);
-            bool inRange = movePreview.IsTileReachable(hoverTile);
             movePreview.ShowPathPreview(hoverTile);
 
-            Color color = inRange ? defaultColor : Color.red;
+            Color color = movePreview.IsTileReachable(hoverTile) ? defaultColor : Color.red;
             cellIndicatorRenderer.material.SetColor("_EmissionColor", color);
         }
     }
 
-    private void VisualizeHoveredGrid()
+    // ITurnActor
+
+    public void BeginTurn(GridData gridData)
     {
-        // Grid pos (x,y,0), world pos (x,0,z) y == z
-        Vector3Int gridPosition = grid.WorldToCell(mousePos);
-        cellIndicator.transform.position = grid.CellToWorld(gridPosition);
+        objectsData = gridData;
+        isTurnComplete = false;
+        inputManager.OnColliderClicked += ColliderClicked;
     }
+
+    public void BeginTurn(GridData gridData, CharacterObject unit)
+    {
+        objectsData = gridData;
+        currentTurnUnit = unit;
+        isTurnComplete = false;
+        inputManager.OnColliderClicked += ColliderClicked;
+    }
+
+    public void EndTurn()
+    {
+        if (selectedChar == null) return;
+        Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+        charObj.ResetMovement();
+        charObj.EnableAttack();
+        ExitCharacter();
+        
+        isTurnComplete = true;
+    }
+
+    public void ForceComplete()
+    {
+        isTurnComplete = true;
+        ExitCharacter();
+    }
+
+    // Input Handling
 
     private void ColliderClicked(Collider collider)
     {
         if (isForHeuristicAgent)
         {
             // agak janky ini code
-            if (inputManager.getSelectMode() == true)
+            if (inputManager.GetSelectMode() == true)
             {
                 GameObject selectedCharTemp = collider.transform.parent.gameObject;
                 Vector3Int currentPos = grid.WorldToCell(selectedCharTemp.transform.position);
@@ -173,7 +187,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                 break;
 
             case "Attack":
-                if (collider.CompareTag("Enemy") && movePreview.IsTileAttackable(clickedGrid) && charObj.canStillAttack())
+                if (collider.CompareTag("Enemy") && movePreview.IsTileAttackable(clickedGrid) && charObj.CanStillAttack())
                 {
                     if (isForHeuristicAgent)
                         combatAgent.SetManualAction(1, clickedGrid);
@@ -206,24 +220,22 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         }
         else if (action == "Attack")
         {
-            if (charObj.canStillAttack())
+            if (charObj.CanStillAttack())
                 movePreview.ShowAttackableTiles(startPos, charObj.AtkRange);
             gridVisualization.SetActive(true);
             cellIndicator.SetActive(true);
-            Debug.Log("Attack mode enabled.");
         }
         else if (action == "EndTurn")
         {
             if (isForHeuristicAgent)
                 combatAgent.SetManualAction(2, startPos);
             else
-            {
                 EndTurn();
-            }
-                
         }
         actionMenu.Hide();
     }
+
+    // Menu handling
 
     private void HandlePauseMenu(string button)
     {
@@ -315,6 +327,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         Time.timeScale = 0;
     }
 
+    // Character selection
+
     private void SelectCharacter(Collider collider)
     {
         selectedChar = collider.transform.parent.gameObject;
@@ -349,17 +363,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         ExitCharacter();
         isTurnComplete = true;
     }
-    public void EndTurn()
-    {
-        if (selectedChar == null) return;
-        Vector3Int currentPos = grid.WorldToCell(selectedChar.transform.position);
-        CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
-        charObj.ResetMovement();
-        charObj.EnableAttack();
-        ExitCharacter();
-        
-        isTurnComplete = true;
-    }
 
     private void EndAction()
     {
@@ -373,10 +376,11 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         actionMenu.Show(screenPos);
     }
 
-    public void ForceComplete()
+    private void VisualizeHoveredGrid()
     {
-        isTurnComplete = true;
-        ExitCharacter();
+        // Grid pos (x,y,0), world pos (x,0,z) y == z
+        Vector3Int gridPosition = grid.WorldToCell(mousePos);
+        cellIndicator.transform.position = grid.CellToWorld(gridPosition);
     }
 
     private void HideHover(Collider collider)

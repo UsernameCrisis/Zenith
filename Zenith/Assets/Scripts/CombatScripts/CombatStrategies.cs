@@ -52,7 +52,7 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
-            bool temp = ai.getGridData().GetTileAt(ai.GetCurrentPosition())?.PlacedObject is CharacterObject;
+            bool temp = ai.GetGridData().GetTileAt(ai.GetCurrentPosition())?.PlacedObject is CharacterObject;
 
             return temp ? Node.Status.Success : Node.Status.Failure;
         }
@@ -69,7 +69,7 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
-            ai.setTargetPos(ai.FindClosest(ai.GetCurrentPosition(), ai.getGridData().GetAllFriendlies()));
+            ai.SetTargetPos(ai.FindClosest(ai.GetCurrentPosition(), ai.GetGridData().GetAllFriendlies()));
             return Node.Status.Success;
         }
     }
@@ -86,10 +86,10 @@ namespace BehaviourTrees
         public Node.Status Process()
         {
             var latestPos = ai.GetCurrentPosition();
-            var enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+            var enemyChar = ai.GetGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
             if (enemyChar == null)
                 return Node.Status.Failure;
-            bool inRange = ai.IsInRange(latestPos, ai.getTargetPos(), enemyChar.AtkRange);
+            bool inRange = ai.IsInRange(latestPos, ai.GetTargetPos(), enemyChar.AtkRange);
 
             return inRange ? Node.Status.Success : Node.Status.Failure;
         }
@@ -107,10 +107,10 @@ namespace BehaviourTrees
         public Node.Status Process()
         {
             var enemyPos = ai.GetCurrentPosition();
-            var targetPos = ai.getTargetPos();
+            var targetPos = ai.GetTargetPos();
 
             int dist = Mathf.Abs(enemyPos.x - targetPos.x) + Mathf.Abs(enemyPos.y - targetPos.y);
-            int minRange = 2;
+            int minRange = 3;
             return dist < minRange ? Node.Status.Success : Node.Status.Failure;
         }
     }
@@ -125,7 +125,7 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
-            bool hasLineOfSight = ai.HasLineOfSight(ai.GetCurrentPosition(), ai.getTargetPos());
+            bool hasLineOfSight = ai.HasLineOfSight(ai.GetCurrentPosition(), ai.GetTargetPos());
             return hasLineOfSight ? Node.Status.Success : Node.Status.Failure;
         }
     }
@@ -143,7 +143,7 @@ namespace BehaviourTrees
         public Node.Status Process()
         {
             var latestPos = ai.GetCurrentPosition();
-            CharacterObject enemyChar = ai.getGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
+            CharacterObject enemyChar = ai.GetGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
             if (enemyChar is null)
                 return Node.Status.Failure;
             CombatExecutor executor = ai.GetCombatExecutor();
@@ -155,7 +155,7 @@ namespace BehaviourTrees
                 return Node.Status.Success;
             }
 
-            executor.ExecuteAttack(enemyChar, latestPos, ai.getTargetPos(), ai.getGridData());
+            executor.ExecuteAttack(enemyChar, latestPos, ai.GetTargetPos(), ai.GetGridData());
             startedAttack = true;
             return Node.Status.Running;
         } 
@@ -172,7 +172,7 @@ namespace BehaviourTrees
 
         protected override Vector3Int SelectTargetTile(Vector3Int current, HashSet<Vector3Int> reachableTile, CharacterObject character)
         {
-            HashSet<Vector3Int> reachable = new HashSet<Vector3Int>(ai.getPreview().GetReachableTiles());
+            HashSet<Vector3Int> reachable = new HashSet<Vector3Int>(ai.GetPreview().GetReachableTiles());
             reachable.Remove(current);
 
             if (reachable.Count == 0)
@@ -192,7 +192,7 @@ namespace BehaviourTrees
             HashSet<Vector3Int> reachable,
             CharacterObject character)
         {
-            var targetPos = ai.getTargetPos();
+            var targetPos = ai.GetTargetPos();
 
             int minRange = 2;
             int maxRange = character.AtkRange;
@@ -217,7 +217,7 @@ namespace BehaviourTrees
             HashSet<Vector3Int> reachable,
             CharacterObject character)
         {
-            return ai.FindMoveToward(current, ai.getTargetPos(), reachable);
+            return ai.FindMoveToward(current, ai.GetTargetPos(), reachable);
         }
     }
 
@@ -244,19 +244,19 @@ namespace BehaviourTrees
                 return Node.Status.Success;
             }
             
-            GridData gridData = ai.getGridData();
+            GridData gridData = ai.GetGridData();
             Vector3Int latestPos = ai.GetCurrentPosition();
             CharacterObject enemyChar = gridData.GetTileAt(latestPos)?.PlacedObject as CharacterObject;
 
             if (enemyChar == null)
                 return Node.Status.Failure;
 
-            ai.getPreview().ShowMovementRange(latestPos, enemyChar.RemainingMoveRange);
-            HashSet<Vector3Int> reachable = ai.getPreview().GetReachableTiles();
+            ai.GetPreview().ShowMovementRange(latestPos, enemyChar.RemainingMoveRange);
+            HashSet<Vector3Int> reachable = ai.GetPreview().GetReachableTiles();
 
             if (reachable == null || reachable.Count == 0)
             {
-                ai.getPreview().ClearAll();
+                ai.GetPreview().ClearAll();
                 return Node.Status.Failure;
             }
 

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BehaviourTrees
@@ -55,10 +53,8 @@ namespace BehaviourTrees
     public class RandomSelector : PrioritySelector
     {
         private Node current;
-        protected override List<Node> SortChildren()  {
-            if (current == null) return children.Shuffle().ToList();
-            return children;
-        }
+        protected override List<Node> SortChildren() =>
+            current == null ? children.Shuffle().ToList() : children;
 
         public RandomSelector(string name, int priority = 0) : base(name, priority) {}
 
@@ -217,12 +213,7 @@ namespace BehaviourTrees
             this.strategy = strategy;
         }
 
-        public override Status Process() 
-        {
-            var result = strategy.Process();
-            // Debug.Log($"Leaf {name} → {result}");
-            return result;
-        }
+        public override Status Process() => strategy.Process();
     }
 
     public class Node

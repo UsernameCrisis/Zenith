@@ -36,7 +36,7 @@ MonoBehaviour:
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 2
-    <AtkRange>k__BackingField: 2
+    <AtkRange>k__BackingField: 3
     <Prefab>k__BackingField: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Enemy2
@@ -75,7 +75,7 @@ MonoBehaviour:
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 1
-    <AtkRange>k__BackingField: 2
+    <AtkRange>k__BackingField: 3
     <Prefab>k__BackingField: {fileID: 920729524746998805, guid: e8b2cca6cfebbe64bb761a7105b0abc2, type: 3}
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Enemy2_Team1

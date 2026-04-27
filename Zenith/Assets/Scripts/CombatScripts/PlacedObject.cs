@@ -82,21 +82,11 @@ public class CharacterObject : PlacedObject
         AtkRange = atkRange;
     }
 
-    public void AddATB(float addition)
-    {
-        CurrentATB += addition;
-    }
-
-    public void SubATB(float subtraction)
-    {
-        CurrentATB -= subtraction;
-    }
+    public void AddATB(float addition) => CurrentATB += addition;
+    public void SubATB(float subtraction) => CurrentATB -= subtraction;
 
     // Call at the start of each turn
-    public void ResetMovement()
-    {
-        RemainingMoveRange = MaxMoveRange;
-    }
+    public void ResetMovement() => RemainingMoveRange = MaxMoveRange;
 
     public void ResetState()
     {
@@ -113,18 +103,9 @@ public class CharacterObject : PlacedObject
 
     public bool CanStillMove => RemainingMoveRange > 0;
 
-    public void EnableAttack()
-    {
-        canAttack = true;
-    }
-    public void DisableAttack()
-    {
-        canAttack = false;
-    }
-    public bool canStillAttack()
-    {
-        return canAttack;
-    }
+    public void EnableAttack() => canAttack = true;
+    public void DisableAttack() => canAttack = false;
+    public bool CanStillAttack() => canAttack;
 
     public void TakeDamage(int amount)
     {

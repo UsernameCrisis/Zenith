@@ -222,7 +222,7 @@ public class TurnManager : MonoBehaviour
         mapPopulator.Generate();
 
         gridData = mapPopulator.objectsData;
-        combatAgent.setGridData(gridData);
+        combatAgent.SetGridData(gridData);
         combatAgent.SetAgentTeam(currentAgentTeam);
         
 

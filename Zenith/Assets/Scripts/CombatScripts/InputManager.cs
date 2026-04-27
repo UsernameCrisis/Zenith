@@ -12,10 +12,10 @@ public class InputManager : MonoBehaviour
 
     private Vector3 lastPosition;
     private Collider lastCollider;
+    private bool selectMode = true;
     private InputAction mouseInputPosition, mouseInputLeftClick, escapeKeyAction;
     public event Action Onclicked, OnExit, OnPauseMenu;
     public event Action<Collider> OnHoverEnter, OnHoverExit, OnColliderClicked;
-    private bool selectMode = true;
 
     void Awake()
     {
@@ -91,13 +91,6 @@ public class InputManager : MonoBehaviour
 
     public Vector3 GetHoveredMapPosition() => lastPosition;
 
-    public void SetSelectMode(bool value)
-    {
-        selectMode = value;
-    }
-
-    public bool getSelectMode()
-    {
-        return selectMode;
-    }
+    public void SetSelectMode(bool value) => selectMode = value;
+    public bool GetSelectMode() => selectMode;
 }

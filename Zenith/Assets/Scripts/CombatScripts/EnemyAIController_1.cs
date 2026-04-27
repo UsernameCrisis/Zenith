@@ -13,20 +13,19 @@ public class EnemyAIController_1 : EnemyAIControllerBase
         preAction.AddChild(new Leaf("FindClosest", new FindClosest(this)));
         root.AddChild(preAction);
 
-        Selector attack1 = new Selector("Attack1");
+        Selector combat = new Selector("Combat");
 
         Sequence tryAttack = new Sequence("TryAttack");
         tryAttack.AddChild(new Leaf("IsInRange1", new IsInRange(this)));
         tryAttack.AddChild(new Leaf("DoAttack1", new Attack(this)));
-        attack1.AddChild(tryAttack);
+        combat.AddChild(tryAttack);
 
-        attack1.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardPlayer(this)));
-        root.AddChild(attack1);
-
-        Sequence attack2 = new Sequence("Attack2");
-        attack2.AddChild(new Leaf("IsInRange2", new IsInRange(this)));
-        attack2.AddChild(new Leaf("DoAttack2", new Attack(this)));
-        root.AddChild(attack2);
+        Sequence moveAndAttack = new Sequence("MoveAndAttack");
+        moveAndAttack.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardPlayer(this)));
+        moveAndAttack.AddChild(new Leaf("IsInRange2 ", new IsInRange(this)));
+        moveAndAttack.AddChild(new Leaf("DoAttack2", new Attack(this)));
+        combat.AddChild(moveAndAttack);
+        root.AddChild(combat);
 
         return root;
     }

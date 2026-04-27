@@ -19,9 +19,13 @@ public class EnemyAIController_2 : EnemyAIControllerBase
         tooCloseDecision.AddChild(new Leaf("IsTooClose", new IsTooClose(this)));
         
         RandomSelector panicDecision = new RandomSelector("PanicDecision");
-        panicDecision.AddChild(new Leaf("Attack", new Attack(this)));
-        panicDecision.AddChild(new Leaf("MoveForRanged", new MoveForRanged(this)));
 
+        Sequence panicAttack = new Sequence("PanicAttack");
+        panicAttack.AddChild(new Leaf("HasLineOfSight", new HasLineOfSight(this)));
+        panicAttack.AddChild(new Leaf("Attack", new Attack(this)));
+        panicDecision.AddChild(panicAttack);
+
+        panicDecision.AddChild(new Leaf("MoveForRanged", new MoveForRanged(this)));
         tooCloseDecision.AddChild(panicDecision);
 
         Sequence tryAttack = new Sequence("TryAttack");

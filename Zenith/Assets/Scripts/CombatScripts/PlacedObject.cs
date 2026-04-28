@@ -58,6 +58,7 @@ public class CharacterObject : PlacedObject
     public int MaxMoveRange { get; private set; } = 3;
     public int RemainingMoveRange { get; private set; }
     public int AtkRange { get; private set; }
+    public GameObject GameObject { get; private set; }
     public event Action<int, int> OnHPChanged;
     public event Action<int> OnTakenDamage;
     public event Action<CharacterObject> OnDied;
@@ -106,6 +107,8 @@ public class CharacterObject : PlacedObject
     public void EnableAttack() => canAttack = true;
     public void DisableAttack() => canAttack = false;
     public bool CanStillAttack() => canAttack;
+    public void BindGameObject(GameObject go) => GameObject = go;
+    public UnitView View => GameObject != null ? GameObject.GetComponent<UnitView>() : null;
 
     public void TakeDamage(int amount)
     {

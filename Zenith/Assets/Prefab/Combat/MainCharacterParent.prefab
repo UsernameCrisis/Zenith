@@ -220,6 +220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8888875954917989042}
   - component: {fileID: 8367958582059622040}
+  - component: {fileID: 6132031960509730268}
   m_Layer: 0
   m_Name: MainCharacterParent
   m_TagString: Player
@@ -259,6 +260,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterView
   damagePopupPrefab: {fileID: 7942734881586010041, guid: 87925f4e4931f4149a320860773cd025, type: 3}
+--- !u!114 &6132031960509730268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5813913746638748159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitView
+  animator: {fileID: 7586146482229877130}
+  spriteRenderer: {fileID: 320327385166283099}
 --- !u!1 &6394801349847046491
 GameObject:
   m_ObjectHideFlags: 0

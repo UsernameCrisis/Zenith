@@ -41,9 +41,7 @@ public class MovementPreview : MonoBehaviour
 
         GameObject prefab = enemyHighlightPrefab != null ? enemyHighlightPrefab : highlightPrefab;
         foreach (var pos in attackable)
-        {
             SpawnHighlight(pos, prefab, activeHighlights);
-        }
     }
 
     public void ShowPathPreview(Vector3Int targetTile)
@@ -70,27 +68,11 @@ public class MovementPreview : MonoBehaviour
         ClearHighlights();
         ClearPath();
     }
-
-    //
-    private void SpawnHighlight(Vector3Int gridPos, GameObject prefab, List<GameObject> list)
-    {
-        Vector3 worldPos = grid.CellToWorld(gridPos);
-        GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity, transform);
-
-        list.Add(obj);
-    }
-
-    public bool IsTileReachable(Vector3Int tilePos)   => movementSystem.IsTileReachable(tilePos);
-    public bool IsTileAttackable(Vector3Int tilePos)  => movementSystem.IsTileAttackable(tilePos);
-    public HashSet<Vector3Int> GetReachableTiles()    => movementSystem.ReachableTiles;
-    public MovementSystem GetMovementSystem() => movementSystem;
-
+    
     public void ClearHighlights()
     {
         foreach (var h in activeHighlights)
-        {
             if (h != null) Destroy(h);
-        }
         activeHighlights.Clear();
     }
 
@@ -100,6 +82,27 @@ public class MovementPreview : MonoBehaviour
             if (p != null) Destroy(p);
         activePath.Clear();
     }
+
+    private void SpawnHighlight(Vector3Int gridPos, GameObject prefab, List<GameObject> list)
+    {
+        Vector3 worldPos = grid.CellToWorld(gridPos);
+        GameObject obj = Instantiate(prefab, worldPos, Quaternion.identity, transform);
+
+        list.Add(obj);
+    }
+
+    public bool IsTileReachable(Vector3Int tilePos) => movementSystem.IsTileReachable(tilePos);
+    public bool IsTileAttackable(Vector3Int tilePos) => movementSystem.IsTileAttackable(tilePos);
+    public HashSet<Vector3Int> GetReachableTiles() => movementSystem.ReachableTiles;
+    public HashSet<Vector3Int> ComputeReachableTiles(Vector3Int startPos, int moveRange) =>
+        movementSystem.ComputeReachableTiles(startPos, moveRange);
+    public HashSet<Vector3Int> ComputeAttackableTiles(Vector3Int startPos, int attackRange) =>
+        movementSystem.ComputeAttackableTiles(startPos, attackRange);
+    public List<Vector3Int> FindPathAStar(Vector3Int start, Vector3Int goal) =>
+        movementSystem.FindPathAStar(start, goal);
+    public int PathCost(Vector3Int start, Vector3Int goal) => movementSystem.PathCost(start, goal);
+    public bool HasLineOfSight(Vector3Int start, Vector3Int end) => movementSystem.HasLineOfSight(start, end);
+    public Vector3Int StartTilePos => movementSystem.StartTilePos;
 }
 
 public class PriorityQueue<T>

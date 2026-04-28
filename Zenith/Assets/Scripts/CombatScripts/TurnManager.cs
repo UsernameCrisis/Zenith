@@ -145,7 +145,6 @@ public class TurnManager : MonoBehaviour
                     combatAgent.BeginTurn(gridData, current);
                     actor = combatAgent;
                 }
-                // print("agent is playing");
             }
         }
         else
@@ -154,7 +153,6 @@ public class TurnManager : MonoBehaviour
             actor = tile.PlacedGameObject.GetComponent<ITurnActor>();
             if (actor != null)
                 actor.BeginTurn(gridData, current);
-            // print("ai is playing");
         }
 
         if (actor == null)
@@ -169,7 +167,6 @@ public class TurnManager : MonoBehaviour
         float timer = 0f;
         
         yield return null;
-        // print("before wait until");
         yield return new WaitUntil(() =>
         {
             timer += Time.deltaTime;
@@ -179,7 +176,6 @@ public class TurnManager : MonoBehaviour
         {
             Debug.LogError("Turn timeout! Forcing completion.");
         }
-        // print("turn completed");
         yield return EndTurnRoutine();
         isTurnRunning = false;
     }

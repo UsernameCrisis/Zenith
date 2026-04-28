@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 471681757802170125}
   - component: {fileID: 8650806634094081094}
   - component: {fileID: 7090583258444906886}
+  - component: {fileID: 4542704925610380829}
   m_Layer: 0
   m_Name: 'Enemy3Parent '
   m_TagString: Enemy
@@ -79,9 +80,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bada4afec8345e643a5557f48b2bca87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController_3
-  grid: {fileID: 0}
-  previewSystem: {fileID: 0}
-  isMoving: 0
 --- !u!114 &7090583258444906886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +93,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterView
   damagePopupPrefab: {fileID: 7942734881586010041, guid: 87925f4e4931f4149a320860773cd025, type: 3}
+--- !u!114 &4542704925610380829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3763461118446173395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitView
+  animator: {fileID: 996794134621331807}
+  spriteRenderer: {fileID: 9100521769355969551}
 --- !u!1 &3859946168756219479
 GameObject:
   m_ObjectHideFlags: 0

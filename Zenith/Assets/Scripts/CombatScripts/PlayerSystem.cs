@@ -19,7 +19,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     [SerializeField] private TutorialMenu tutorialMenu;
     [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
-    [SerializeField] private Animator animator;
     [SerializeField] private bool isForHeuristicAgent = false;
 
     private Vector3 mousePos;

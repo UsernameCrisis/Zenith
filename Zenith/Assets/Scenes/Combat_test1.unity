@@ -547,6 +547,7 @@ MonoBehaviour:
   defaultX: 0
   defaultY: 3.251
   defaultZ: -5
+  enableFading: 1
 --- !u!1 &331495576
 GameObject:
   m_ObjectHideFlags: 0
@@ -1822,7 +1823,8 @@ MonoBehaviour:
   controlMode: 0
   combatAgent: {fileID: 1666468179}
   currentAgentTeam: 1
-  useAnimation: 0
+  useAnimation: 1
+  showTurnOrderUI: 1
   defeatedEnemyNames: []
 --- !u!114 &784646988
 MonoBehaviour:
@@ -2461,7 +2463,6 @@ MonoBehaviour:
   isFullyRandom: 0
   minTraversablePaths: 2
   obstacleDensity: 0.15
-  skipValidationChance: 0.25
   clusterLimit: 2
   obstacleID: 7
   teamDist: 6
@@ -3693,8 +3694,8 @@ MonoBehaviour:
   combatExecutor: {fileID: 0}
   turnManager: {fileID: 784646987}
   groundRenderer: {fileID: 0}
-  currEp: 0
-  cumulativeReward: 0
+  CurrEp: 0
+  CumulativeReward: 0
 --- !u!114 &1666468180
 MonoBehaviour:
   m_ObjectHideFlags: 0

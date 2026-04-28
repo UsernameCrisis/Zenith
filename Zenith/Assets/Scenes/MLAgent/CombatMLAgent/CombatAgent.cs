@@ -244,7 +244,7 @@ public class CombatAgent : Agent, ITurnActor
         switch (actionType)
         {
             case 0:
-                if (!previewSystem.GetMovementSystem().ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
+                if (!previewSystem.ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
                 {
                     AddReward(-0.1f);
                     RequestDecision();
@@ -257,7 +257,7 @@ public class CombatAgent : Agent, ITurnActor
                 break;
 
             case 1:
-                if (!previewSystem.GetMovementSystem().ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
+                if (!previewSystem.ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
                 {
                     AddReward(-0.1f);
                     RequestDecision();
@@ -294,8 +294,8 @@ public class CombatAgent : Agent, ITurnActor
 
         Vector3Int currentPos = character.Position;
 
-        HashSet<Vector3Int> reachable = previewSystem.GetMovementSystem().ComputeReachableTiles(currentPos, character.RemainingMoveRange);
-        HashSet<Vector3Int> attackable = previewSystem.GetMovementSystem().ComputeAttackableTiles(currentPos, character.AtkRange);
+        HashSet<Vector3Int> reachable = previewSystem.ComputeReachableTiles(currentPos, character.RemainingMoveRange);
+        HashSet<Vector3Int> attackable = previewSystem.ComputeAttackableTiles(currentPos, character.AtkRange);
 
         // MASK ACTION TYPE
         bool canMove = reachable.Count > 0 && !hasMoved;

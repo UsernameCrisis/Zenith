@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class CombatExecutor : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
     private bool isMoving = false;
     private bool isAttacking = false;
     private TurnManager turnManager;
@@ -24,7 +23,7 @@ public class CombatExecutor : MonoBehaviour
     {
         if (character == null) return;
 
-        List<Vector3Int> path = movePreview.GetMovementSystem().FindPathAStar(startPos, targetPos);
+        List<Vector3Int> path = movePreview.FindPathAStar(startPos, targetPos);
         
         if (path == null || path.Count == 0)
             return;
@@ -37,7 +36,7 @@ public class CombatExecutor : MonoBehaviour
 
         if (!gridData.CanPlaceObjectAt(targetPos))
             return;
-        // print("before start coroutine or move");
+
         if (turnManager.GetUseAnimation())
             StartCoroutine(WalkPath(path, startPos, character, gridData));
         else
@@ -62,13 +61,13 @@ public class CombatExecutor : MonoBehaviour
         Transform charTransform = gridData.GetTileAt(startPos).PlacedGameObject.transform;
 
         isMoving = true;
-        if (animator != null)
-            animator.SetBool("isMoving", true);
+        character.View?.SetMoving(isMoving);
 
         for (int i = 0; i < path.Count; i++)
         {
             Vector3 start = charTransform.position;
             Vector3 end = grid.CellToWorld(path[i]);
+            
 
             float t = 0f;
             float speed = 2f;
@@ -77,6 +76,9 @@ public class CombatExecutor : MonoBehaviour
             {
                 if (charTransform == null)
                     yield break;
+
+                Vector3 direction = end - charTransform.position;
+                character.View.SetFacing(direction.x);
 
                 t += Time.deltaTime * speed;
                 charTransform.position = Vector3.Lerp(start, end, t);
@@ -91,8 +93,7 @@ public class CombatExecutor : MonoBehaviour
 
         isMoving = false;
 
-        if (animator != null)
-            animator.SetBool("isMoving", false);
+        character.View?.SetMoving(isMoving);
 
         movePreview.ClearAll();
     }
@@ -101,16 +102,12 @@ public class CombatExecutor : MonoBehaviour
     {
         Vector3Int finalPos = path[^1];
 
-        // Move instantly in grid logic
         gridData.MoveObject(startPos, finalPos, grid);
 
-        // Update world position immediately
         Transform charTransform = gridData.GetTileAt(finalPos).PlacedGameObject.transform;
         charTransform.position = grid.CellToWorld(finalPos);
 
-        // Consume movement
         character.UseMovement(path.Count);
-
         movePreview.ClearAll();
     }
 

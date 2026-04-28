@@ -117,11 +117,10 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         Vector3Int best = enemyPos;
         int bestCost = int.MaxValue;
-        MovementSystem ms = previewSystem.GetMovementSystem();
 
         foreach (var p in character)
         {
-            int cost = ms.PathCost(enemyPos, p.pos);
+            int cost = previewSystem.PathCost(enemyPos, p.pos);
             if (cost < bestCost)
             {
                 bestCost = cost;
@@ -140,11 +139,10 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         Vector3Int best = enemyPos;
         int bestCost = int.MaxValue;
-        MovementSystem ms = previewSystem.GetMovementSystem();
 
         foreach (var tile in reachable)
         {
-            int cost = ms.PathCost(tile, targetPos);
+            int cost = previewSystem.PathCost(tile, targetPos);
             if (cost < bestCost)
             {
                 bestCost = cost;
@@ -180,11 +178,10 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
         // Jika terlalu jauh akan melakukan ini
         bestScore = float.MinValue;
-        MovementSystem ms = previewSystem.GetMovementSystem();
 
         foreach (var tile in reachable)
         {
-            int cost = ms.PathCost(tile, playerPos);
+            int cost = previewSystem.PathCost(tile, playerPos);
 
             float score = cost == int.MaxValue ? float.MinValue : -cost;
 
@@ -200,7 +197,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     public bool HasLineOfSight(Vector3Int start, Vector3Int end)
     {
-        return previewSystem.GetMovementSystem().HasLineOfSight(start, end);
+        return previewSystem.HasLineOfSight(start, end);
     }
 
     public Vector3Int GetCurrentPosition()

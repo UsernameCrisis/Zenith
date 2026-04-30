@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2081576064086719019}
   - component: {fileID: 5143051600830710145}
   - component: {fileID: 8916597720525653611}
+  - component: {fileID: 3503644181055108516}
   m_Layer: 10
   m_Name: Sprite_eye
   m_TagString: Untagged
@@ -44,7 +45,7 @@ Animator:
   m_GameObject: {fileID: 315847696537024545}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0e5f10a6d76440141892229686528e7d, type: 2}
+  m_Controller: {fileID: 9100000, guid: aada9f99245096a4ea62d0612bb0c291, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -135,6 +136,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3, y: 0.33, z: 0.1}
   m_Center: {x: 0, y: -0.02, z: 0}
+--- !u!114 &3503644181055108516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315847696537024545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitView
+  animator: {fileID: 2081576064086719019}
+  spriteRenderer: {fileID: 5143051600830710145}
+  defaultFacingRight: 1
 --- !u!1 &920729524746998805
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,9 +199,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b735dbef10eab1c4386159d166cc987c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController_2
-  grid: {fileID: 0}
-  previewSystem: {fileID: 0}
-  isMoving: 0
 --- !u!114 &5902453797501484746
 MonoBehaviour:
   m_ObjectHideFlags: 0

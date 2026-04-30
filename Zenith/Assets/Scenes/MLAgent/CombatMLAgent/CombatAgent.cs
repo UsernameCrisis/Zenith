@@ -8,11 +8,14 @@ using System;
 
 public class CombatAgent : Agent, ITurnActor
 {
-    [SerializeField] private bool isManualMode = false;
+    [Header("References")]
     [SerializeField] private MovementPreview previewSystem;
     [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] private TurnManager turnManager;
     [SerializeField] private Renderer groundRenderer;
+
+    [Header("Settings")]
+    [SerializeField] private bool isManualMode = false;
 
     [HideInInspector] public int CurrEp = 0;
     [HideInInspector] public float CumulativeReward = 0f;
@@ -21,22 +24,26 @@ public class CombatAgent : Agent, ITurnActor
     private Coroutine flashGroundCoroutine;
     private List<CharacterObject> allySlots = new();
     private List<CharacterObject> enemySlots = new();
-    private int chosenActionType = 2;
-    private int chosenTileIndex = 55;
+    private int chosenActionType = 2; // default to end turn
+    private int chosenTileIndex = 55; // center tile
     private int _currentAgentTeam = 1;
     private GridData _gridData;
     private int activeUnitIndex;
-    private int mapMin = -5;
-    private int mapMax = 5;
+    private const int MapMin = -5;
+    private const int MapMax = 5;
+    private const int MapSize  = 10;
+    private const int MapOffset =  5;
     private float _maxTurn;
     private bool hasAction = false;
-    private bool hasMoved;
-    private bool hasAttacked;
+    private bool hasMoved = false;
+    private bool hasAttacked = false;
     private bool isTurnComplete = false;
 
     public Action OnTurnEnded;
     public bool IsPlayer => false;
     public bool IsTurnComplete() => isTurnComplete;
+
+    // ML Agent lifecycle
 
     public override void Initialize()
     {
@@ -44,21 +51,6 @@ public class CombatAgent : Agent, ITurnActor
         CumulativeReward = 0f;
         if (groundRenderer != null)
             defaultGroundColor = groundRenderer.material.color;
-    }
-
-    public void BeginTurn(GridData gridData, CharacterObject character)
-    {
-        _gridData = gridData;
-        BeginTurn();
-    }
-
-    public void BeginTurn()
-    {
-        isTurnComplete = false;
-        hasMoved = false;
-        hasAttacked = false;
-
-        RequestDecision();
     }
 
     public override void OnEpisodeBegin()
@@ -79,40 +71,29 @@ public class CombatAgent : Agent, ITurnActor
         // allySlots.Clear();
         enemySlots.Clear();
 
-        if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count || allySlots[activeUnitIndex] == null)
-        {
-            activeUnitIndex = allySlots.FindIndex(u => u != null);
-            Debug.Log("<color=red>WARNING:</color> null slot is selected, changing to another unit!");
-            if (activeUnitIndex == -1)
-                activeUnitIndex = 0;
-        }
-
         var enemies = _gridData.GetUnitsByTeam(_currentAgentTeam == 1 ? 2 : 1);
 
         for (int i = 0; i < 3; i++)
             enemySlots.Add(i < enemies.Count ? enemies[i].character : null);
 
-        // this code should not run (should already be handled by turn manager and turn queue)
-        if (allySlots[activeUnitIndex] == null)
+        // This code should not run (should already be handled by turn manager and turn queue)
+        if (!IsValidActiveUnit())
         {
             Debug.Log("<color=red>WARNING:</color> null slot is selected, changing to another unit!");
             activeUnitIndex = allySlots.FindIndex(u => u != null);
+            if (activeUnitIndex == -1) activeUnitIndex = 0;
         }
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        CharacterObject active = null;
-
-        if (activeUnitIndex >= 0 && activeUnitIndex < allySlots.Count)
-            active = allySlots[activeUnitIndex];
-
+        CharacterObject active = IsValidActiveUnit() ? allySlots[activeUnitIndex] : null;
         Vector3Int currPos = active != null ? active.Position : Vector3Int.zero;
 
         // GRID
-        for (int x = mapMin; x < mapMax; x++)
+        for (int x = MapMin; x < MapMax; x++)
         {
-            for (int y = mapMin; y < mapMax; y++)
+            for (int y = MapMin; y < MapMax; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
                 TileData tile = _gridData.GetTileAt(pos);
@@ -132,51 +113,12 @@ public class CombatAgent : Agent, ITurnActor
 
         // ALLY UNIT DATA
         for (int i = 0; i < 3; i++)
-        {
-            CharacterObject character = allySlots[i];
-            if (character == null) 
-            {
-                // padding if fewer units
-                for (int j = 0; j < 8; j++)
-                    sensor.AddObservation(0f);
-            }
-            else
-            {
-                sensor.AddObservation((float)character.HP / character.MaxHp);
-                sensor.AddObservation((float)character.Damage / 20f);
-                sensor.AddObservation((float)character.Defense / 20f);
-                sensor.AddObservation((float)character.AtkRange / 5f);
-
-                sensor.AddObservation(character.CurrentATB / 100f);
-                sensor.AddObservation(character.Speed / 20f);
-
-                sensor.AddObservation((character.Position.x - currPos.x) / 10f); // ubah jadi relative pos
-                sensor.AddObservation((character.Position.y - currPos.y) / 10f);
-            }
-        }
+            ObserveUnit(sensor, allySlots[i], currPos);
     
         //  ENEMY UNIT DATA
         for (int i = 0; i < 3; i++)
         {
-            CharacterObject character = enemySlots[i];
-            if (character == null)
-            {
-                for (int j = 0; j < 8; j++)
-                    sensor.AddObservation(0f);
-            }
-            else
-            {
-                sensor.AddObservation((float)character.HP / character.MaxHp);
-                sensor.AddObservation((float)character.Damage / 20f);
-                sensor.AddObservation((float)character.Defense / 20f);
-                sensor.AddObservation((float)character.AtkRange / 5f);
-
-                sensor.AddObservation(character.CurrentATB / 100f);
-                sensor.AddObservation(character.Speed / 20f);
-
-                sensor.AddObservation((character.Position.x - currPos.x) / 10f); // ubah jadi relative pos
-                sensor.AddObservation((character.Position.y - currPos.y) / 10f);
-            }
+            ObserveUnit(sensor, enemySlots[i], currPos);
         }
 
         // WHICH UNIT IS ACTING
@@ -186,8 +128,8 @@ public class CombatAgent : Agent, ITurnActor
         // TURN INFO
         sensor.AddObservation(turnManager.currentTurn / _maxTurn);
 
-        sensor.AddObservation(GetAliveAllies() / 3f); // num allies alive
-        sensor.AddObservation(GetAliveEnemies() / 3f); // num enemies alive
+        sensor.AddObservation(CountAlive(allySlots) / 3f); // num allies alive
+        sensor.AddObservation(CountAlive(enemySlots) / 3f); // num enemies alive
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -197,7 +139,7 @@ public class CombatAgent : Agent, ITurnActor
         if (!hasAction)
         {
             discrete[0] = 2; // EndTurn
-            discrete[1] = 55;
+            discrete[1] = GridPosToTileIndex(Vector3Int.zero);
             return;
         }
 
@@ -222,16 +164,13 @@ public class CombatAgent : Agent, ITurnActor
             return;
         }
 
-        AddReward(-0.01f);
+        PenalizePerTurn();
         int actionType = actions.DiscreteActions[0];
         int tileIndex = actions.DiscreteActions[1]; 
 
-        // Konversi dari tile index kembali ke koord grid
-        int x = (tileIndex % 10) - 5; // -5 karena range x dan y -5 hingga 4
-        int y = (tileIndex / 10) - 5;
-        Vector3Int targetPos = new Vector3Int(x, y, 0);
+        Vector3Int targetPos = TileIndexToGridPos(tileIndex);
 
-        if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
+        if (!IsValidActiveUnit())
         {
             Debug.LogError("Invalid active unit index!");
             ForceComplete();
@@ -244,29 +183,11 @@ public class CombatAgent : Agent, ITurnActor
         switch (actionType)
         {
             case 0:
-                if (!previewSystem.ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
-                {
-                    AddReward(-0.1f);
-                    RequestDecision();
-                    return;
-                }
-                AddReward(0.05f);
-                hasMoved = true;
-                combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
-                StartCoroutine(WaitForMoveThenDecideOrEnd(character));
+                HandleMoveAction(character, currentPos, targetPos);
                 break;
 
             case 1:
-                if (!previewSystem.ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
-                {
-                    AddReward(-0.1f);
-                    RequestDecision();
-                    return;
-                }
-                AddReward(0.05f);
-                hasAttacked = true;
-                combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
-                DecideOrEnd(character);
+                HandleAttackAction(character, currentPos, targetPos);
                 break;
 
             case 2:
@@ -282,13 +203,12 @@ public class CombatAgent : Agent, ITurnActor
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        if (activeUnitIndex < 0 || activeUnitIndex >= allySlots.Count)
-            return;
+        if (!IsValidActiveUnit()) return;
 
         CharacterObject character = allySlots[activeUnitIndex];
         if (character == null || character.HP <= 0)
         { 
-            print("null or dead character is selected");
+            Debug.LogWarning("null or dead character is selected");
             return;
         }
 
@@ -314,25 +234,46 @@ public class CombatAgent : Agent, ITurnActor
         if (canMove)
         {
             foreach (Vector3Int pos in reachable)
-                validTiles.Add((pos.y + 5) * 10 + pos.x + 5);
+                validTiles.Add(GridPosToTileIndex(pos));
         }
     
         if (canAttack)
         {
             foreach (Vector3Int pos in attackable)
-                validTiles.Add((pos.y + 5) * 10 + pos.x + 5);
+                validTiles.Add(GridPosToTileIndex(pos));
         }
     
         // ALWAYS include current position as fallback
-        validTiles.Add((currentPos.y + 5) * 10 + currentPos.x + 5);
+        validTiles.Add(GridPosToTileIndex(currentPos));
     
         // Apply mask
-        for (int i = 0; i < 100; i++)
+        int totalTiles = MapSize * MapSize;
+        for (int i = 0; i < totalTiles; i++)
         {
             if (!validTiles.Contains(i))
                 actionMask.SetActionEnabled(1, i, false);
         }
     }
+
+    // Turn management
+
+    public void BeginTurn(GridData gridData, CharacterObject character)
+    {
+        _gridData = gridData;
+        BeginTurn();
+    }
+
+    public void BeginTurn()
+    {
+        isTurnComplete = false;
+        hasMoved = false;
+        hasAttacked = false;
+
+        RequestDecision();
+    }
+
+    public void ForceComplete() => isTurnComplete = true;
+    public void EndTurn() {}
 
     // Public API
     public void SetManualAction(int actionType, Vector3Int targetPos)
@@ -349,10 +290,36 @@ public class CombatAgent : Agent, ITurnActor
     public void SetAllySlots(List<CharacterObject> slots) => allySlots = slots;
     public void SetGridData(GridData data) => _gridData = data;
     public bool GetIsManualMode() => isManualMode;
-    public void ForceComplete() => isTurnComplete = true;
-    public void EndTurn() {}
 
     // Private helpers
+
+    private void HandleMoveAction(CharacterObject character, Vector3Int currentPos, Vector3Int targetPos)
+    {
+        if (!previewSystem.ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
+        {
+            PenalizeInvalidAction();
+            RequestDecision();
+            return;
+        }
+        RewardValidAction();
+        hasMoved = true;
+        combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
+        StartCoroutine(WaitForMoveThenDecideOrEnd(character));
+    }
+
+    private void HandleAttackAction(CharacterObject character, Vector3Int currentPos, Vector3Int targetPos)
+    {
+        if (!previewSystem.ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
+        {
+            PenalizeInvalidAction();
+            RequestDecision();
+            return;
+        }
+        RewardValidAction();
+        hasAttacked = true;
+        combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
+        DecideOrEnd(character);
+    }
 
     private IEnumerator WaitForMoveThenDecideOrEnd(CharacterObject character)
     {
@@ -362,19 +329,6 @@ public class CombatAgent : Agent, ITurnActor
         DecideOrEnd(character);
     }
 
-    private IEnumerator FlashGround(Color targetColor, float duration)
-    {
-        float elapsedTime = 0f;
-
-        groundRenderer.material.color = targetColor;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            groundRenderer.material.color = Color.Lerp(targetColor, defaultGroundColor, elapsedTime / duration);
-            yield return null;
-        }
-    }
     private void EndTurn(CharacterObject character)
     {
         if (turnManager.TurnAlreadyEnded)
@@ -393,7 +347,6 @@ public class CombatAgent : Agent, ITurnActor
         character.EnableAttack();
         hasMoved = false;
         hasAttacked = false;
-        Debug.Log("Agent turn finished");
         if (isManualMode)
             OnTurnEnded?.Invoke();
         isTurnComplete = true;
@@ -401,8 +354,7 @@ public class CombatAgent : Agent, ITurnActor
 
     private void DecideOrEnd(CharacterObject character)
     {
-        if (turnManager.TurnAlreadyEnded)
-            return;
+        if (turnManager.TurnAlreadyEnded) return;
         if (character == null || character.HP <= 0)
         {
             ForceComplete();
@@ -420,37 +372,74 @@ public class CombatAgent : Agent, ITurnActor
         }
     }
 
-    private float GetAliveEnemies()
-    {
-        int alive = 0;
+    // Reward helpers
 
-        foreach (var unit in enemySlots)
+    private void PenalizePerTurn() => AddReward(-0.01f);
+    private void PenalizeInvalidAction() => AddReward(-0.1f);
+    private void RewardValidAction() => AddReward(0.02f);
+
+    // Observation helpers
+
+    private void ObserveUnit(VectorSensor sensor, CharacterObject unit, Vector3Int relativeTo)
+    {
+        if (unit == null)
         {
-            if (unit != null && unit.HP > 0)
-                alive++;
+            // Padding if fewer units
+            for (int i = 0; i < 8; i++)
+                sensor.AddObservation(0f);
+            return;
         }
 
+        sensor.AddObservation((float)unit.HP      / unit.MaxHp);
+        sensor.AddObservation((float)unit.Damage   / 20f);
+        sensor.AddObservation((float)unit.Defense  / 20f);
+        sensor.AddObservation((float)unit.AtkRange / 5f);
+        sensor.AddObservation(unit.CurrentATB      / 100f);
+        sensor.AddObservation(unit.Speed           / 20f);
+        // Position is relative to the active unit so the agent learns spatial reasoning
+        sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
+        sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);
+    }
+
+    private int CountAlive(List<CharacterObject> slots)
+    {
+        int alive = 0;
+        foreach (var unit in slots)
+            if (unit != null && unit.HP > 0) alive++;
         return alive;
     }
 
-    private float GetAliveAllies()
-    {
-        int alive = 0;
+    // Coordinate encoding
 
-        foreach (var unit in allySlots)
+    private static int GridPosToTileIndex(Vector3Int pos) =>
+        (pos.y + MapOffset) * MapSize + (pos.x + MapOffset);
+
+    private static Vector3Int TileIndexToGridPos(int index) =>
+        new Vector3Int(
+            (index % MapSize) - MapOffset,
+            (index / MapSize) - MapOffset,
+            0);
+
+    // Validity check
+
+    private bool IsValidActiveUnit() =>
+        activeUnitIndex >= 0 &&
+        activeUnitIndex < allySlots.Count &&
+        allySlots[activeUnitIndex] != null;
+
+    // Visual feedback
+
+    private IEnumerator FlashGround(Color targetColor, float duration)
+    {
+        float elapsedTime = 0f;
+        groundRenderer.material.color = targetColor;
+
+        while (elapsedTime < duration)
         {
-            if (unit != null && unit.HP > 0)
-                alive++;
+            elapsedTime += Time.deltaTime;
+            groundRenderer.material.color = Color.Lerp(targetColor, defaultGroundColor, elapsedTime / duration);
+            yield return null;
         }
-
-        return alive;
+        groundRenderer.material.color = defaultGroundColor;
     }
-
-    private bool IsValidUnit(int index)
-    {
-        return index >= 0 && index < allySlots.Count &&
-                allySlots[index] != null && allySlots[index].HP > 0;
-    }
-
-
 }

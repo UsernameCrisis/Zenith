@@ -877,6 +877,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -962,6 +974,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -1344,6 +1368,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -1429,6 +1465,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -1889,6 +1937,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -1974,6 +2034,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -2999,6 +3071,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -3084,6 +3168,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -4380,6 +4476,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 
@@ -4465,6 +4573,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 174364123}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: optionMenu
+      value: 
+      objectReference: {fileID: 1419675402}
+    - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: tutorialMenu
+      value: 
+      objectReference: {fileID: 1910185648}
     - target: {fileID: 3373497427308359784, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: sceneCamera
       value: 

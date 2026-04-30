@@ -108,7 +108,7 @@ public class CharacterObject : PlacedObject
     public void DisableAttack() => canAttack = false;
     public bool CanStillAttack() => canAttack;
     public void BindGameObject(GameObject go) => GameObject = go;
-    public UnitView View => GameObject != null ? GameObject.GetComponent<UnitView>() : null;
+    public UnitView View => GameObject != null ? GameObject.GetComponentInChildren<UnitView>() : null;
 
     public void TakeDamage(int amount)
     {

@@ -6,70 +6,54 @@ using UnityEngine.SceneManagement;
 
 public class PlayerSystem : MonoBehaviour, ITurnActor
 {
+    [Header("References")]
     [SerializeField] GameObject mouseIndicator, cellIndicator;
     [SerializeField] private InputManager inputManager;
     [SerializeField] private CombatAgent combatAgent;
     [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] private Grid grid;
     [SerializeField] private GameObject gridVisualization;
-    [SerializeField] AudioSource source; // gunakan untuk suara
     [SerializeField] private MovementPreview movePreview;
     [SerializeField] private CharacterActionMenu actionMenu;
-    [SerializeField] private PauseMenu pauseMenu;
-    [SerializeField] private TutorialMenu tutorialMenu;
-    [SerializeField] private AudioSettingsUI optionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
     [SerializeField] private bool isForHeuristicAgent = false;
 
+    private PlayerCombatMenuController menuController;
+    private Renderer cellIndicatorRenderer;
+    private Color defaultColor;
+
     private Vector3 mousePos;
     private GridData objectsData;
-    private Renderer cellIndicatorRenderer;
     private GameObject selectedChar;
-    private Color defaultColor;
+    private CharacterObject currentTurnUnit;
     private bool isInActionMode = false;
     private string currentAction = null;
-    private CharacterObject currentTurnUnit;
-    private TurnManager turnManager;
     private bool isTurnComplete = false;
-    private bool isPaused = false, isInsideOption = false, isInsideTutorial = false;
-    private bool isMoving = false;
 
     public bool IsTurnComplete() => isTurnComplete;
     public bool IsPlayer => true;
 
+    void Awake()
+    {
+        menuController = GetComponent<PlayerCombatMenuController>();
+        menuController.OnRequestDeselectCharacter += HandleDeselectRequest;
+    }
     void OnEnable()
     {
-        // inputManager.OnHoverEnter += ShowHover;
-        // inputManager.OnHoverExit += HideHover;
-        inputManager.OnExit += HandleEscapePressed;
-        actionMenu.OnActionSelected += HandleActionMenu;
-        pauseMenu.OnButtonSelected += HandlePauseMenu;
-        optionMenu.OnButtonSelected += HandleOptionMenu;
-        tutorialMenu.OnButtonSelected += HandleTutorialMenu;
+        inputManager.OnExit += menuController.HandleEscapePressed;
         if (isForHeuristicAgent)
-        {
             combatAgent.OnTurnEnded += HandleAgentTurnEnded;
-        }
     }
 
     void OnDisable()
     {
-        // inputManager.OnHoverEnter -= ShowHover;
-        // inputManager.OnHoverExit -= HideHover;
-        inputManager.OnExit -= HandleEscapePressed;
-        actionMenu.OnActionSelected -= HandleActionMenu;
-        pauseMenu.OnButtonSelected -= HandlePauseMenu;
-        optionMenu.OnButtonSelected -= HandleOptionMenu;
-        tutorialMenu.OnButtonSelected -= HandleTutorialMenu;
+        inputManager.OnExit -= menuController.HandleEscapePressed;
         if (isForHeuristicAgent)
-        {
             combatAgent.OnTurnEnded -= HandleAgentTurnEnded;
-        }
     }
 
     void Start()
     {
-        turnManager = GetComponentInParent<TurnManager>();
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         defaultColor = cellIndicatorRenderer.material.color;
     }
@@ -134,7 +118,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         if (isForHeuristicAgent)
         {
             // agak janky ini code
-            if (inputManager.GetSelectMode() == true)
+            if (inputManager.GetSelectMode())
             {
                 GameObject selectedCharTemp = collider.transform.parent.gameObject;
                 Vector3Int currentPos = grid.WorldToCell(selectedCharTemp.transform.position);
@@ -174,15 +158,11 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                 if (collider.CompareTag("Grid") && movePreview.IsTileReachable(clickedGrid))
                 {
                     if (isForHeuristicAgent)
-                    {
                         combatAgent.SetManualAction(0, clickedGrid);
-                    }
-                        
                     else
                         combatExecutor.ExecuteMove(charObj, startPos, clickedGrid, objectsData);
                     EndAction();
                 }
-                    
                 break;
 
             case "Attack":
@@ -207,123 +187,35 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void HandleActionMenu(string action)
     {
         if (combatExecutor.IsMoving) return;
+
         currentAction = action;
         isInActionMode = true;
+
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
         CharacterObject charObj = objectsData.GetTileAt(startPos)?.PlacedObject as CharacterObject;
-        if (action == "Move")
+
+        switch (action)
         {
-            movePreview.ShowMovementRange(startPos, charObj.RemainingMoveRange);
-            gridVisualization.SetActive(true);
-            cellIndicator.SetActive(true);
+            case "Move":
+                movePreview.ShowMovementRange(startPos, charObj.RemainingMoveRange);
+                ShowGrid();
+                break;
+
+            case "Attack":
+                if (charObj.CanStillAttack())
+                    movePreview.ShowAttackableTiles(startPos, charObj.AtkRange);
+                ShowGrid();
+                break;
+
+            case "EndTurn":
+                if (isForHeuristicAgent)
+                    combatAgent.SetManualAction(2, startPos);
+                else
+                    EndTurn();
+                break;
         }
-        else if (action == "Attack")
-        {
-            if (charObj.CanStillAttack())
-                movePreview.ShowAttackableTiles(startPos, charObj.AtkRange);
-            gridVisualization.SetActive(true);
-            cellIndicator.SetActive(true);
-        }
-        else if (action == "EndTurn")
-        {
-            if (isForHeuristicAgent)
-                combatAgent.SetManualAction(2, startPos);
-            else
-                EndTurn();
-        }
+
         actionMenu.Hide();
-    }
-
-    // Menu handling
-
-    private void HandlePauseMenu(string button)
-    {
-        if (button == "Resume")
-        {
-            Resume();
-        }
-        else if (button == "Settings")
-        {
-            pauseMenu.Hide();
-            optionMenu.Show();
-            isInsideOption = true;
-
-        }
-        else if (button == "Tutorial")
-        {
-            pauseMenu.Hide();
-            tutorialMenu.Show();
-            isInsideTutorial = true;
-        }
-        else if (button == "Exit")
-        {
-            Time.timeScale = 1;
-            SceneManager.LoadScene("Main Menu");
-        }
-    }
-
-    private void HandleOptionMenu(string button)
-    {
-        if (button == "Back")
-        {
-            optionMenu.Back();
-            isInsideOption = false;
-        }
-    }
-
-    private void HandleTutorialMenu(string button)
-    {
-        if (button == "Back")
-        {
-            tutorialMenu.Back();
-            isInsideTutorial = false;
-        }
-    }
-
-    private void HandleEscapePressed()
-    {
-        if (isInsideTutorial)
-        {
-            tutorialMenu.Back();
-            isInsideTutorial = false;
-            return;
-        }
-
-        if (isInsideOption)
-        {
-            optionMenu.Back();
-            isInsideOption = false;
-            return;
-        }
-
-        if (isPaused)
-        {
-            Resume();
-            return;
-        }
-
-        if (selectedChar != null)
-        {
-            ExitCharacter();
-            inputManager.OnColliderClicked += ColliderClicked;
-            return;
-        }
-
-        OpenPauseMenu();
-    }
-    
-    private void Resume()
-    {
-        Time.timeScale = 1;
-        isPaused = false;
-        pauseMenu.Hide();
-    }
-    
-    private void OpenPauseMenu()
-    {
-        pauseMenu.Show();
-        isPaused = true;
-        Time.timeScale = 0;
     }
 
     // Character selection
@@ -332,11 +224,14 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     {
         selectedChar = collider.transform.parent.gameObject;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
+
+        actionMenu.OnActionSelected += HandleActionMenu;
         actionMenu.Show(screenPos);
 
         cameraMovement.FocusOnCharacter(selectedChar.transform); 
 
         inputManager.SetSelectMode(false);
+        menuController.IsCharacterSelected = true;
     }
 
     public void ExitCharacter()
@@ -344,6 +239,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
         movePreview.ClearAll();
+
+        actionMenu.OnActionSelected -= HandleActionMenu;
         actionMenu.Hide();
 
         selectedChar = null;
@@ -355,6 +252,13 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
         if (cellIndicatorRenderer != null)
             cellIndicatorRenderer.material.color = defaultColor;
+        menuController.IsCharacterSelected = false;
+    }
+
+    private void HandleDeselectRequest()
+    {
+        ExitCharacter();
+        inputManager.OnColliderClicked += ColliderClicked;
     }
 
     private void HandleAgentTurnEnded()
@@ -382,13 +286,9 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         cellIndicator.transform.position = grid.CellToWorld(gridPosition);
     }
 
-    private void HideHover(Collider collider)
+    private void ShowGrid()
     {
-        throw new NotImplementedException();
-    }
-
-    private void ShowHover(Collider collider)
-    {
-        throw new NotImplementedException();
+        gridVisualization.SetActive(true);
+        cellIndicator.SetActive(true);
     }
 }

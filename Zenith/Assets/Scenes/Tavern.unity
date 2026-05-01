@@ -2035,6 +2035,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1169126075559426559, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: dialoguePanel
+      value: 
+      objectReference: {fileID: 1237268700}
+    - target: {fileID: 1169126075559426559, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: playerOverworldAttributes
       value: 
       objectReference: {fileID: 2207961507669318555}

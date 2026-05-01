@@ -23,6 +23,7 @@ public class OverworldUI : MonoBehaviour
 
     [Header("Other UI")]
     public GameObject interactUI;
+    [SerializeField] private GameObject dialoguePanel;
     // ItemDescriptionObject removed to stop errors
 
     void Awake()
@@ -45,6 +46,18 @@ public class OverworldUI : MonoBehaviour
 
     void Update()
     {
+        if (dialoguePanel != null && dialoguePanel.activeInHierarchy)
+        {
+            if (inventoryObject != null && inventoryObject.activeSelf)
+            {
+                inventoryObject.SetActive(false);
+                if (inventoryDisplay != null && inventoryDisplay.tooltipPanel != null)
+                    inventoryDisplay.tooltipPanel.SetActive(false);
+            }
+
+            return;
+        }
+
         if (InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
         {
             ToggleInventory();

@@ -17,11 +17,17 @@ public class CombatAgent : Agent, ITurnActor
     [Header("Settings")]
     [SerializeField] private bool isManualMode = false;
 
+    [Header("Shaped Reward Weights")]
+    [SerializeField] private float damageDealtRewardScale = 0.3f;
+    [SerializeField] private float damageTakenPenaltyScale = 0.15f;
+    [SerializeField] private float inRangeBonus = 0.01f;
+
     [HideInInspector] public int CurrEp = 0;
     [HideInInspector] public float CumulativeReward = 0f;
 
     private Color defaultGroundColor;
     private Coroutine flashGroundCoroutine;
+    private Material groundMaterial;
     private List<CharacterObject> allySlots = new();
     private List<CharacterObject> enemySlots = new();
     private int chosenActionType = 2; // default to end turn
@@ -38,6 +44,7 @@ public class CombatAgent : Agent, ITurnActor
     private bool hasMoved = false;
     private bool hasAttacked = false;
     private bool isTurnComplete = false;
+    private List<DamageListener> damageListeners = new();
 
     public Action OnTurnEnded;
     public bool IsPlayer => false;
@@ -50,7 +57,10 @@ public class CombatAgent : Agent, ITurnActor
         CurrEp = 0;
         CumulativeReward = 0f;
         if (groundRenderer != null)
+        {
+            groundMaterial = groundRenderer.material;
             defaultGroundColor = groundRenderer.material.color;
+        }
     }
 
     public override void OnEpisodeBegin()
@@ -66,16 +76,17 @@ public class CombatAgent : Agent, ITurnActor
         }
         CurrEp++;
         CumulativeReward = 0f;
+
+        UnsubscribeAllDamageCallbacks();
         turnManager.ResetEnv();
         _maxTurn = turnManager.GetMaxTurn();
         // allySlots.Clear();
         enemySlots.Clear();
-
         var enemies = _gridData.GetUnitsByTeam(_currentAgentTeam == 1 ? 2 : 1);
 
         for (int i = 0; i < 3; i++)
             enemySlots.Add(i < enemies.Count ? enemies[i].character : null);
-
+        SubscribeAllDamageCallbacks();
         // This code should not run (should already be handled by turn manager and turn queue)
         if (!IsValidActiveUnit())
         {
@@ -301,7 +312,7 @@ public class CombatAgent : Agent, ITurnActor
             RequestDecision();
             return;
         }
-        RewardValidAction();
+        // RewardValidAction();
         hasMoved = true;
         combatExecutor.ExecuteMove(character, currentPos, targetPos, _gridData);
         StartCoroutine(WaitForMoveThenDecideOrEnd(character));
@@ -315,7 +326,7 @@ public class CombatAgent : Agent, ITurnActor
             RequestDecision();
             return;
         }
-        RewardValidAction();
+        // RewardValidAction();
         hasAttacked = true;
         combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
         DecideOrEnd(character);
@@ -325,6 +336,8 @@ public class CombatAgent : Agent, ITurnActor
     {
         while (combatExecutor.IsMoving)
             yield return null;
+        
+        if (turnManager.TurnAlreadyEnded) yield break;
 
         DecideOrEnd(character);
     }
@@ -342,6 +355,8 @@ public class CombatAgent : Agent, ITurnActor
             Debug.LogError($"EndTurn called for non-current unit: {character.Name}");
             return;
         }
+
+        GivePositioningReward(character);
         turnManager.TurnAlreadyEnded = true;
         character.ResetMovement();
         character.EnableAttack();
@@ -374,6 +389,24 @@ public class CombatAgent : Agent, ITurnActor
 
     // Reward helpers
 
+    private void GivePositioningReward(CharacterObject character)
+    {
+        Vector3Int pos = character.Position;
+
+        foreach (var enemy in enemySlots)
+        {
+            if (enemy == null || enemy.HP <= 0) continue;
+
+            int dist = Mathf.Abs(pos.x - enemy.Position.x) +
+                    Mathf.Abs(pos.y - enemy.Position.y);
+
+            if (dist <= character.AtkRange)
+            {
+                AddReward(inRangeBonus);
+                return;
+            }
+        }
+    }
     private void PenalizePerTurn() => AddReward(-0.01f);
     private void PenalizeInvalidAction() => AddReward(-0.1f);
     private void RewardValidAction() => AddReward(0.02f);
@@ -432,14 +465,78 @@ public class CombatAgent : Agent, ITurnActor
     private IEnumerator FlashGround(Color targetColor, float duration)
     {
         float elapsedTime = 0f;
-        groundRenderer.material.color = targetColor;
+        groundMaterial.color = targetColor;
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            groundRenderer.material.color = Color.Lerp(targetColor, defaultGroundColor, elapsedTime / duration);
+            groundMaterial.color = Color.Lerp(targetColor, defaultGroundColor, elapsedTime / duration);
             yield return null;
         }
-        groundRenderer.material.color = defaultGroundColor;
+        groundMaterial.color = defaultGroundColor;
+    }
+
+    private void SubscribeAllDamageCallbacks()
+    {
+        foreach (var enemy in enemySlots)
+        {
+            if (enemy == null) continue;
+            var listener = new DamageListener(this, enemy, isEnemy: true);
+            damageListeners.Add(listener);
+            enemy.OnTakenDamage += listener.OnDamage;
+        }
+
+        foreach (var ally in allySlots)
+        {
+            if (ally == null) continue;
+            var listener = new DamageListener(this, ally, isEnemy: false);
+            damageListeners.Add(listener);
+            ally.OnTakenDamage += listener.OnDamage;
+        }
+    }
+
+    private void UnsubscribeAllDamageCallbacks()
+    {
+        foreach (var listener in damageListeners)
+        {
+            if (listener.character != null)
+                listener.character.OnTakenDamage -= listener.OnDamage;
+        }
+        damageListeners.Clear();
+    }
+
+    private void OnEnemyTookDamage(int finalDamage, CharacterObject enemy)
+    {
+        if (enemy.MaxHp <= 0) return;
+        float normalised = (float)finalDamage / enemy.MaxHp;
+        AddReward(normalised * damageDealtRewardScale);
+    }
+
+    private void OnAllyTookDamage(int finalDamage, CharacterObject ally)
+    {
+        if (ally.MaxHp <= 0) return;
+        float normalised = (float)finalDamage / ally.MaxHp;
+        AddReward(-(normalised * damageTakenPenaltyScale));
+    }
+
+    private class DamageListener
+    {
+        private readonly CombatAgent agent;
+        public readonly CharacterObject character;
+        private readonly bool isEnemy;
+
+        public DamageListener(CombatAgent agent, CharacterObject character, bool isEnemy)
+        {
+            this.agent     = agent;
+            this.character = character;
+            this.isEnemy   = isEnemy;
+        }
+        public void OnDamage(int finalDamage)
+        {
+            if (isEnemy)
+                agent.OnEnemyTookDamage(finalDamage, character);
+            else
+                agent.OnAllyTookDamage(finalDamage, character);
+        }
     }
 }

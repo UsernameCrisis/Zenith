@@ -36,4 +36,9 @@ public class ObjectFader : MonoBehaviour
         Color smoothColor = new(currColor.r, currColor.g, currColor.b, Mathf.Lerp(currColor.a, originalOpacity, fadeSpeed * Time.deltaTime));
         mat.color = smoothColor;
     }
+
+    private void OnDestroy()
+    {
+        if (mat != null) Destroy(mat);
+    }
 }

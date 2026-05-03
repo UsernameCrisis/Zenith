@@ -73,25 +73,13 @@ public class TrainingMapGenerator
             Debug.LogError("SpawnTeams: could not find empty tile for team 1!");
             return;
         }
-    
-        int maxAttempts = 200;
-        int attempts = 0;
-        do
-        {
-            team2Center = GetRandomEmptyTile();
-            attempts++;
 
-            if (attempts >= maxAttempts)
-            {
-                Debug.LogWarning("SpawnTeams: could not satisfy team distance, using closest available.");
-                break;
-            }
-        }
-        while (team2Center.x != int.MinValue && Vector3Int.Distance(team1Center, team2Center) < teamDist);
+        team2Center = GetRandomTileInDistanceRange(team1Center, teamDist);
+
         if (team2Center.x == int.MinValue)
         {
-            Debug.LogError("SpawnTeams: could not find empty tile for team 2!");
-            return;
+            Debug.LogError("SpawnTeams: fallback to farthest tile for team 2!");
+            team2Center = GetFarthestTile(team1Center);
         }
 
         SpawnTeam(team1Center, 4, 6); // team 1 IDs
@@ -131,27 +119,45 @@ public class TrainingMapGenerator
 
     private void SpawnObstacles()
     {
-        var checker = new MapConnectivityChecker(
+        MapConnectivityChecker checker = new MapConnectivityChecker(
             isWalkable,
             width, height,
             minX, minY,
             minTraversablePaths);
 
+        HashSet<Vector3Int> guaranteedPath = GenerateGuaranteedPath();
+
         int totalTiles = width * height;
         int targetObstacles = Mathf.RoundToInt(totalTiles * obstacleDensity);
         int placed = 0;
-        int attempts = totalTiles * 3;
 
-        for (int i = 0; i < attempts && placed < targetObstacles; i++)
+        List<Vector3Int> candidates = new List<Vector3Int>();
+
+        for (int x = minX; x <= maxX; x++)
         {
-            Vector3Int pos = GetRandomEmptyTile();
+            for (int y = minY; y <= maxY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
 
-            if (!IsInsideBounds(pos)) continue;
-            if (isOccupied(pos)) continue;
+                if (isOccupied(pos)) continue;
 
-            if (Vector3Int.Distance(pos, team1Center) <= 2 ||
-                Vector3Int.Distance(pos, team2Center) <= 2)
-                continue;
+                // keep guaranteed path free
+                if (guaranteedPath.Contains(pos)) continue;
+
+                if (Vector3Int.Distance(pos, team1Center) <= 1 ||
+                    Vector3Int.Distance(pos, team2Center) <= 1)
+                    continue;
+
+                candidates.Add(pos);
+            }
+        }
+            
+
+        Shuffle(candidates);
+
+        foreach (var pos in candidates)
+        {
+            if (placed >= targetObstacles) break;
 
             if (isFullyRandom && CountObstacleNeighbors(pos) > clusterLimit)
                 continue;
@@ -162,11 +168,21 @@ public class TrainingMapGenerator
                 ? checker.MaxFlow(team1Center, team2Center)
                 : checker.CountPaths(team1Center, team2Center);
 
-            if (pathCount < minTraversablePaths)
+            if (pathCount < 1)
             {
                 removeLastObject(pos);
                 continue;
             }
+
+            if (pathCount < minTraversablePaths)
+            {
+                if (Random.value > 0.2f)
+                {
+                    removeLastObject(pos);
+                    continue;
+                }
+            }
+
             placed++;
         }
     }
@@ -187,6 +203,28 @@ public class TrainingMapGenerator
         return count;
     }
 
+    private HashSet<Vector3Int> GenerateGuaranteedPath()
+    {
+        HashSet<Vector3Int> path = new HashSet<Vector3Int>();
+
+        Vector3Int current = team1Center;
+        path.Add(current);
+
+        while (current != team2Center)
+        {
+            int dx = Math.Sign(team2Center.x - current.x);
+            int dy = Math.Sign(team2Center.y - current.y);
+            if (Random.value < 0.5f)
+                current.x += dx;
+            else
+                current.y += dy;
+
+            path.Add(current);
+        }
+
+        return path;
+    }
+
     private Vector3Int GetRandomEmptyTile()
     {
         for (int i = 0; i < 100; i++)
@@ -200,14 +238,99 @@ public class TrainingMapGenerator
         }
 
         for (int x = minX; x <= maxX; x++)
+        {
             for (int y = minY; y <= maxY; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
                 if (!isOccupied(pos)) return pos;
             }
+        }
 
         Debug.LogError("TrainingMapGenerator: no empty tile found!");
         return new Vector3Int(int.MinValue, int.MinValue, 0);
+    }
+
+    private Vector3Int GetRandomTileInDistanceRange(Vector3Int from, float minDist)
+    {
+        List<Vector3Int> candidates = new List<Vector3Int>();
+        float maxDist = -1f;
+    
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (isOccupied(pos)) continue;
+
+                float dist = Mathf.Abs(from.x - pos.x) + Mathf.Abs(from.y - pos.y);
+                if (dist >= minDist)
+                {
+                    candidates.Add(pos);
+
+                    if (dist > maxDist)
+                        maxDist = dist;
+                }
+            }
+        }
+
+        if (candidates.Count == 0)
+        {
+            Debug.LogWarning("No valid tiles in distance range!");
+            return new Vector3Int(int.MinValue, int.MinValue, 0);
+        }
+
+        float t = Random.value;
+        t = t * t;
+        
+        float targetDist = Mathf.Lerp(minDist, maxDist, t);
+        Vector3Int best = candidates[0];
+        float bestDiff = Mathf.Abs(Vector3Int.Distance(from, best) - targetDist);
+        
+        foreach (var c in candidates)
+        {
+            float diff = Mathf.Abs(Vector3Int.Distance(from, c) - targetDist);
+            if (diff < bestDiff)
+            {
+                best = c;
+                bestDiff = diff;
+            }
+        }
+        
+        return best;
+    }
+
+    private Vector3Int GetFarthestTile(Vector3Int from)
+    {
+        Vector3Int best = new Vector3Int(int.MinValue, int.MinValue, 0);
+        float bestDist = -1f;
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (isOccupied(pos)) continue;
+
+                float dist = Vector3Int.Distance(from, pos);
+                if (dist > bestDist)
+                {
+                    bestDist = dist;
+                    best = pos;
+                }
+            }
+        }
+        
+
+        return best;
+    }
+
+    private void Shuffle(List<Vector3Int> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int rand = Random.Range(i, list.Count);
+            (list[i], list[rand]) = (list[rand], list[i]);
+        }
     }
 
     private bool IsInsideBounds(Vector3Int pos) =>

@@ -20,6 +20,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private PlayerCombatMenuController menuController;
     private Renderer cellIndicatorRenderer;
+    private Material cellIndicatorMaterial;
     private Color defaultColor;
 
     private Vector3 mousePos;
@@ -55,7 +56,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     void Start()
     {
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
-        defaultColor = cellIndicatorRenderer.material.color;
+        cellIndicatorMaterial = cellIndicatorRenderer.material;
+        defaultColor = cellIndicatorMaterial.color;
     }
 
     void Update()
@@ -72,7 +74,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
             movePreview.ShowPathPreview(hoverTile);
 
             Color color = movePreview.IsTileReachable(hoverTile) ? defaultColor : Color.red;
-            cellIndicatorRenderer.material.SetColor("_EmissionColor", color);
+            cellIndicatorMaterial.SetColor("_EmissionColor", color);
         }
     }
 
@@ -251,7 +253,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         inputManager.OnColliderClicked -= ColliderClicked;
 
         if (cellIndicatorRenderer != null)
-            cellIndicatorRenderer.material.color = defaultColor;
+            cellIndicatorMaterial.color = defaultColor;
         menuController.IsCharacterSelected = false;
     }
 

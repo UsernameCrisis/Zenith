@@ -137,7 +137,7 @@ public class TurnManager : MonoBehaviour
             return actor == null || actor.IsTurnComplete() || timer > timeout;
         });
         if (timer > timeout)
-            Debug.LogError("Turn timeout! Forcing completion.");
+            Debug.LogWarning("Turn timeout! Forcing completion.");
         yield return EndTurnRoutine();
         isTurnRunning = false;
     }
@@ -265,7 +265,7 @@ public class TurnManager : MonoBehaviour
 
         combatAgent.SetAllySlots(allySlots);
         turnQueue = new TurnQueue(characters, 10); // Sementara simulate 10 turn ahead
-        print("Total units: " + turnQueue.allUnits.Count);
+        // print("Total units: " + turnQueue.allUnits.Count);
         RefreshTurnOrderUI();
     }
 

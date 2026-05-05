@@ -1,11 +1,30 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class UnitView : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private bool defaultFacingRight = true;
 
-    private float lastFacing = 1f;
+    private GridData gridData;
+    private Vector3Int attackerPos;
+    private Vector3Int targetPos;
+    private CharacterObject boundCharacter;
+    private TurnManager turnManager;
+
+    public event Action OnAttackFinished;
+    public event Action OnDeathFinished;
+
+    public void Bind(CharacterObject character, TurnManager turnManager)
+    {
+        boundCharacter = character;
+        this.turnManager = turnManager;
+
+        character.OnTakenDamage += HandleTakenDamage;
+        character.OnDied += HandleDeath;
+    }
 
     public void SetMoving(bool isMoving)
     {
@@ -16,7 +35,71 @@ public class UnitView : MonoBehaviour
     {
         if (Mathf.Abs(directionX) < 0.01f) return;
 
-        lastFacing = Mathf.Sign(directionX);
-        spriteRenderer.flipX = lastFacing < 0;
+        bool shouldFaceRight = directionX > 0;
+        bool flip = shouldFaceRight != defaultFacingRight;
+        spriteRenderer.flipX = flip;
+    }
+
+    public void PlayAttack(Vector3Int attackerPos, Vector3Int targetPos, GridData gridData)
+    {
+        this.gridData = gridData;
+        this.attackerPos = attackerPos;
+        this.targetPos = targetPos;
+        animator.SetTrigger("attack");
+    }
+
+    public void OnAttackAnimationEnd()
+    {
+        OnAttackFinished?.Invoke();
+    }
+
+    public void OnAttackHit()
+    {
+        gridData?.AttackObject(attackerPos, targetPos);
+    }
+
+    public void PlayHit()
+    {
+        if (!turnManager.GetUseAnimation()) return;
+        animator.SetTrigger("hit");
+    }
+
+    private void HandleTakenDamage(int damage)
+    {
+        PlayHit();
+    }
+
+    private void HandleDeath(CharacterObject character)
+    {
+        PlayDeath();
+    }
+
+    public void PlayDeath()
+    {
+        animator.SetTrigger("death");
+    }
+
+    public void OnDeathAnimationEnd()
+    {
+        OnDeathFinished?.Invoke();
+    }
+
+    public void FaceTarget(float attackerXPos, float targetXPos)
+    {
+        float directionX = targetXPos - attackerXPos;
+
+        if (Mathf.Abs(directionX) > 0.01f)
+        {
+            SetFacing(directionX);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (boundCharacter != null)
+        {
+            boundCharacter.OnTakenDamage -= HandleTakenDamage;
+            boundCharacter.OnDied -= HandleDeath;
+        }
     }
 }

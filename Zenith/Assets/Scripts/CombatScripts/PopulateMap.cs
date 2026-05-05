@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,7 +25,6 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private int width, height;
 
     private int minX, maxX, minY, maxY, offsetX, offsetY;
-    private Vector3Int team1Center, team2Center;
     private TurnManager turnManager;
 
     public GridData objectsData;
@@ -73,14 +73,46 @@ public class PopulateMap : MonoBehaviour
         if (pos == null) return;
 
         TileData tile = objectsData.GetTileAt(pos.Value);
-        
+
+        var view = character.View;
+
+        if (view != null && turnManager.GetUseAnimation())
+        {
+            StartCoroutine(HandleDeathRoutine(character, pos.Value, tile, view));
+        }
+        else
+        {
+            if (!forTrainingAgent)
+                HandleDeathPlayerOnly(character, tile);
+
+            if (tile.PlacedGameObject != null)
+                Destroy(tile.PlacedGameObject);
+
+            objectsData.RemoveObjectAt(pos.Value);
+        }
+    }
+
+    private IEnumerator HandleDeathRoutine(CharacterObject character, Vector3Int pos, TileData tile, UnitView view)
+    {
+        bool finished = false;
+    
+        void OnFinished() => finished = true;
+    
+        view.OnDeathFinished += OnFinished;
+
+        // Death animation triggered from OnDied inside UnitView
+    
+        yield return new WaitUntil(() => finished);
+    
+        view.OnDeathFinished -= OnFinished;
+    
         if (!forTrainingAgent)
             HandleDeathPlayerOnly(character, tile);
-
+    
         if (tile.PlacedGameObject != null)
             Destroy(tile.PlacedGameObject);
-
-        objectsData.RemoveObjectAt(pos.Value);
+    
+        objectsData.RemoveObjectAt(pos);
     }
 
     private void GenerateTrainingMap()
@@ -193,10 +225,14 @@ public class PopulateMap : MonoBehaviour
         {
             character.BindGameObject(newObject);
             CharacterView view = newObject.GetComponent<CharacterView>();
-            if (view != null)
+            UnitView unitView = newObject.GetComponentInChildren<UnitView>();
+            if (view != null && unitView != null)
+            {
                 view.Bind(character);
+                unitView.Bind(character, turnManager);
+            }
             else
-                Debug.LogWarning($"{newObject.name} has no CharacterView!");
+                Debug.LogWarning($"{newObject.name} has no CharacterView or UnitView!");
         }
 
         objectsData.AddObjectAt(gridPos, placedObj, placedGameObjects.Count - 1, newObject);
@@ -229,7 +265,7 @@ public class PopulateMap : MonoBehaviour
         } 
         else if (tile.PlacedGameObject.CompareTag("Enemy"))
         {
-            turnManager.defeatedEnemyNames.Add(tile.PlacedGameObject.name); 
+            turnManager.DefeatedEnemyNames.Add(tile.PlacedGameObject.name); 
         } 
         else if (tile.PlacedGameObject.CompareTag("Allies"))
         {

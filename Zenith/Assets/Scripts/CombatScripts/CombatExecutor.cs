@@ -47,13 +47,49 @@ public class CombatExecutor : MonoBehaviour
     {
         if (attacker == null) return;
         if (attackerPos == targetPos) return;
+
+        if (turnManager.GetUseAnimation())
+            StartCoroutine(AttackRoutine(attacker, attackerPos, targetPos, gridData));
+        else
+            InstantAttack(attacker, attackerPos, targetPos, gridData);
+
+        movePreview.ClearAll();
+    }
+
+    private IEnumerator AttackRoutine(CharacterObject attacker, Vector3Int attackerPos, Vector3Int targetPos, GridData gridData)
+    {
         isAttacking = true;
 
+        var view = attacker.View;
+
+        if (view == null)
+        {
+            Debug.LogWarning("No UnitView found!");
+            yield break;
+        }
+
+        view.FaceTarget(attackerPos.x, targetPos.x);
+
+        bool finished = false;
+
+        void OnFinished() => finished = true;
+        view.OnAttackFinished += OnFinished;
+
+        view.PlayAttack(attackerPos, targetPos, gridData);
+
+        attacker.DisableAttack();
+        yield return new WaitUntil(() => finished);
+        view.OnAttackFinished -= OnFinished;
+
+        isAttacking = false;
+    }
+
+    private void InstantAttack(CharacterObject attacker, Vector3Int attackerPos, Vector3Int targetPos, GridData gridData)
+    {
+        isAttacking = true;
         gridData.AttackObject(attackerPos, targetPos);
         attacker.DisableAttack();
         isAttacking = false;
-
-        movePreview.ClearAll();
     }
 
     private IEnumerator WalkPath(List<Vector3Int> path, Vector3Int startPos, CharacterObject character, GridData gridData)

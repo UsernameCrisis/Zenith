@@ -558,6 +558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 331495577}
   - component: {fileID: 331495578}
+  - component: {fileID: 331495579}
   m_Layer: 0
   m_Name: GridSelectSystem
   m_TagString: Untagged
@@ -599,15 +600,25 @@ MonoBehaviour:
   combatExecutor: {fileID: 784646986}
   grid: {fileID: 780557240}
   gridVisualization: {fileID: 1127068153}
-  source: {fileID: 0}
   movePreview: {fileID: 784646988}
   actionMenu: {fileID: 543234303}
-  pauseMenu: {fileID: 174364123}
-  tutorialMenu: {fileID: 1910185648}
-  optionMenu: {fileID: 1419675402}
   cameraMovement: {fileID: 330585548}
-  animator: {fileID: 0}
   isForHeuristicAgent: 0
+--- !u!114 &331495579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 331495576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b270fe4961ad9974a89a97f0f3b46834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatMenuController
+  pauseMenu: {fileID: 174364123}
+  optionMenu: {fileID: 1419675402}
+  tutorialMenu: {fileID: 1910185648}
 --- !u!1 &366886310
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,6 +1771,7 @@ GameObject:
   - component: {fileID: 784646986}
   - component: {fileID: 784646987}
   - component: {fileID: 784646988}
+  - component: {fileID: 784646989}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -1803,7 +1815,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4090ad026c457dd47bbe18071b2989cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatExecutor
-  animator: {fileID: 0}
 --- !u!114 &784646987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1816,16 +1827,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 768cf22d85cde0a4e9867e870f2ef962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnManager
-  currentTurn: 1
-  maxTurn: 50
   gridSelect: {fileID: 331495578}
   turnOrderUI: {fileID: 2049846321}
-  controlMode: 0
   combatAgent: {fileID: 1666468179}
+  controlMode: 0
   currentAgentTeam: 1
   useAnimation: 1
   showTurnOrderUI: 1
-  defeatedEnemyNames: []
+  currentTurn: 1
 --- !u!114 &784646988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1842,6 +1851,25 @@ MonoBehaviour:
   pathPrefab: {fileID: 2472174430814047340, guid: 4b1237f7931e2af49907402ee9fd7ebe, type: 3}
   enemyHighlightPrefab: {fileID: 8720225419636420207, guid: de91152a6c5d48f42bfd0b594bc6d28c, type: 3}
   maxRange: 3
+--- !u!114 &784646989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784646984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c1b0cb8bab98bb45b4dd6b610c759a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleResultHandler
+  gridSelect: {fileID: 331495578}
+  turnOrderUI: {fileID: 2049846321}
+  combatAgent: {fileID: 1666468179}
+  controlMode: 0
+  currentAgentTeam: 1
+  showTurnOrderUI: 1
+  maxTurn: 500
 --- !u!1 &800820801
 GameObject:
   m_ObjectHideFlags: 0

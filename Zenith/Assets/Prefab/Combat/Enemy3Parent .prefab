@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 471681757802170125}
   - component: {fileID: 8650806634094081094}
   - component: {fileID: 7090583258444906886}
-  - component: {fileID: 4542704925610380829}
   m_Layer: 0
   m_Name: 'Enemy3Parent '
   m_TagString: Enemy
@@ -93,20 +92,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterView
   damagePopupPrefab: {fileID: 7942734881586010041, guid: 87925f4e4931f4149a320860773cd025, type: 3}
---- !u!114 &4542704925610380829
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3763461118446173395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitView
-  animator: {fileID: 996794134621331807}
-  spriteRenderer: {fileID: 9100521769355969551}
 --- !u!1 &3859946168756219479
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,8 +194,9 @@ GameObject:
   - component: {fileID: 996794134621331807}
   - component: {fileID: 9100521769355969551}
   - component: {fileID: 164883706842601236}
+  - component: {fileID: 9044522542716831862}
   m_Layer: 12
-  m_Name: Sprite_eye
+  m_Name: Sprite_bat
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -226,7 +212,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
   m_LocalPosition: {x: 0.5, y: 0.6, z: 0.5}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1.8, y: 1.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 471681757802170125}
@@ -241,7 +227,7 @@ Animator:
   m_GameObject: {fileID: 4249258544017466012}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3793db098cfb1d24996f10baae401e40, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -300,7 +286,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1561315252, guid: 4871732fb45b71a43aa4b76d87796ee4, type: 3}
+  m_Sprite: {fileID: -1171028252, guid: ee2f16ddf0b757c4b9e347ad3728327b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -330,5 +316,20 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.2, y: 0.8, z: 0.1}
+  m_Size: {x: 0.4, y: 0.3, z: 0.1}
   m_Center: {x: 0.0025041897, y: -0.030000009, z: 1.4545043e-10}
+--- !u!114 &9044522542716831862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4249258544017466012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitView
+  animator: {fileID: 996794134621331807}
+  spriteRenderer: {fileID: 9100521769355969551}
+  defaultFacingRight: 0

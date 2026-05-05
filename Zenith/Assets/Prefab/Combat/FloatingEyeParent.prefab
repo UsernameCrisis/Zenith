@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2081576064086719019}
   - component: {fileID: 5143051600830710145}
   - component: {fileID: 8916597720525653611}
+  - component: {fileID: 4237907315167765886}
   m_Layer: 12
   m_Name: Sprite_eye
   m_TagString: Enemy
@@ -44,7 +45,7 @@ Animator:
   m_GameObject: {fileID: 315847696537024545}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0e5f10a6d76440141892229686528e7d, type: 2}
+  m_Controller: {fileID: 9100000, guid: aada9f99245096a4ea62d0612bb0c291, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -135,6 +136,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.3, y: 0.33, z: 0.1}
   m_Center: {x: 0, y: -0.02, z: 0}
+--- !u!114 &4237907315167765886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315847696537024545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitView
+  animator: {fileID: 2081576064086719019}
+  spriteRenderer: {fileID: 5143051600830710145}
+  defaultFacingRight: 1
 --- !u!1 &920729524746998805
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +162,6 @@ GameObject:
   - component: {fileID: 3463039356533368029}
   - component: {fileID: 6708055557406165516}
   - component: {fileID: 5902453797501484746}
-  - component: {fileID: 403393475934889158}
   m_Layer: 0
   m_Name: FloatingEyeParent
   m_TagString: Enemy
@@ -197,20 +212,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterView
   damagePopupPrefab: {fileID: 7942734881586010041, guid: 87925f4e4931f4149a320860773cd025, type: 3}
---- !u!114 &403393475934889158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 920729524746998805}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff2d3aa48c6a6c6438fa41ccc472ec9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitView
-  animator: {fileID: 2081576064086719019}
-  spriteRenderer: {fileID: 5143051600830710145}
 --- !u!1 &3159793122656923418
 GameObject:
   m_ObjectHideFlags: 0

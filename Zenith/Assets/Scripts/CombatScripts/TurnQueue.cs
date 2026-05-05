@@ -85,7 +85,6 @@ public class TurnQueue
 
     public CharacterObject PopNext()
     {
-        Debug.Log($"PopNext → queue count before: {queue.Count}");
         if (queue.Count == 0)
             RefillFull();
         
@@ -127,7 +126,7 @@ public class TurnQueue
         allUnits.Remove(character);
         simulationMeters.Remove(character);
         queue.RemoveAll(c => c == character);
-        Debug.Log($"After remove → allUnits: {allUnits.Count}, queue: {queue.Count}");
+        // Debug.Log($"After remove → allUnits: {allUnits.Count}, queue: {queue.Count}");
         // if (queue.Count <= visibleCount)
         //     RefillFull();
     }

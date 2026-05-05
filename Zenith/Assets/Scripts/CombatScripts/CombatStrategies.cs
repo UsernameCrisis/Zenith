@@ -251,8 +251,7 @@ namespace BehaviourTrees
             if (enemyChar == null)
                 return Node.Status.Failure;
 
-            ai.GetPreview().ShowMovementRange(latestPos, enemyChar.RemainingMoveRange);
-            HashSet<Vector3Int> reachable = ai.GetPreview().GetReachableTiles();
+            HashSet<Vector3Int> reachable = ai.GetPreview().ComputeReachableTiles(latestPos, enemyChar.RemainingMoveRange);
 
             if (reachable == null || reachable.Count == 0)
             {

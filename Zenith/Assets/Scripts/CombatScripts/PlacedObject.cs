@@ -108,7 +108,7 @@ public class CharacterObject : PlacedObject
     public void DisableAttack() => canAttack = false;
     public bool CanStillAttack() => canAttack;
     public void BindGameObject(GameObject go) => GameObject = go;
-    public UnitView View => GameObject != null ? GameObject.GetComponent<UnitView>() : null;
+    public UnitView View => GameObject != null ? GameObject.GetComponentInChildren<UnitView>() : null;
 
     public void TakeDamage(int amount)
     {
@@ -119,7 +119,7 @@ public class CharacterObject : PlacedObject
         OnHPChanged?.Invoke(HP, MaxHp);
         OnTakenDamage?.Invoke(finalDamage);
 
-        Debug.Log($"{Name} took {finalDamage} damage! (Raw: {amount}, Defense: {Defense}) Remaining HP: {HP}");
+        // Debug.Log($"{Name} took {finalDamage} damage! (Raw: {amount}, Defense: {Defense}) Remaining HP: {HP}");
 
         if (HP <= 0)
             OnDeath();
@@ -133,18 +133,18 @@ public class CharacterObject : PlacedObject
     
     public void Attack(CharacterObject target)
     {
-        Debug.Log($"{Name} attacks {target.Name} for {Damage} damage!");
+        // Debug.Log($"{Name} attacks {target.Name} for {Damage} damage!");
         target.TakeDamage(Damage);
     }
 
     public override void OnPlaced(Vector3Int pos)
     {
         base.OnPlaced(pos);
-        Debug.Log($"{Name} placed at {pos}");
+        // Debug.Log($"{Name} placed at {pos}");
     }
     protected virtual void OnDeath()
     {
-        Debug.Log($"{Name} has died.");
+        // Debug.Log($"{Name} has died.");
 
         OnDied?.Invoke(this);
     }

@@ -86,4 +86,11 @@ public class OllamaChatProvider : MonoBehaviour
 
     [Serializable]
     public class OllamaResponse { public string response; }
+
+    [Serializable]
+    public class AIStructuredResponse
+    {
+        public string response;
+        public int score;
+    }
 }

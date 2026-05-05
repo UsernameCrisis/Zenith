@@ -1,8 +1,10 @@
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using TMPro;
 using System.Collections;
+using System.Text.RegularExpressions;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using static OllamaChatProvider;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -61,6 +63,11 @@ public class DialogueManager : MonoBehaviour
         leftTargetPos = leftPortraitRect.anchoredPosition;
         rightTargetPos = rightPortraitRect.anchoredPosition;
         textTargetPos = textPanelRect.anchoredPosition;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetDailyTalkLimits();
+        }
     }
 
     private void Start()
@@ -244,9 +251,55 @@ public class DialogueManager : MonoBehaviour
 
     public void OnTalkButtonPressed()
     {
+        NPCSaveData data = GameManager.Instance.GetNPCData(currentNPCID);
+
+        if (data.dailyTalks >= 10)
+        {
+            optionsPanel.SetActive(false);
+            DisplayAIResponse($"{currentNPCID} doesn't seem to want to talk for now.");
+            return;
+        }
+
         optionsPanel.SetActive(false);
         chatInputPanel.SetActive(true);
         chatInputField.ActivateInputField();
+    }
+
+    private void ProcessAIResponse(string rawText)
+    {
+        string cleanMessage = "";
+        int pointsGained = 0;
+        bool parsedSuccessfully = false;
+
+        var match = Regex.Match(rawText, @"\{.*\}", RegexOptions.Singleline);
+        if (match.Success)
+        {
+            try
+            {
+                AIStructuredResponse res = JsonUtility.FromJson<AIStructuredResponse>(match.Value);
+                cleanMessage = res.response;
+                pointsGained = res.score;
+                parsedSuccessfully = true;
+            }
+            catch { }
+        }
+
+        if (!parsedSuccessfully)
+        {
+            Match scoreMatch = Regex.Match(rawText, @"""score"":\s*(-?\d+)");
+            if (scoreMatch.Success)
+            {
+                int.TryParse(scoreMatch.Groups[1].Value, out pointsGained);
+            }
+
+            cleanMessage = Regex.Replace(rawText, @"\{.*\}", "").Trim();
+            if (string.IsNullOrEmpty(cleanMessage)) cleanMessage = rawText;
+        }
+
+        pointsGained = Mathf.Clamp(pointsGained, -1, 10);
+
+        GameManager.Instance.UpdateNPC(currentNPCID, pointsGained, true);
+        DisplayAIResponse(cleanMessage);
     }
 
     public void SendChatToAI()
@@ -256,20 +309,33 @@ public class DialogueManager : MonoBehaviour
 
         chatInputPanel.SetActive(false);
         chatInputField.text = "";
-
         isWaitingForAI = true;
-        nameText.text = currentNPCID;
-        dialogueText.text = "...";
 
-        string formattedPrompt = $"Instructions: You are {currentNPCID}, a friendly character in an RPG. " +
-                                 $"Respond to the player's message in one short sentence.\n" +
-                                 $"Player: {userText}\n" +
-                                 $"{currentNPCID}:";
+        var npcData = GameManager.Instance.GetNPCData(currentNPCID);
+        string attitude = GetAttitudeString(npcData.friendship);
 
-        StartCoroutine(ollamaProvider.SendChatRequest(formattedPrompt, (aiResponse) => {
-            isWaitingForAI = false; 
-            DisplayAIResponse(aiResponse);
+        string formattedPrompt =
+            $"Task: Respond as {currentNPCID} ({attitude}).\n" +
+            $"Scale: -1 (mean), 0 (neutral), 1-10 (friendly/helpful).\n" +
+            $"Format Example: {{\"response\": \"Hello friend!\", \"score\": 5}}\n" +
+            $"Player said: \"{userText}\"\n" +
+            $"Response JSON:";
+
+        StartCoroutine(ollamaProvider.SendChatRequest(formattedPrompt, (rawAIOutput) => {
+            isWaitingForAI = false;
+            ProcessAIResponse(rawAIOutput);
         }));
+    }
+
+    private string GetAttitudeString(int score)
+    {
+        if (score <= -51) return "Dislike/Hostile";
+        if (score <= -1) return "Annoyed/Cold";
+        if (score <= 200) return "Neutral/Indifferent";
+        if (score <= 500) return "Slightly Friendly/Polite";
+        if (score <= 1000) return "Acquaintance/Respectful";
+        if (score <= 1500) return "Friendly/Warm";
+        return "Best Friends/Extremely Loyal";
     }
 
     private void DisplayAIResponse(string text)

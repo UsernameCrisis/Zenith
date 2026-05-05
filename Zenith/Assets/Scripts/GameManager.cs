@@ -4,11 +4,19 @@ using UnityEngine.SceneManagement;
 using System.IO;
 
 [System.Serializable]
+public class NPCSaveData
+{
+    public string npcID;
+    public int friendship;
+    public int dailyTalks;
+}
+[System.Serializable]
 public class GameSaveData
 {
     public int gold;
     public int gold_spent;
     public bool viewedTutorial;
+    public List<NPCSaveData> npcDataList = new List<NPCSaveData>();
 }
 
 public class GameManager : MonoBehaviour
@@ -18,6 +26,7 @@ public class GameManager : MonoBehaviour
     [Header("Persistent Stats")]
     public int gold = 0;
     public int gold_spent = 0;
+    public Dictionary<string, NPCSaveData> npcRegistry = new Dictionary<string, NPCSaveData>();
 
     [Header("Combat Stats")]
     public int playerHP = 100;
@@ -57,6 +66,35 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public NPCSaveData GetNPCData(string id)
+    {
+        if (!npcRegistry.ContainsKey(id))
+        {
+            npcRegistry[id] = new NPCSaveData { npcID = id, friendship = 0, dailyTalks = 0 };
+        }
+        return npcRegistry[id];
+    }
+
+    public void UpdateNPC(string id, int friendshipChange, bool incrementTalk)
+    {
+        NPCSaveData data = GetNPCData(id);
+
+        data.friendship = Mathf.Clamp(data.friendship + friendshipChange, -100, 2000);
+
+        if (incrementTalk) data.dailyTalks++;
+
+        Debug.Log($"{id} updated. Friendship: {data.friendship}, Talks: {data.dailyTalks}");
+    }
+
+    public void ResetDailyTalkLimits()
+    {
+        foreach (var npc in npcRegistry.Values)
+        {
+            npc.dailyTalks = 0;
+        }
+        Debug.Log("NPC Talk Limits have been reset for this visit.");
+    }
+
     #region Save/Load Logic
     public void SaveGameState()
     {
@@ -65,9 +103,10 @@ public class GameManager : MonoBehaviour
         data.gold_spent = gold_spent;
         data.viewedTutorial = ViewedOverworldTutorial;
 
+        data.npcDataList = new List<NPCSaveData>(npcRegistry.Values);
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, json);
-        Debug.Log("Game Stats Saved!");
     }
 
     public void LoadGameState()
@@ -81,23 +120,24 @@ public class GameManager : MonoBehaviour
         gold_spent = data.gold_spent;
         ViewedOverworldTutorial = data.viewedTutorial;
 
+        npcRegistry.Clear();
+        foreach (var npc in data.npcDataList)
+        {
+            npcRegistry[npc.npcID] = npc;
+        }
+
         hasData = true;
-        Debug.Log("Game Stats Loaded!");
     }
 
     public void DeleteGameState()
     {
-        if (File.Exists(savePath))
-        {
-            File.Delete(savePath);
+        if (File.Exists(savePath)) File.Delete(savePath);
 
-            gold = 0;
-            gold_spent = 0;
-            ViewedOverworldTutorial = false;
-            hasData = false;
-
-            Debug.Log("Game Stats Deleted!");
-        }
+        gold = 0;
+        gold_spent = 0;
+        ViewedOverworldTutorial = false;
+        npcRegistry.Clear();
+        hasData = false;
     }
 
     #endregion

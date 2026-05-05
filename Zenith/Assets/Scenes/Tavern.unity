@@ -2998,7 +2998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableNPC
   InteractText: Talk
-  npcID: warrior
+  npcID: Thorek
   conversation: {fileID: 11400000, guid: c17949ca927dfad4a915a4696d79e8dc, type: 2}
   dialogueManager: {fileID: 119795966}
 --- !u!1 &356497676
@@ -11671,7 +11671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableNPC
   InteractText: Talk
-  npcID: cleric
+  npcID: Iris
   conversation: {fileID: 11400000, guid: 55ea59275cf05154eb3206a7309471c8, type: 2}
   dialogueManager: {fileID: 119795966}
 --- !u!1001 &1751241700
@@ -13119,7 +13119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableNPC
   InteractText: Talk
-  npcID: merchant
+  npcID: Orvain
   conversation: {fileID: 11400000, guid: 1b2050b5e8ad704458a8c6f17e409252, type: 2}
   dialogueManager: {fileID: 119795966}
 --- !u!1 &1961692710

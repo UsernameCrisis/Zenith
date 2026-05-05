@@ -42,11 +42,14 @@ public class DialogueManager : MonoBehaviour
 
     private DialogueData currentDialogue;
     private string currentNPCID;
+    private string lastFullResponse;
     private int index;
     private bool isTyping;
     private bool isDialogueActive;
     private bool isShowingOptions;
     private bool canInteract = true;
+    private bool isAIResponding;
+    private bool isWaitingForAI;
     private Coroutine typeRoutine;
 
     private Vector2 leftTargetPos;
@@ -110,8 +113,23 @@ public class DialogueManager : MonoBehaviour
         if (isTyping)
         {
             StopCoroutine(typeRoutine);
-            dialogueText.text = currentDialogue.lines[index].text;
             isTyping = false;
+
+            if (isAIResponding)
+            {
+                dialogueText.text = lastFullResponse;
+            }
+            else
+            {
+                dialogueText.text = currentDialogue.lines[index].text;
+            }
+            return;
+        }
+
+        if (isAIResponding)
+        {
+            isAIResponding = false;
+            ShowInteractionOptions();
             return;
         }
 
@@ -132,7 +150,7 @@ public class DialogueManager : MonoBehaviour
         isShowingOptions = true;
         optionsPanel.SetActive(true);
 
-        if (currentNPCID.ToLower() == "merchant")
+        if (currentNPCID.ToLower() == "orvain")
         {
             shopButton.SetActive(true);
             partyButton.SetActive(false);
@@ -239,6 +257,7 @@ public class DialogueManager : MonoBehaviour
         chatInputPanel.SetActive(false);
         chatInputField.text = "";
 
+        isWaitingForAI = true;
         nameText.text = currentNPCID;
         dialogueText.text = "...";
 
@@ -248,6 +267,7 @@ public class DialogueManager : MonoBehaviour
                                  $"{currentNPCID}:";
 
         StartCoroutine(ollamaProvider.SendChatRequest(formattedPrompt, (aiResponse) => {
+            isWaitingForAI = false; 
             DisplayAIResponse(aiResponse);
         }));
     }
@@ -256,6 +276,8 @@ public class DialogueManager : MonoBehaviour
     {
         isDialogueActive = true;
         isShowingOptions = false;
+        isAIResponding = true;
+        lastFullResponse = text;
 
         if (typeRoutine != null) StopCoroutine(typeRoutine);
         typeRoutine = StartCoroutine(TypeText(text));
@@ -264,6 +286,7 @@ public class DialogueManager : MonoBehaviour
     void Update()
     {
         if (chatInputField != null && chatInputField.isFocused) return;
+        if (isWaitingForAI) return;
 
         if (isDialogueActive)
         {

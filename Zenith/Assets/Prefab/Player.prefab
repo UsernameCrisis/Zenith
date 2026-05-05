@@ -43,7 +43,7 @@ Animator:
   m_GameObject: {fileID: 4000603623970284719}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 43b0ed2f3e61d154e923131bf8b4b060, type: 2}
+  m_Controller: {fileID: 9100000, guid: e1fa80df81c815e478aa2f5728a96b4b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -203,6 +203,7 @@ MonoBehaviour:
   rb: {fileID: 5234813713430550328}
   animator: {fileID: 4827329345341099098}
   shadow: {fileID: 6376279058266744994}
+  ExternalSpeedMultiplier: 1
 --- !u!114 &7613042265651345359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,9 +221,10 @@ MonoBehaviour:
   gold: 0
   invincibilityDuration: 0.4
   deathVolume: {fileID: 0}
-  Atk: 0
-  Def: 0
-  inventory: {fileID: 0}
+  fadeOverlay: {fileID: 0}
+  vignetteDuration: 1
+  postVignetteWait: 1
+  fadeToBlackDuration: 2
 --- !u!114 &1248949727071076179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,7 +237,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a39ff4a042b42143960ab34fe84e8cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  blockingUIPanels: []
   InteractUI: {fileID: 0}
+  CurrentInteractable: {fileID: 0}
+  CurrentOpenInteractable: {fileID: 0}
   _interactText: {fileID: 0}
 --- !u!65 &2835819776977226559
 BoxCollider:

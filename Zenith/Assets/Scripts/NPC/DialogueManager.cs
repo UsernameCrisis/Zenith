@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -41,6 +42,10 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Text Settings")]
     public float typingSpeed = 0.02f;
+
+    [Header("Memory Settings")]
+    public int maxMemoryLines = 4;
+    private List<string> currentConversationHistory = new List<string>();
 
     private DialogueData currentDialogue;
     private string currentNPCID;
@@ -113,6 +118,7 @@ public class DialogueManager : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(AnimateIntro());
         DisplayLine();
+        currentConversationHistory.Clear();
     }
 
     public void NextLine()
@@ -264,44 +270,6 @@ public class DialogueManager : MonoBehaviour
         chatInputPanel.SetActive(true);
         chatInputField.ActivateInputField();
     }
-
-    private void ProcessAIResponse(string rawText)
-    {
-        string cleanMessage = "";
-        int pointsGained = 0;
-        bool parsedSuccessfully = false;
-
-        var match = Regex.Match(rawText, @"\{.*\}", RegexOptions.Singleline);
-        if (match.Success)
-        {
-            try
-            {
-                AIStructuredResponse res = JsonUtility.FromJson<AIStructuredResponse>(match.Value);
-                cleanMessage = res.response;
-                pointsGained = res.score;
-                parsedSuccessfully = true;
-            }
-            catch { }
-        }
-
-        if (!parsedSuccessfully)
-        {
-            Match scoreMatch = Regex.Match(rawText, @"""score"":\s*(-?\d+)");
-            if (scoreMatch.Success)
-            {
-                int.TryParse(scoreMatch.Groups[1].Value, out pointsGained);
-            }
-
-            cleanMessage = Regex.Replace(rawText, @"\{.*\}", "").Trim();
-            if (string.IsNullOrEmpty(cleanMessage)) cleanMessage = rawText;
-        }
-
-        pointsGained = Mathf.Clamp(pointsGained, -1, 10);
-
-        GameManager.Instance.UpdateNPC(currentNPCID, pointsGained, true);
-        DisplayAIResponse(cleanMessage);
-    }
-
     public void SendChatToAI()
     {
         string userText = chatInputField.text;
@@ -309,22 +277,71 @@ public class DialogueManager : MonoBehaviour
 
         chatInputPanel.SetActive(false);
         chatInputField.text = "";
+
         isWaitingForAI = true;
+        nameText.text = currentNPCID;
+        dialogueText.text = "...";
 
         var npcData = GameManager.Instance.GetNPCData(currentNPCID);
         string attitude = GetAttitudeString(npcData.friendship);
+        string historyContext = string.Join("\n", currentConversationHistory);
 
-        string formattedPrompt =
-            $"Task: Respond as {currentNPCID} ({attitude}).\n" +
-            $"Scale: -1 (mean), 0 (neutral), 1-10 (friendly/helpful).\n" +
-            $"Format Example: {{\"response\": \"Hello friend!\", \"score\": 5}}\n" +
-            $"Player said: \"{userText}\"\n" +
-            $"Response JSON:";
+        string chatPrompt =
+            $"Instructions: You are {currentNPCID}. Attitude: {attitude}. " +
+            $"Respond to the player in one short, natural sentence. Do not use JSON.\n" +
+            $"{historyContext}\n" +
+            $"Player: {userText}\n" +
+            $"{currentNPCID}:";
 
-        StartCoroutine(ollamaProvider.SendChatRequest(formattedPrompt, (rawAIOutput) => {
+        StartCoroutine(ollamaProvider.SendChatRequest(chatPrompt, (aiResponse) => {
             isWaitingForAI = false;
-            ProcessAIResponse(rawAIOutput);
+
+            ProcessDialogueResponse(aiResponse, userText);
         }));
+    }
+    private void ProcessDialogueResponse(string aiResponse, string playerMsg)
+    {
+        string cleanAIResponse = aiResponse.Trim();
+
+        DisplayAIResponse(cleanAIResponse);
+
+        AddLineToHistory($"Player: {playerMsg}");
+        AddLineToHistory($"{currentNPCID}: {cleanAIResponse}");
+
+        StartCoroutine(GetFriendshipRating(playerMsg, cleanAIResponse));
+    }
+
+    private IEnumerator GetFriendshipRating(string playerMsg, string aiMsg)
+    {
+        string ratingPrompt =
+            $"Rate the player's message based on the reply. Scale -1 to 10. " +
+            $"Player: {playerMsg}. Reply: {aiMsg}. " +
+            $"Return only the integer number.";
+
+        yield return ollamaProvider.SendChatRequest(ratingPrompt, (scoreText) => {
+            Match match = Regex.Match(scoreText, @"-?\d+");
+            if (match.Success)
+            {
+                if (int.TryParse(match.Value, out int score))
+                {
+                    GameManager.Instance.UpdateNPC(currentNPCID, score, true);
+                }
+            }
+            else
+            {
+                GameManager.Instance.UpdateNPC(currentNPCID, 0, true);
+            }
+        });
+    }
+    private void AddLineToHistory(string line)
+    {
+        if (string.IsNullOrWhiteSpace(line) || line.Length < 3) return;
+
+        currentConversationHistory.Add(line);
+        if (currentConversationHistory.Count > maxMemoryLines * 2)
+        {
+            currentConversationHistory.RemoveAt(0);
+        }
     }
 
     private string GetAttitudeString(int score)

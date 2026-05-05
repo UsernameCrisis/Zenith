@@ -82,7 +82,20 @@ public class OllamaChatProvider : MonoBehaviour
     }
 
     [Serializable]
-    public class OllamaRequest { public string model; public string prompt; public bool stream; }
+    public class OllamaRequest
+    {
+        public string model;
+        public string prompt;
+        public bool stream;
+        public Options options = new Options();
+    }
+
+    [Serializable]
+    public class Options
+    {
+        public float temperature = 0.3f;
+        public int num_predict = 100;
+    }
 
     [Serializable]
     public class OllamaResponse { public string response; }

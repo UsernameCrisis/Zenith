@@ -13,7 +13,7 @@ public class CombatOverMenu : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        ok.onClick.AddListener(() => OnButtonSelected?.Invoke("ok"));
+        ok.onClick.AddListener(HandleOkPressed);
         gameObject.SetActive(false);
     }
 

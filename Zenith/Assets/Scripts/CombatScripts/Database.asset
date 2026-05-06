@@ -29,7 +29,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Enemy1
     <ID>k__BackingField: 1
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 12
+    <Damage>k__BackingField: 15
     <Speed>k__BackingField: 10
     <Defense>k__BackingField: 3
     <currentATB>k__BackingField: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Enemy2
     <ID>k__BackingField: 2
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 15
+    <Damage>k__BackingField: 18
     <Speed>k__BackingField: 8
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Enemy3
     <ID>k__BackingField: 3
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 8
+    <Damage>k__BackingField: 12
     <Speed>k__BackingField: 14
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Enemy1_Team1
     <ID>k__BackingField: 4
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 12
+    <Damage>k__BackingField: 15
     <Speed>k__BackingField: 10
     <Defense>k__BackingField: 3
     <currentATB>k__BackingField: 0
@@ -81,7 +81,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Enemy2_Team1
     <ID>k__BackingField: 5
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 15
+    <Damage>k__BackingField: 18
     <Speed>k__BackingField: 8
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Enemy3_Team1
     <ID>k__BackingField: 6
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 8
+    <Damage>k__BackingField: 12
     <Speed>k__BackingField: 14
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0

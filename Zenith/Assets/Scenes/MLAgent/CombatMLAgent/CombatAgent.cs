@@ -20,7 +20,7 @@ public class CombatAgent : Agent, ITurnActor
     [Header("Shaped Reward Weights")]
     [SerializeField] private float damageDealtRewardScale = 0.3f;
     [SerializeField] private float damageTakenPenaltyScale = 0.15f;
-    [SerializeField] private float inRangeBonus = 0.01f;
+    [SerializeField] private float inRangeBonus = 0.05f;
 
     [HideInInspector] public int CurrEp = 0;
     [HideInInspector] public float CumulativeReward = 0f;
@@ -138,7 +138,8 @@ public class CombatAgent : Agent, ITurnActor
 
         // TURN INFO
         sensor.AddObservation(turnManager.currentTurn / _maxTurn);
-
+        sensor.AddObservation(hasMoved    ? 1f : 0f);
+        sensor.AddObservation(hasAttacked ? 1f : 0f);
         sensor.AddObservation(CountAlive(allySlots) / 3f); // num allies alive
         sensor.AddObservation(CountAlive(enemySlots) / 3f); // num enemies alive
     }
@@ -208,6 +209,8 @@ public class CombatAgent : Agent, ITurnActor
                 Debug.Log("DEFAULT TRIGGERED");
                 break;
         }
+
+        SurvivalBonusReward();
         
         CumulativeReward = GetCumulativeReward();
     }
@@ -407,7 +410,13 @@ public class CombatAgent : Agent, ITurnActor
             }
         }
     }
-    private void PenalizePerTurn() => AddReward(-0.01f);
+
+    private void SurvivalBonusReward()
+    {
+        int totalAliveAllies = CountAlive(allySlots);
+        AddReward(0.005f * totalAliveAllies);
+    }
+    private void PenalizePerTurn() => AddReward(-0.005f);
     private void PenalizeInvalidAction() => AddReward(-0.1f);
     private void RewardValidAction() => AddReward(0.02f);
 
@@ -418,17 +427,18 @@ public class CombatAgent : Agent, ITurnActor
         if (unit == null)
         {
             // Padding if fewer units
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 9; i++)
                 sensor.AddObservation(0f);
             return;
         }
 
-        sensor.AddObservation((float)unit.HP      / unit.MaxHp);
-        sensor.AddObservation((float)unit.Damage   / 20f);
-        sensor.AddObservation((float)unit.Defense  / 20f);
+        sensor.AddObservation((float)unit.HP / unit.MaxHp);
+        sensor.AddObservation((float)unit.Damage / 20f);
+        sensor.AddObservation((float)unit.Defense / 20f);
         sensor.AddObservation((float)unit.AtkRange / 5f);
-        sensor.AddObservation(unit.CurrentATB      / 100f);
-        sensor.AddObservation(unit.Speed           / 20f);
+        sensor.AddObservation((float)unit.RemainingMoveRange / unit.MaxMoveRange);
+        sensor.AddObservation(unit.CurrentATB / 100f);
+        sensor.AddObservation(unit.Speed / 20f);
         // Position is relative to the active unit so the agent learns spatial reasoning
         sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
         sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);

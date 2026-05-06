@@ -204,20 +204,20 @@ public class TurnManager : MonoBehaviour
         turnQueue.Remove(character);
         RefreshTurnOrderUI();
 
-        GetComponentInChildren<PopulateMap>().HandleCharacterDeath(character);
-
         int slotIndex = allySlots.IndexOf(character);
         if (slotIndex != -1)
             allySlots[slotIndex] = null;
 
-        bool battleEnded = CheckBattleEnd();
-
-        if (wasCurrent && !battleEnded && deadActor != null)
+        GetComponentInChildren<PopulateMap>().HandleCharacterDeath(character, onRemoved:() => 
         {
-            Debug.LogWarning("Current unit died, forcing turn completion.");
-            ForceActorComplete(deadActor);
-        }
-        
+            bool battleEnded = CheckBattleEnd();
+
+            if (wasCurrent && !battleEnded && deadActor != null)
+            {
+                Debug.LogWarning("Current unit died, forcing turn completion.");
+                ForceActorComplete(deadActor);
+            }
+        });
     }
 
     private ITurnActor GetActorFor(CharacterObject character)

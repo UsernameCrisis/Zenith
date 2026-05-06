@@ -147,7 +147,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void HandleActionClick(Collider collider)
     {
         if (selectedChar == null || currentAction == null) return;
-        if (combatExecutor.IsMoving) return;
+        if (combatExecutor.IsMoving || combatExecutor.IsAttacking) return;
 
         Vector3Int clickedGrid = grid.WorldToCell(mousePos);
         Vector3Int startPos = grid.WorldToCell(selectedChar.transform.position);
@@ -188,7 +188,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private void HandleActionMenu(string action)
     {
-        if (combatExecutor.IsMoving) return;
+        if (combatExecutor.IsMoving || combatExecutor.IsAttacking) return;
 
         currentAction = action;
         isInActionMode = true;
@@ -277,8 +277,19 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
 
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
-        actionMenu.Show(screenPos);
+        if (combatExecutor.IsAttacking || combatExecutor.IsMoving)
+            StartCoroutine(ShowMenuAfterAnimation());
+        else
+            actionMenu.Show(Camera.main.WorldToScreenPoint(selectedChar.transform.position));
+    }
+
+    private IEnumerator ShowMenuAfterAnimation()
+    {
+        yield return new WaitUntil(() => !combatExecutor.IsAttacking && !combatExecutor.IsMoving);
+
+        if (selectedChar == null) yield break;
+
+        actionMenu.Show(Camera.main.WorldToScreenPoint(selectedChar.transform.position));
     }
 
     private void VisualizeHoveredGrid()

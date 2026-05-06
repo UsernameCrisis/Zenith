@@ -427,7 +427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Policies.BehaviorParameters
   m_BrainParameters:
-    VectorObservationSize: 154
+    VectorObservationSize: 162
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -466,6 +466,9 @@ MonoBehaviour:
   turnManager: {fileID: 3623620154553805043}
   groundRenderer: {fileID: 2524222785721338451}
   isManualMode: 0
+  damageDealtRewardScale: 0.3
+  damageTakenPenaltyScale: 0.15
+  inRangeBonus: 0.05
   CurrEp: 0
   CumulativeReward: 0
 --- !u!114 &3539061122232183149
@@ -665,7 +668,7 @@ MonoBehaviour:
   controlMode: 1
   currentAgentTeam: 1
   showTurnOrderUI: 0
-  maxTurn: 50
+  maxTurn: 200
 --- !u!1 &5163076560049013693
 GameObject:
   m_ObjectHideFlags: 0

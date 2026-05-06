@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class CombatAgent : Agent, ITurnActor
+public class CombatAgent2 : Agent, ITurnActor
 {
     [Header("References")]
     [SerializeField] private MovementPreview previewSystem;
@@ -531,11 +531,11 @@ public class CombatAgent : Agent, ITurnActor
 
     private class DamageListener
     {
-        private readonly CombatAgent agent;
+        private readonly CombatAgent2 agent;
         public readonly CharacterObject character;
         private readonly bool isEnemy;
 
-        public DamageListener(CombatAgent agent, CharacterObject character, bool isEnemy)
+        public DamageListener(CombatAgent2 agent, CharacterObject character, bool isEnemy)
         {
             this.agent     = agent;
             this.character = character;

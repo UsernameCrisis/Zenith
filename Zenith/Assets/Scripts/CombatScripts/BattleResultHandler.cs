@@ -8,6 +8,7 @@ public class BattleResultHandler : MonoBehaviour
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;
     [SerializeField] private CombatAgent combatAgent;
+    [SerializeField] private CombatOverMenu combatOverUI;
 
     [Header("Settings")]
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
@@ -76,13 +77,17 @@ public class BattleResultHandler : MonoBehaviour
         // GameManager.Instance.CurrentEnemy = null;
 
         // Player mode, pass defeated enemy names up to GameManager.
+        gridSelect.ExitCharacter();
+        turnOrderUI.gameObject.SetActive(false);
+        combatOverUI.Show(true);
+
         foreach (var name in DefeatedEnemyNames)
             GameManager.Instance.defeatedEnemyNames.Add(name);
 
         Debug.Log($"Enemies defeated: {string.Join(", ", GameManager.Instance.defeatedEnemyNames)}");
 
-        // PERLU TAMBAH END SCREEN
-        GameManager.Instance.EndCombat();
+        combatOverUI.OnButtonSelected += HandleCombatOverButton;
+        combatOverUI.Show(true);
         return true;
     }
 
@@ -92,8 +97,27 @@ public class BattleResultHandler : MonoBehaviour
         {
             combatAgent.AddReward(-1f);
             StartCoroutine(EndEpisodeNextFrame());
+            return true;
         }
+        gridSelect.ExitCharacter();
+        turnOrderUI.gameObject.SetActive(false);
+        combatOverUI.OnButtonSelected += HandleCombatOverButton;
+        combatOverUI.Show(false);
         return true;
+    }
+
+    private void HandleCombatOverButton(string result)
+    {
+        combatOverUI.OnButtonSelected -= HandleCombatOverButton;
+
+        if (result == "Victory")
+        {
+            GameManager.Instance.EndCombat();
+        }
+        else if (result == "Defeat")
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Tavern");
+        }
     }
 
     public bool HandleTurnEnd(int currentTurn)
@@ -102,7 +126,9 @@ public class BattleResultHandler : MonoBehaviour
 
         if (currentTurn > maxTurn)
         {
-            combatAgent.AddReward(-1f);
+            int enemiesAlive = GridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1).Count;
+            float penalty = -0.5f - (0.5f * (enemiesAlive / 3f));
+            combatAgent.AddReward(penalty);
             StartCoroutine(EndEpisodeNextFrame());
             return true;
         }

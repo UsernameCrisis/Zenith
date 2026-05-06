@@ -67,7 +67,7 @@ public class PopulateMap : MonoBehaviour
         objectsData.Clear();
     }
 
-    public void HandleCharacterDeath(CharacterObject character)
+    public void HandleCharacterDeath(CharacterObject character, System.Action onRemoved = null)
     {
         Vector3Int? pos = objectsData.GetPositionOf(character);
         if (pos == null) return;
@@ -78,7 +78,7 @@ public class PopulateMap : MonoBehaviour
 
         if (view != null && turnManager.GetUseAnimation())
         {
-            StartCoroutine(HandleDeathRoutine(character, pos.Value, tile, view));
+            StartCoroutine(HandleDeathRoutine(character, pos.Value, tile, view, onRemoved));
         }
         else
         {
@@ -89,10 +89,11 @@ public class PopulateMap : MonoBehaviour
                 Destroy(tile.PlacedGameObject);
 
             objectsData.RemoveObjectAt(pos.Value);
+            onRemoved?.Invoke();
         }
     }
 
-    private IEnumerator HandleDeathRoutine(CharacterObject character, Vector3Int pos, TileData tile, UnitView view)
+    private IEnumerator HandleDeathRoutine(CharacterObject character, Vector3Int pos, TileData tile, UnitView view, System.Action onRemoved)
     {
         bool finished = false;
     
@@ -113,6 +114,7 @@ public class PopulateMap : MonoBehaviour
             Destroy(tile.PlacedGameObject);
     
         objectsData.RemoveObjectAt(pos);
+        onRemoved?.Invoke();
     }
 
     private void GenerateTrainingMap()

@@ -86,8 +86,8 @@ public class BattleResultHandler : MonoBehaviour
 
         Debug.Log($"Enemies defeated: {string.Join(", ", GameManager.Instance.defeatedEnemyNames)}");
 
-        // PERLU TAMBAH END SCREEN
-        GameManager.Instance.EndCombat();
+        combatOverUI.OnButtonSelected += HandleCombatOverButton;
+        combatOverUI.Show(true);
         return true;
     }
 
@@ -101,8 +101,23 @@ public class BattleResultHandler : MonoBehaviour
         }
         gridSelect.ExitCharacter();
         turnOrderUI.gameObject.SetActive(false);
+        combatOverUI.OnButtonSelected += HandleCombatOverButton;
         combatOverUI.Show(false);
         return true;
+    }
+
+    private void HandleCombatOverButton(string result)
+    {
+        combatOverUI.OnButtonSelected -= HandleCombatOverButton;
+
+        if (result == "Victory")
+        {
+            GameManager.Instance.EndCombat();
+        }
+        else if (result == "Defeat")
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Tavern");
+        }
     }
 
     public bool HandleTurnEnd(int currentTurn)

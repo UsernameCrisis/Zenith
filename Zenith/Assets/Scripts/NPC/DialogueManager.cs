@@ -5,6 +5,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.IO;
+using System.Linq;
 using static OllamaChatProvider;
 
 public class DialogueManager : MonoBehaviour
@@ -284,21 +286,65 @@ public class DialogueManager : MonoBehaviour
 
         var npcData = GameManager.Instance.GetNPCData(currentNPCID);
         string attitude = GetAttitudeString(npcData.friendship);
-        string historyContext = string.Join("\n", currentConversationHistory);
+
+        var identity = GetNPCIdentity(currentNPCID, userText);
 
         string chatPrompt =
-            $"Instructions: You are {currentNPCID}. Attitude: {attitude}. " +
-            $"Respond to the player in one short, natural sentence. Do not use JSON.\n" +
-            $"{historyContext}\n" +
+            $"### SYSTEM IDENTITY:\n" +
+            $"Name: {currentNPCID}\n" +
+            $"Persona: {identity.role}\n" +
+            $"Current Attitude: {attitude}\n\n" +
+            $"### INJECTED MEMORY/LORE (Use this to inform your answer, do not repeat it): \n" +
+            $"{identity.lore}\n\n" +
+            $"### IMPORTANT RULES:\n" +
+            $"- STAY IN CHARACTER AT ALL COSTS.\n" +
+            $"- Respond in one short, natural sentence.\n" +
+            $"- DO NOT repeat the Injected Memory word-for-word.\n" +
+            $"- DO NOT act like a virtual assistant, AI, or helpful bot.\n\n" +
+            $"### DIALOGUE HISTORY:\n" +
+            $"{string.Join("\n", currentConversationHistory)}\n" +
             $"Player: {userText}\n" +
             $"{currentNPCID}:";
 
         StartCoroutine(ollamaProvider.SendChatRequest(chatPrompt, (aiResponse) => {
             isWaitingForAI = false;
-
             ProcessDialogueResponse(aiResponse, userText);
         }));
     }
+
+    private (string role, string lore) GetNPCIdentity(string npcID, string playerInput)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, "NPC_Knowledge", $"{npcID}.txt");
+
+        if (!File.Exists(path))
+            return ("A mysterious traveler.", "No specific lore known.");
+
+        string[] allLines = File.ReadAllLines(path);
+        if (allLines.Length == 0) return ("A citizen.", "...");
+
+        string npcRole = allLines[0];
+
+        List<string> foundLore = new List<string>();
+        string lowerInput = playerInput.ToLower();
+
+        for (int i = 1; i < allLines.Length; i++)
+        {
+            string line = allLines[i];
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            string[] keywords = lowerInput.Split(' ');
+            if (keywords.Any(word => word.Length > 3 && line.ToLower().Contains(word)))
+            {
+                foundLore.Add(line);
+            }
+        }
+
+        if (foundLore.Count > 0)
+            return (npcRole, string.Join(" ", foundLore.Take(2)));
+
+        return (npcRole, "You are in a conversation. Be natural.");
+    }
+
     private void ProcessDialogueResponse(string aiResponse, string playerMsg)
     {
         string cleanAIResponse = aiResponse.Trim();

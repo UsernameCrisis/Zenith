@@ -392,6 +392,7 @@ GameObject:
   - component: {fileID: 2937932412013154433}
   - component: {fileID: 3250970122857388090}
   - component: {fileID: 3539061122232183149}
+  - component: {fileID: 6880062522039445120}
   m_Layer: 0
   m_Name: CombatAgent
   m_TagString: Untagged
@@ -427,7 +428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Policies.BehaviorParameters
   m_BrainParameters:
-    VectorObservationSize: 162
+    VectorObservationSize: 178
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -452,7 +453,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3538249264204869504}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ee855032506c554c8b48a6389cd9db8, type: 3}
   m_Name: 
@@ -487,6 +488,35 @@ MonoBehaviour:
   NumStepsToRecord: 10
   DemonstrationName: Testing
   DemonstrationDirectory: D:/Unity/Unity Projects/Zenith/Zenith/Zenith/Assets\Demonstrations
+--- !u!114 &6880062522039445120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3538249264204869504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d79be9f8d4bc4a447bacb0da99097ac7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAgent2
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 2147483647
+  previewSystem: {fileID: 2538016240396351783}
+  combatExecutor: {fileID: 1093156593872438105}
+  turnManager: {fileID: 3623620154553805043}
+  groundRenderer: {fileID: 2524222785721338451}
+  isManualMode: 0
+  damageDealtRewardScale: 0.3
+  damageTakenPenaltyScale: 0.15
+  inRangeBonus: 0.05
+  maxPossibleHP: 215
+  maxPossibleDamage: 55
+  maxPossibleDef: 20
+  CurrEp: 0
+  CumulativeReward: 0
 --- !u!1 &3896474083499346063
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +695,7 @@ MonoBehaviour:
   gridSelect: {fileID: 5126143606620060392}
   turnOrderUI: {fileID: 0}
   combatAgent: {fileID: 3250970122857388090}
+  combatOverUI: {fileID: 0}
   controlMode: 1
   currentAgentTeam: 1
   showTurnOrderUI: 0

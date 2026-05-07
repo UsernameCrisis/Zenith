@@ -23,7 +23,7 @@ MonoBehaviour:
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 1
     <Team>k__BackingField: 1
-    <AtkRange>k__BackingField: 2
+    <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
     <Portrait>k__BackingField: {fileID: 1952440101, guid: 646e9486f53bfee44a8064ce61d283bf, type: 3}
   - <Name>k__BackingField: Enemy1

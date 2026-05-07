@@ -152,6 +152,24 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         return best;
     }
 
+    public Vector3Int FindMoveAwayFrom(Vector3Int currentPos, Vector3Int fleeFrom, HashSet<Vector3Int> reachable)
+    {
+        Vector3Int best = currentPos;
+        int bestDist = int.MinValue;
+
+        foreach (var tile in reachable)
+        {
+            int dist = GetPreview().PathCost(fleeFrom, tile);
+            if (dist > bestDist)
+            {
+                bestDist = dist;
+                best = tile;
+            }
+        }
+
+        return best;
+    }
+
     public Vector3Int FindBestRangedTile(Vector3Int current, Vector3Int playerPos, HashSet<Vector3Int> reachable,
                                 int minRange, int maxRange)
     {

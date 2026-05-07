@@ -12,7 +12,8 @@ public enum CombatState
 public enum CombatControlMode
 {
     Player,
-    MLAgent
+    MLAgent,
+    BehaviorTree
 }
 
 public class TurnManager : MonoBehaviour

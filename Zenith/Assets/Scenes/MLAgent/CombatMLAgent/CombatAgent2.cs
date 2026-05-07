@@ -22,6 +22,14 @@ public class CombatAgent2 : Agent, ITurnActor
     [SerializeField] private float damageTakenPenaltyScale = 0.15f;
     [SerializeField] private float inRangeBonus = 0.05f;
 
+    [Header("Stat Normalization Ceilings")]
+    [SerializeField] private float maxPossibleHP     = 215f;
+    [SerializeField] private float maxPossibleDamage = 55f;
+    [SerializeField] private float maxPossibleDef    = 20f;
+
+    private const int NumUnitTypes = 6;
+    private const int ObsPerUnit = 12;
+
     [HideInInspector] public int CurrEp = 0;
     [HideInInspector] public float CumulativeReward = 0f;
 
@@ -45,6 +53,8 @@ public class CombatAgent2 : Agent, ITurnActor
     private bool hasAttacked = false;
     private bool isTurnComplete = false;
     private List<DamageListener> damageListeners = new();
+    private float episodeDifficultyScore = 0f;
+    private StatsRecorder statsRecorder;
 
     public Action OnTurnEnded;
     public bool IsPlayer => false;
@@ -56,6 +66,7 @@ public class CombatAgent2 : Agent, ITurnActor
     {
         CurrEp = 0;
         CumulativeReward = 0f;
+        statsRecorder = Academy.Instance.StatsRecorder;
         if (groundRenderer != null)
         {
             groundMaterial = groundRenderer.material;
@@ -87,6 +98,11 @@ public class CombatAgent2 : Agent, ITurnActor
         for (int i = 0; i < 3; i++)
             enemySlots.Add(i < enemies.Count ? enemies[i].character : null);
         SubscribeAllDamageCallbacks();
+
+        episodeDifficultyScore = ComputeDifficultyScore();
+        statsRecorder.Add("Environment/EpisodeDifficulty", episodeDifficultyScore);
+        statsRecorder.Add("Environment/HardEpisodeRate", episodeDifficultyScore > 0.7f ? 1f : 0f);
+
         // This code should not run (should already be handled by turn manager and turn queue)
         if (!IsValidActiveUnit())
         {
@@ -138,8 +154,6 @@ public class CombatAgent2 : Agent, ITurnActor
 
         // TURN INFO
         sensor.AddObservation(turnManager.currentTurn / _maxTurn);
-        sensor.AddObservation(hasMoved    ? 1f : 0f);
-        sensor.AddObservation(hasAttacked ? 1f : 0f);
         sensor.AddObservation(CountAlive(allySlots) / 3f); // num allies alive
         sensor.AddObservation(CountAlive(enemySlots) / 3f); // num enemies alive
     }
@@ -424,24 +438,45 @@ public class CombatAgent2 : Agent, ITurnActor
 
     private void ObserveUnit(VectorSensor sensor, CharacterObject unit, Vector3Int relativeTo)
     {
-        if (unit == null)
+        if (unit == null || unit.HP <= 0)
         {
             // Padding if fewer units
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < ObsPerUnit; i++)
                 sensor.AddObservation(0f);
             return;
         }
 
+        int typeIndex = Mathf.Clamp(unit.ID, 0, NumUnitTypes - 1);
+        for (int i = 0; i < NumUnitTypes; i++)
+            sensor.AddObservation(i == typeIndex ? 1f : 0f);
+
         sensor.AddObservation((float)unit.HP / unit.MaxHp);
-        sensor.AddObservation((float)unit.Damage / 20f);
-        sensor.AddObservation((float)unit.Defense / 20f);
-        sensor.AddObservation((float)unit.AtkRange / 5f);
-        sensor.AddObservation((float)unit.RemainingMoveRange / unit.MaxMoveRange);
-        sensor.AddObservation(unit.CurrentATB / 100f);
-        sensor.AddObservation(unit.Speed / 20f);
+        sensor.AddObservation(unit.MaxHp / maxPossibleHP);
+        sensor.AddObservation(unit.Damage / maxPossibleDamage);
+        sensor.AddObservation(unit.Defense / maxPossibleDef);
         // Position is relative to the active unit so the agent learns spatial reasoning
         sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
         sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);
+    }
+
+    private float ComputeDifficultyScore()
+    {
+        float totalPower = 0f;
+        int count = 0;
+
+        foreach (var enemy in enemySlots)
+        {
+            if (enemy == null) continue;
+
+            float power = (enemy.MaxHp  / maxPossibleHP)     * 0.4f
+                        + (enemy.Damage / maxPossibleDamage)  * 0.4f
+                        + (enemy.Defense / maxPossibleDef)    * 0.2f;
+
+            totalPower += power;
+            count++;
+        }
+
+        return count > 0 ? totalPower / count : 0f;
     }
 
     private int CountAlive(List<CharacterObject> slots)

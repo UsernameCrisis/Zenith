@@ -752,6 +752,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueManager
   player: {fileID: 2207961507669318556}
+  inventoryUIPanel: {fileID: 300637806}
   dialoguePanel: {fileID: 1237268700}
   optionsPanel: {fileID: 1231378576}
   leftPortraitRect: {fileID: 622900362}
@@ -2103,6 +2104,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3263816883682605926, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: trashText
+      value: 
+      objectReference: {fileID: 1832087796}
     - target: {fileID: 3835590873399808524, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_Name
       value: Overeworld_UI
@@ -5672,7 +5677,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 795720908}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 119795966}
+        m_TargetAssemblyTypeName: DialogueManager, Assembly-CSharp
+        m_MethodName: OnGiftButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &795720908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6682,6 +6699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bbf6e97b0a78dc438ba0a3ace1109b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
+  isGifting: 0
   mainInventory: []
   maxWeight: 80
   currentWeight: 0
@@ -10247,12 +10265,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1237268701}
   - {fileID: 300637805}
   - {fileID: 911217635}
   - {fileID: 1600236438}
   - {fileID: 987611270}
   - {fileID: 1637296772}
-  - {fileID: 1237268701}
   m_Father: {fileID: 59180447}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -12152,6 +12170,17 @@ Transform:
   - {fileID: 1264741248}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1832087796 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3557052376036837506, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+  m_PrefabInstance: {fileID: 300637804}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1833565083
 GameObject:
   m_ObjectHideFlags: 0

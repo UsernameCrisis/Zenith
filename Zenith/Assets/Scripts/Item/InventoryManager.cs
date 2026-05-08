@@ -32,6 +32,7 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
     public event Action OnInventoryChanged;
+    public bool isGifting;
 
     [Header("Inventory Settings")]
     public List<ItemStack> mainInventory = new();
@@ -219,6 +220,32 @@ public class InventoryManager : MonoBehaviour
         }
         UpdateWeight();
         OnInventoryChanged?.Invoke();
+    }
+
+    public void GiftItem(ItemStack stack)
+    {
+        if (stack.itemData == null) return;
+
+        DialogueManager dm = FindFirstObjectByType<DialogueManager>();
+        if (dm != null)
+        {
+            dm.ReceiveGift(stack.itemData);
+        }
+
+        RemoveItem(stack.itemData, 1);
+
+        isGifting = false;
+
+        OverworldUI ui = FindFirstObjectByType<OverworldUI>();
+        if (ui != null && ui.inventoryObject != null)
+        {
+            ui.inventoryObject.SetActive(false);
+
+            if (ui.inventoryDisplay != null && ui.inventoryDisplay.tooltipPanel != null)
+            {
+                ui.inventoryDisplay.tooltipPanel.SetActive(false);
+            }
+        }
     }
 
     public void UseItem(ItemStack stack)

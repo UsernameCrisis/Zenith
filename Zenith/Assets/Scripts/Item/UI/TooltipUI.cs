@@ -67,6 +67,8 @@ public class TooltipUI : MonoBehaviour
         itemStats.text = $"Weight: {item.weight} | Value: {item.sellPrice}g";
 
         isShowing = true;
+        canvasGroup.alpha = 1f;
+        gameObject.SetActive(true);
     }
 
     public void HideTooltip()

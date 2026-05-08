@@ -46,15 +46,23 @@ public class OverworldUI : MonoBehaviour
 
     void Update()
     {
-        if (dialoguePanel != null && dialoguePanel.activeInHierarchy)
+        bool isGifting = InventoryManager.Instance != null && InventoryManager.Instance.isGifting;
+
+        if (isGifting && inventoryObject.activeSelf)
         {
-            if (inventoryObject != null && inventoryObject.activeSelf)
+            if (Input.GetKeyDown(KeyCode.Escape) || InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
+            {
+                CancelGifting();
+                return;
+            }
+        }
+        else if (dialoguePanel != null && dialoguePanel.activeInHierarchy)
+        {
+            if (inventoryObject.activeSelf)
             {
                 inventoryObject.SetActive(false);
-                if (inventoryDisplay != null && inventoryDisplay.tooltipPanel != null)
-                    inventoryDisplay.tooltipPanel.SetActive(false);
+                inventoryDisplay.tooltipPanel.GetComponent<TooltipUI>()?.HideTooltip();
             }
-
             return;
         }
 
@@ -62,8 +70,27 @@ public class OverworldUI : MonoBehaviour
         {
             ToggleInventory();
         }
+    }
 
-        HandleTooltipPosition();
+    private void CancelGifting()
+    {
+        InventoryManager.Instance.isGifting = false;
+
+        if (inventoryDisplay != null && inventoryDisplay.tooltipPanel != null)
+        {
+            inventoryDisplay.tooltipPanel.GetComponent<TooltipUI>()?.HideTooltip();
+        }
+
+        var contextMenu = FindFirstObjectByType<ItemContextMenu>(FindObjectsInactive.Include);
+        if (contextMenu != null) contextMenu.Hide();
+
+        if (inventoryObject != null) inventoryObject.SetActive(false);
+
+        DialogueManager dm = FindFirstObjectByType<DialogueManager>();
+        if (dm != null)
+        {
+            dm.optionsPanel.SetActive(true);
+        }
     }
 
     private void ToggleInventory()
@@ -77,20 +104,6 @@ public class OverworldUI : MonoBehaviour
         {
             inventoryDisplay.RefreshUI();
         }
-    }
-
-    private void HandleTooltipPosition()
-    {
-        // If the inventory is closed, or we don't have a tooltip, don't do anything
-        if (inventoryDisplay == null || inventoryDisplay.tooltipPanel == null) return;
-        if (!inventoryDisplay.tooltipPanel.activeInHierarchy) return;
-
-        // Move the new Tooltip Panel to the mouse position
-        Vector2 mousePos = InputSystem.actions.FindAction("MousePosition").ReadValue<Vector2>();
-
-        // Offset it slightly so it's not directly under the cursor
-        Vector2 offset = new Vector2(20, -20);
-        inventoryDisplay.tooltipPanel.transform.position = mousePos + offset;
     }
 
     public void UpdateUI(int current, int max)

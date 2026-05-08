@@ -30,6 +30,8 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         Debug.Log("Hovering over: " + currentStack.itemData.itemName);
         if (parentUI != null && parentUI.tooltipPanel != null)
         {
+            parentUI.tooltipPanel.SetActive(true);
+
             var tooltip = parentUI.tooltipPanel.GetComponent<TooltipUI>();
             if (tooltip != null)
             {
@@ -72,5 +74,13 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             ItemRarity.Legendary => new Color(1f, 0.5f, 0f),
             _ => Color.white
         };
+    }
+
+    void OnDisable()
+    {
+        if (parentUI != null && parentUI.tooltipPanel != null)
+        {
+            parentUI.tooltipPanel.GetComponent<TooltipUI>()?.HideTooltip();
+        }
     }
 }

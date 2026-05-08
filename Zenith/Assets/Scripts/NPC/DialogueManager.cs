@@ -13,6 +13,7 @@ public class DialogueManager : MonoBehaviour
 {
     [Header("External References")]
     public PlayerMovement player;
+    public GameObject inventoryUIPanel;
 
     [Header("UI Containers")]
     public GameObject dialoguePanel;
@@ -271,6 +272,100 @@ public class DialogueManager : MonoBehaviour
         optionsPanel.SetActive(false);
         chatInputPanel.SetActive(true);
         chatInputField.ActivateInputField();
+    }
+
+    public void OnGiftButtonPressed()
+    {
+        optionsPanel.SetActive(false);
+        InventoryManager.Instance.isGifting = true;
+        inventoryUIPanel.SetActive(true);
+    }
+
+    public void ReceiveGift(BaseItem item)
+    {
+        isWaitingForAI = true;
+        isAIResponding = true;
+        nameText.text = currentNPCID;
+        dialogueText.text = "...";
+
+        var npcData = GameManager.Instance.GetNPCData(currentNPCID);
+        string attitude = GetAttitudeString(npcData.friendship);
+
+        var identity = GetNPCIdentity(currentNPCID, item.itemName + " " + item.description);
+
+        string giftPrompt =
+            $"### SYSTEM IDENTITY:\n" +
+            $"Name: {currentNPCID}\n" +
+            $"Persona: {identity.role}\n" +
+            $"Current Attitude: {attitude}\n\n" +
+            $"### CONTEXT:\n" +
+            $"The player has just gifted you: {item.itemName}.\n" +
+            $"Item Description: {item.description}\n\n" +
+            $"### INJECTED KNOWLEDGE (Likes/Dislikes):\n" +
+            $"{identity.lore}\n\n" +
+            $"### RULES:\n" +
+            $"- React to the gift in one short, natural sentence.\n" +
+            $"- Be honest: if the lore says you hate this, be annoyed. If you love it, be happy.\n" +
+            $"- DO NOT mention 'stats', 'sell value', or 'items description' technicalities.\n" +
+            $"- {currentNPCID}:";
+
+        StartCoroutine(ollamaProvider.SendChatRequest(giftPrompt, (aiResponse) => {
+            isWaitingForAI = false;
+            ProcessGiftResponse(aiResponse, item, identity.lore);
+        }));
+    }
+
+    private void ProcessGiftResponse(string aiResponse, BaseItem item, string lore)
+    {
+        string cleanAIResponse = aiResponse.Trim();
+        DisplayAIResponse(cleanAIResponse);
+
+        AddLineToHistory($"Player gave a {item.itemName}");
+        AddLineToHistory($"{currentNPCID}: {cleanAIResponse}");
+
+        StartCoroutine(GetGiftFriendshipRating(item, cleanAIResponse, lore));
+    }
+
+    private IEnumerator GetGiftFriendshipRating(BaseItem item, string aiMsg, string lore)
+    {
+        string ratingPrompt =
+            $"### CONTEXT:\n" +
+            $"NPC Lore: {lore}\n" +
+            $"Gift: {item.itemName}\n" +
+            $"Reaction given: '{aiMsg}'\n\n" +
+            $"### TASK:\n" +
+            $"Rate how much {currentNPCID} likes the gift based on the reaction and lore. " +
+            $"Scale: -5 (hates it) to 50 (loves it).\n" +
+            $"Return ONLY the integer. If no number is found or you are unsure, return 5.";
+
+        yield return ollamaProvider.SendChatRequest(ratingPrompt, (scoreText) => {
+            int baseScore = 5;
+
+            Match match = Regex.Match(scoreText, @"-?\d+");
+            if (match.Success && int.TryParse(match.Value, out int parsedScore))
+            {
+                baseScore = Mathf.Clamp(parsedScore, -5, 50);
+            }
+            else
+            {
+                Debug.LogWarning($"AI gave a 'drunk' response ({scoreText}). Failsafe triggered: Score set to 5.");
+            }
+
+            float multiplier = CalculateValueMultiplier(item.sellPrice);
+            int finalScore = Mathf.RoundToInt(baseScore * multiplier);
+
+            Debug.Log($"[GIFT SYSTEM] {item.itemName} | Base: {baseScore} | Multiplier: {multiplier:F2} | Final: {finalScore}");
+            GameManager.Instance.UpdateNPC(currentNPCID, finalScore, false);
+        });
+    }
+
+    private float CalculateValueMultiplier(int price)
+    {
+        if (price < 50) return 1.0f;
+        if (price >= 500) return 5.0f;
+
+        float normalizedValue = (price - 50f) / 450f;
+        return 1f + (4f * Mathf.Pow(normalizedValue, 0.7f));
     }
     public void SendChatToAI()
     {

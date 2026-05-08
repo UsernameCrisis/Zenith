@@ -8,6 +8,7 @@ public class ItemContextMenu : MonoBehaviour
     public Button actionButton;
     public TMP_Text actionText;
     public Button trashButton;
+    public TMP_Text trashText;
 
     private ItemStack currentStack;
     private RectTransform rectTransform;
@@ -53,6 +54,13 @@ public class ItemContextMenu : MonoBehaviour
                 break;
         }
 
+        DialogueManager dm = FindFirstObjectByType<DialogueManager>();
+        if (dm == null || !dm.dialoguePanel.activeInHierarchy)
+        {
+            InventoryManager.Instance.isGifting = false;
+        }
+        trashText.text = InventoryManager.Instance.isGifting ? "Gift" : "Trash";
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
@@ -70,9 +78,16 @@ public class ItemContextMenu : MonoBehaviour
 
     public void OnTrashClick()
     {
-        Debug.Log("Trash Button Clicked!");
-        if (currentStack != null)
+        if (currentStack == null) return;
+
+        if (InventoryManager.Instance.isGifting)
         {
+            InventoryManager.Instance.GiftItem(currentStack);
+            Hide();
+        }
+        else
+        {
+            Debug.Log("Trash Button Clicked!");
             InventoryManager.Instance.RemoveItem(currentStack.itemData, 1);
 
             if (!InventoryManager.Instance.mainInventory.Contains(currentStack))

@@ -262,7 +262,7 @@ public class DialogueManager : MonoBehaviour
     {
         NPCSaveData data = GameManager.Instance.GetNPCData(currentNPCID);
 
-        if (data.dailyTalks >= 10)
+        if (data.dailyTalks >= 5)
         {
             optionsPanel.SetActive(false);
             DisplayAIResponse($"{currentNPCID} doesn't seem to want to talk for now.");
@@ -279,6 +279,33 @@ public class DialogueManager : MonoBehaviour
         optionsPanel.SetActive(false);
         InventoryManager.Instance.isGifting = true;
         inventoryUIPanel.SetActive(true);
+    }
+
+    public void OnPartyClick()
+    {
+        var npcData = GameManager.Instance.GetNPCData(currentNPCID);
+        bool alreadyInParty = IsInParty(currentNPCID);
+
+        string styleOpen = "<color=#AAAAAA><i>*";
+        string styleClose = "*</i></color>";
+
+        if (alreadyInParty)
+        {
+            SetPartyStatus(currentNPCID, false);
+            dialogueText.text = $"{styleOpen}{currentNPCID} has left your party.{styleClose}";
+        }
+        else if (npcData.friendship >= 0)
+        {
+            SetPartyStatus(currentNPCID, true);
+            dialogueText.text = $"{styleOpen}{currentNPCID} has joined your party!{styleClose}";
+        }
+        else
+        {
+            dialogueText.text = GetRejectionText(currentNPCID);
+        }
+
+        isAIResponding = true;
+        optionsPanel.SetActive(false);
     }
 
     public void ReceiveGift(BaseItem item)
@@ -473,6 +500,56 @@ public class DialogueManager : MonoBehaviour
                 GameManager.Instance.UpdateNPC(currentNPCID, 0, true);
             }
         });
+    }
+    private bool IsInParty(string npcID)
+    {
+        if (npcID == "Thorek") return GameManager.Instance.warriorInParty;
+        if (npcID == "Iris") return GameManager.Instance.clericInParty;
+        return false;
+    }
+
+    private void SetPartyStatus(string npcID, bool status)
+    {
+        Debug.Log($"<color=orange>[Party Check]</color> SetPartyStatus called for: '{npcID}' with status: {status}");
+
+        bool matchFound = false;
+
+        if (npcID == "Thorek")
+        {
+            GameManager.Instance.warriorInParty = status;
+            Debug.Log("<color=green>[Party Success]</color> Thorek's warriorInParty bool updated!");
+            matchFound = true;
+        }
+
+        if (npcID == "Iris")
+        {
+            GameManager.Instance.clericInParty = status;
+            Debug.Log("<color=green>[Party Success]</color> Iris's clericInParty bool updated!");
+            matchFound = true;
+        }
+
+        if (!matchFound)
+        {
+            Debug.LogError($"<color=red>[Party Error]</color> No ID match found for '{npcID}'. Check for typos or extra spaces!");
+        }
+
+        Debug.Log($"<color=cyan>[Party Final State]</color> {npcID} in party is now: {status}");
+    }
+
+    private string GetRejectionText(string npcID)
+    {
+        // Using <i> for italics and <color> to make it look like a system/narration message
+        string styleOpen = "<color=#AAAAAA><i>*";
+        string styleClose = "*</i></color>";
+
+        string[] lines = {
+        $"{npcID} doesn't seem to trust you enough to risk their life.",
+        $"{npcID} politely declines; your bond isn't quite strong enough yet.",
+        $"{npcID} watches you with skepticism. You'll need more influence to recruit them.",
+        $"You haven't earned {npcID}'s loyalty yet. Keep talking and gifting!"
+    };
+
+        return styleOpen + lines[Random.Range(0, lines.Length)] + styleClose;
     }
     private void AddLineToHistory(string line)
     {

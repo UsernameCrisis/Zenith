@@ -13,7 +13,11 @@ public enum CombatControlMode
 {
     Player,
     MLAgent,
-    BehaviorTree
+    BehaviorTree,
+    PlayerVsAgent,
+    EnemyPlayer,
+    BTRecording,
+    Demonstration
 }
 
 public class TurnManager : MonoBehaviour
@@ -21,13 +25,14 @@ public class TurnManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;
-    [SerializeField] private CombatAgent combatAgent;
+    [SerializeField] private CombatAgent2 combatAgent;
 
     [Header("Settings")]
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
-    [SerializeField] private int currentAgentTeam = 1;
+    [SerializeField] private int currentAgentTeam = 2;
     [SerializeField] private bool useAnimation = true;
     [SerializeField] private bool showTurnOrderUI = true;
+    [SerializeField] private int demoControlledTeam = 0;
 
     public CombatState State { get; private set; } = CombatState.Playing;
     public TurnQueue turnQueue;
@@ -47,6 +52,7 @@ public class TurnManager : MonoBehaviour
         resultHandler = GetComponent<BattleResultHandler>();
         resultHandler.OnCharacterDied += HandleCharacterDied;
         resultHandler.OnEnvReset += HandleEnvReset;
+        ResetEnv();
     }
 
     void OnDestroy()
@@ -70,18 +76,23 @@ public class TurnManager : MonoBehaviour
 
     public void ResetEnv()
     {
+        StopAllCoroutines();
+        turnLoopCoroutine = null;
         isTurnRunning = false;
         State = CombatState.Playing;
         currentTurn = 1;
+        allySlots.Clear();
+        resultHandler.ResetEnv();
+    }
 
+    public void StopTurnLoop()
+    {
+        isTurnRunning = false;
         if (turnLoopCoroutine != null)
         {
             StopCoroutine(turnLoopCoroutine);
             turnLoopCoroutine = null;
         }
-        
-        allySlots.Clear();
-        resultHandler.ResetEnv();
     }
 
     public int GetMaxTurn() => resultHandler.MaxTurn;
@@ -146,6 +157,18 @@ public class TurnManager : MonoBehaviour
     private IEnumerator EndTurnRoutine()
     {
         TurnAlreadyEnded = true;
+
+        if (controlMode == CombatControlMode.BTRecording)
+        {
+            var allUnits = gridData.GetAllUnits();
+            foreach (var unit in allUnits)
+            {
+                var bt = gridData.GetTileAt(unit.pos)?.PlacedGameObject?
+                    .GetComponent<EnemyAIControllerBase>();
+                bt?.SetObservingAgent(null);
+            }
+        }
+
         bool episodeEnded = resultHandler.HandleTurnEnd(currentTurn);
 
         if (episodeEnded)
@@ -161,36 +184,157 @@ public class TurnManager : MonoBehaviour
 
     private void AssignActor(CharacterObject current)
     {
-        if (controlMode == CombatControlMode.Player && current.IsPlayer)
+        if (controlMode == CombatControlMode.Player)
         {
-            gridSelect.BeginTurn(gridData);
-            actor = gridSelect;
+            if (current.IsPlayer)
+            {
+                gridSelect.BeginTurn(gridData, current);
+                actor = gridSelect;
+                return;
+            }
+            AssignBehaviorTreeActor(current);
             return;
         }
 
-        if (controlMode == CombatControlMode.MLAgent && current.Team == currentAgentTeam)
+        if (controlMode == CombatControlMode.MLAgent)
         {
-            int index = GetAllySlotIndex(current);
-            if (index < 0) return;
+            if (current.Team == currentAgentTeam)
+            {
+                AssignAgentActor(current);
+                return;
+            }
+            AssignBehaviorTreeActor(current);
+            return;
+        }
 
-            combatAgent.SetActiveUnitIndex(index);
+        if (controlMode == CombatControlMode.PlayerVsAgent)
+        {
+            if (current.Team != currentAgentTeam)
+            {
+                if (current.IsPlayer)
+                {
+                    gridSelect.BeginTurn(gridData, current);
+                    actor = gridSelect;
+                }
+                else
+                {
+                    AssignBehaviorTreeActor(current);
+                }
+                return;
+            }
+            AssignAgentActor(current);
+            return;
+        }
 
-            if (combatAgent.GetIsManualMode())
+        if (controlMode == CombatControlMode.EnemyPlayer)
+        {
+            if (current.Team == 2)
             {
                 gridSelect.BeginTurn(gridData, current);
                 actor = gridSelect;
             }
             else
             {
-                combatAgent.BeginTurn(gridData, current);
-                actor = combatAgent;
+                AssignBehaviorTreeActor(current);
             }
             return;
         }
 
-        // Bot-controlled enemy unit.
+        if (controlMode == CombatControlMode.Demonstration)
+        {
+            if (current.Team == demoControlledTeam)
+            {
+                bool wholeTeamIsHuman = demoControlledTeam != 1;
+                if (wholeTeamIsHuman || current.IsPlayer)
+                {
+                    gridSelect.BeginTurn(gridData, current);
+                    actor = gridSelect;
+                    return;
+                }
+            }
+            AssignBehaviorTreeActor(current);
+            return;
+        }
+
+        if (controlMode == CombatControlMode.BTRecording)
+        {
+            if (current.Team == currentAgentTeam)
+            {
+                AssignBTRecordingActor(current);
+            }
+            else
+            {
+                AssignBehaviorTreeActor(current);
+            }
+            return;
+        }
+        AssignBehaviorTreeActor(current);
+    }
+
+    private void AssignBTRecordingActor(CharacterObject current)
+    {
+        int index = GetAllySlotIndex(current);
+        if (index < 0)
+        {
+            Debug.LogWarning($"AssignBTRecordingActor: {current.Name} not in allySlots!");
+            return;
+        }
+        combatAgent.SetActiveUnitIndex(index);
+        combatAgent.BeginTurn(gridData, current); // start listening for request decision
+
         TileData tile = gridData.GetTileAt(current.Position);
-        if (tile?.PlacedGameObject == null) return;
+        if (tile?.PlacedGameObject == null)
+        {
+            Debug.LogWarning($"AssignBTRecordingActor: no GameObject for {current.Name}");
+            return;
+        }
+
+        EnemyAIControllerBase btActor = tile.PlacedGameObject
+            .GetComponent<EnemyAIControllerBase>();
+
+        if (btActor == null)
+        {
+            Debug.LogWarning($"No EnemyAIControllerBase found for {current.Name}!");
+            return;
+        }
+
+        btActor.SetObservingAgent(combatAgent);
+        btActor.BeginTurn(gridData, current);
+        actor = combatAgent;
+    }
+
+    private void AssignAgentActor(CharacterObject current)
+    {
+        int index = GetAllySlotIndex(current);
+        if (index < 0)
+        {
+            Debug.LogWarning($"AssignAgentActor: {current.Name} not found in allySlots!");
+            return;
+        }
+
+        combatAgent.SetActiveUnitIndex(index);
+        combatAgent.BeginTurn(gridData, current);
+
+        if (combatAgent.GetIsManualMode())
+        {
+            gridSelect.BeginTurn(gridData, current);
+            actor = gridSelect;
+        }
+        else
+        {
+            // combatAgent.BeginTurn(gridData, current);
+            actor = combatAgent;
+        }
+    }
+
+    private void AssignBehaviorTreeActor(CharacterObject current)
+    {
+        TileData tile = gridData.GetTileAt(current.Position);
+        if (tile?.PlacedGameObject == null)
+        {
+            Debug.LogWarning($"AssignBehaviorTreeActor: no GameObject found for {current.Name}");
+            return;
+        }
 
         actor = tile.PlacedGameObject.GetComponent<ITurnActor>();
         actor?.BeginTurn(gridData, current);
@@ -232,11 +376,12 @@ public class TurnManager : MonoBehaviour
 
     private void ForceActorComplete(ITurnActor deadActor)
     {
-        if (deadActor is CombatAgent agent)
+        if (deadActor is CombatAgent2 agent)
             agent.ForceComplete();
         else if (deadActor is EnemyAIControllerBase enemy)
             enemy.ForceComplete();
-        // PlayerSystem handling can be added here when needed.
+        else if (deadActor is PlayerSystem player)
+            player.ForceComplete();
     }
 
     // Turn queue setup
@@ -245,6 +390,16 @@ public class TurnManager : MonoBehaviour
     {
         gridData = data;
         resultHandler.GridData = data;
+
+        int humanControlledTeam = controlMode switch
+        {
+            CombatControlMode.EnemyPlayer => 2,
+            CombatControlMode.Demonstration => demoControlledTeam,
+            CombatControlMode.MLAgent => currentAgentTeam,
+            CombatControlMode.BTRecording => currentAgentTeam,
+            _ => 1
+        };
+        gridSelect.SetControlledTeam(humanControlledTeam);
 
         var units = gridData.GetAllUnits();
         List<CharacterObject> characters = new();
@@ -255,7 +410,11 @@ public class TurnManager : MonoBehaviour
             CharacterObject c = u.character;
             characters.Add(c);
 
-            if (c.Team == currentAgentTeam)
+            bool agentControlsThisUnit = (controlMode == CombatControlMode.MLAgent || 
+                controlMode == CombatControlMode.PlayerVsAgent || 
+                controlMode == CombatControlMode.BTRecording) && c.Team == currentAgentTeam;
+
+            if (agentControlsThisUnit)
                 allySlots.Add(c);
     
             resultHandler.SubscribeCharacterDeath(u.character);
@@ -273,9 +432,14 @@ public class TurnManager : MonoBehaviour
     private void HandleEnvReset(GridData newGridData)
     {
         InitializeTurnQueue(newGridData);
-        StartTurnLoop();
+        StartCoroutine(StartTurnLoopNextFrame());
     }
 
+    private IEnumerator StartTurnLoopNextFrame()
+    {
+        yield return null;
+        StartTurnLoop();
+    }
     void AdvanceATB(CharacterObject active)
     {
         if (active.Speed <= 0f) return;
@@ -284,9 +448,7 @@ public class TurnManager : MonoBehaviour
         float time = (100f - active.CurrentATB) / active.Speed;
 
         foreach (var u in units)
-        {
             u.character.AddATB(u.character.Speed * time);
-        }
 
         active.SubATB(100f);
     }

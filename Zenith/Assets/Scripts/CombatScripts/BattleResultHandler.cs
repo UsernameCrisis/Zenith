@@ -7,14 +7,16 @@ public class BattleResultHandler : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;
-    [SerializeField] private CombatAgent combatAgent;
+    [SerializeField] private CombatAgent2 combatAgent;
     [SerializeField] private CombatOverMenu combatOverUI;
 
     [Header("Settings")]
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
-    [SerializeField] private int currentAgentTeam = 1;
+    [SerializeField] private int currentAgentTeam = 2;
     [SerializeField] private bool showTurnOrderUI = true;
+    [SerializeField] private bool isRecordingMode = false;
     [SerializeField] private int maxTurn = 50;
+    
 
     public int MaxTurn => maxTurn;
     public GridData GridData { private get; set; }
@@ -25,6 +27,10 @@ public class BattleResultHandler : MonoBehaviour
     void Start()
     {
         mapPopulator = GetComponentInChildren<PopulateMap>();
+        bool agentNeeded = controlMode == CombatControlMode.MLAgent || 
+                            controlMode == CombatControlMode.PlayerVsAgent ||
+                            controlMode == CombatControlMode.BTRecording;
+        combatAgent.gameObject.SetActive(agentNeeded);
     }
 
     public void SubscribeCharacterDeath(CharacterObject character)
@@ -39,12 +45,10 @@ public class BattleResultHandler : MonoBehaviour
 
     private void HandleCharacterDied(CharacterObject character)
     {
-        if (controlMode == CombatControlMode.MLAgent)
+        if (controlMode == CombatControlMode.MLAgent ||
+            controlMode == CombatControlMode.PlayerVsAgent)
         {
-            if (character.Team == currentAgentTeam)
-                combatAgent.AddReward(-0.5f);
-            else
-                combatAgent.AddReward(0.5f);
+            combatAgent.OnUnitKilled(character);
         }
 
         OnCharacterDied?.Invoke(character);
@@ -52,22 +56,37 @@ public class BattleResultHandler : MonoBehaviour
 
     public bool CheckBattleEnd()
     {
-        int aliveAllies  = GridData.GetUnitsByTeam(currentAgentTeam).Count;
-        int aliveEnemies = GridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1).Count;
+        int aliveAgentTeam  = GridData.GetUnitsByTeam(currentAgentTeam).Count;
+        int aliveOpponentTeam = GridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1).Count;
 
-        if (aliveEnemies == 0) return HandleVictory();
-        if (aliveAllies  == 0) return HandleDefeat();
+        if (aliveOpponentTeam == 0) return HandleVictory();
+        if (aliveAgentTeam == 0) return HandleDefeat();
 
         return false;
     }
 
     private bool HandleVictory()
     {
-        if (controlMode == CombatControlMode.MLAgent)
+        if (controlMode == CombatControlMode.MLAgent || 
+        controlMode == CombatControlMode.BTRecording)
+        {
+            combatAgent.OnVictory();
+            StartCoroutine(EndEpisodeNextFrame());
+            return true;
+        }
+
+        if (controlMode == CombatControlMode.PlayerVsAgent)
+        {
+            combatAgent.OnDefeat();
+            ShowPlayerVictoryUI();
+            return true;
+        }
+
+        if (controlMode == CombatControlMode.Demonstration)
         {
             gridSelect.ExitCharacter();
-            combatAgent.AddReward(1f);
-            StartCoroutine(EndEpisodeNextFrame());
+            GetComponent<TurnManager>().StopTurnLoop();
+            StartCoroutine(ResetAfterDelay());
             return true;
         }
 
@@ -79,7 +98,6 @@ public class BattleResultHandler : MonoBehaviour
         // Player mode, pass defeated enemy names up to GameManager.
         gridSelect.ExitCharacter();
         turnOrderUI.gameObject.SetActive(false);
-        combatOverUI.Show(true);
 
         foreach (var name in DefeatedEnemyNames)
             GameManager.Instance.defeatedEnemyNames.Add(name);
@@ -93,16 +111,30 @@ public class BattleResultHandler : MonoBehaviour
 
     private bool HandleDefeat()
     {
-        if (controlMode == CombatControlMode.MLAgent)
+        if (controlMode == CombatControlMode.MLAgent || 
+        controlMode == CombatControlMode.BTRecording)
         {
-            combatAgent.AddReward(-1f);
+            combatAgent.OnDefeat();
             StartCoroutine(EndEpisodeNextFrame());
             return true;
         }
-        gridSelect.ExitCharacter();
-        turnOrderUI.gameObject.SetActive(false);
-        combatOverUI.OnButtonSelected += HandleCombatOverButton;
-        combatOverUI.Show(false);
+
+        if (controlMode == CombatControlMode.PlayerVsAgent)
+        {
+            combatAgent.OnVictory();
+            ShowPlayerDefeatUI();
+            return true;
+        }
+
+        if (controlMode == CombatControlMode.Demonstration)
+        {
+            gridSelect.ExitCharacter();
+            GetComponent<TurnManager>().StopTurnLoop();
+            StartCoroutine(ResetAfterDelay());
+            return true;
+        }
+
+        ShowPlayerDefeatUI();
         return true;
     }
 
@@ -122,18 +154,27 @@ public class BattleResultHandler : MonoBehaviour
 
     public bool HandleTurnEnd(int currentTurn)
     {
-        if (controlMode != CombatControlMode.MLAgent) return false;
-
-        if (currentTurn > maxTurn)
+        if (controlMode == CombatControlMode.MLAgent)
         {
-            int enemiesAlive = GridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1).Count;
-            float penalty = -0.5f - (0.5f * (enemiesAlive / 3f));
-            combatAgent.AddReward(penalty);
-            StartCoroutine(EndEpisodeNextFrame());
-            return true;
+            if (currentTurn > maxTurn)
+            {
+                combatAgent.OnDefeat();
+                StartCoroutine(EndEpisodeNextFrame());
+                return true;
+            }
+            combatAgent.OnGlobalTurnEnd();
         }
 
-        combatAgent.AddReward(-0.01f);
+        if (controlMode == CombatControlMode.Demonstration)
+        {
+            if (currentTurn > maxTurn)
+            {
+                gridSelect.ExitCharacter();
+                GetComponent<TurnManager>().StopTurnLoop();
+                StartCoroutine(ResetAfterDelay());
+                return true;
+            }
+        }
         return false;
     }
 
@@ -149,8 +190,12 @@ public class BattleResultHandler : MonoBehaviour
         GridData newGridData = mapPopulator.objectsData;
         GridData = newGridData;
 
-        combatAgent.SetGridData(newGridData);
-        combatAgent.SetAgentTeam(currentAgentTeam);
+        if (combatAgent != null)
+        {
+            combatAgent.SetGridData(newGridData);
+            combatAgent.SetAgentTeam(currentAgentTeam);
+        }
+        
 
         OnEnvReset?.Invoke(newGridData);
 
@@ -169,9 +214,46 @@ public class BattleResultHandler : MonoBehaviour
         }
     }
 
+    private void ShowPlayerVictoryUI()
+    {
+        gridSelect.ExitCharacter();
+        turnOrderUI.gameObject.SetActive(false);
+
+        foreach (var name in DefeatedEnemyNames)
+            GameManager.Instance.defeatedEnemyNames.Add(name);
+
+        combatOverUI.OnButtonSelected += HandleCombatOverButton;
+        combatOverUI.Show(true);
+    }
+
+    private void ShowPlayerDefeatUI()
+    {
+        gridSelect.ExitCharacter();
+        turnOrderUI.gameObject.SetActive(false);
+        combatOverUI.OnButtonSelected += HandleCombatOverButton;
+        combatOverUI.Show(false);
+    }
+
     private IEnumerator EndEpisodeNextFrame()
     {
         yield return null;
+
+        if (isRecordingMode)
+        {
+            float safetyTimer = 0f;
+            while (!combatAgent.IsBTActionFullyProcessed() && safetyTimer < 2f)
+            {
+                safetyTimer += Time.deltaTime;
+                yield return null;
+            }
+            combatAgent.ForceComplete();
+        }
         combatAgent.EndEpisode();
+    }
+
+    private IEnumerator ResetAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        GetComponent<TurnManager>().ResetEnv();
     }
 }

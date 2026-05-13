@@ -76,6 +76,7 @@ public class UnitView : MonoBehaviour
 
     public void PlayDeath()
     {
+        if (!turnManager.GetUseAnimation()) return;
         animator.SetTrigger("death");
     }
 

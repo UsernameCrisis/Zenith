@@ -1,17 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="7d4df8a5-48ca-4ea7-a7ad-a1129b6690ab" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/TestMLAgent_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/TestMLAgent_timers.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Zenith.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Zenith.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/CombatMLAgent_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/CombatMLAgent_timers.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/Combat_test1_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/Combat_test1_timers.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/Enemy2Parent.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/Enemy2Parent.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/Enemy3Parent .prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/Enemy3Parent .prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/FloatingEyeParent.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/FloatingEyeParent.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/MainCharacterParent.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/MainCharacterParent.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/MLAgent/TrainingEnvironment.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/MLAgent/TrainingEnvironment.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Combat_test1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Combat_test1.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/Testing/Prefabs/Environment.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/Testing/Prefabs/Environment.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent2.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/GUI_CombatAgent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/GUI_CombatAgent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/BattleResultHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/BattleResultHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ClericAIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ClericAIController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatStrategies.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatStrategies.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/Database.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/Database.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIControllerBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIControllerBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ITurnActor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ITurnActor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_1.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_3.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_3.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/GridData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/GridData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/InputManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/InputManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/MovementSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/MovementSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ObjectDatabaseSO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ObjectDatabaseSO.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerAIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerAIController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PopulateMap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PopulateMap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TrainingMapGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TrainingMapGenerator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnQueue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TurnQueue.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/UnitView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/UnitView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/WarriorAIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/WarriorAIController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/CombatAgent.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Config/CombatAgent.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +65,9 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.read_demo.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main-new"
   }
 }]]></component>

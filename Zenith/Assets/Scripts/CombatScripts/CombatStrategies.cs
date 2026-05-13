@@ -74,7 +74,13 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
-            ai.SetTargetPos(ai.FindClosest(ai.GetCurrentPosition(), ai.GetGridData().GetAllFriendlies()));
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null) return Node.Status.Failure;
+
+            var targets = ai.GetGridData().GetEnemyTeamUnit(self.Team);
+            ai.SetTargetPos(ai.FindClosest(currentPos, targets));
             return Node.Status.Success;
         }
     }
@@ -127,10 +133,12 @@ namespace BehaviourTrees
     public class IsTooClose : IStrategy
     {
         EnemyAIControllerBase ai;
+        private readonly int minRange;
 
-        public IsTooClose(EnemyAIControllerBase ai)
+        public IsTooClose(EnemyAIControllerBase ai, int minRange = 3)
         {
             this.ai = ai;
+            this.minRange = minRange;
         }
 
         public Node.Status Process()
@@ -138,7 +146,7 @@ namespace BehaviourTrees
             var enemyPos = ai.GetCurrentPosition();
             var targetPos = ai.GetTargetPos();
 
-            int dist = Mathf.Abs(enemyPos.x - targetPos.x) + Mathf.Abs(enemyPos.y - targetPos.y);
+            int dist = ai.GetPreview().PathCost(enemyPos, targetPos);
             int minRange = 3;
             return dist < minRange ? Node.Status.Success : Node.Status.Failure;
         }
@@ -175,16 +183,29 @@ namespace BehaviourTrees
             CharacterObject enemyChar = ai.GetGridData().GetTileAt(latestPos)?.PlacedObject as CharacterObject;
             if (enemyChar is null)
                 return Node.Status.Failure;
+
+            if (!enemyChar.CanStillAttack())
+                return Node.Status.Failure;
+
             CombatExecutor executor = ai.GetCombatExecutor();
             if (startedAttack)
             {
+                if (ai.HasObservingAgent())
+                {
+                    if (!ai.ConsumeBTActionComplete())
+                        return Node.Status.Running;
+
+                    startedAttack = false;
+                    return Node.Status.Success;
+                }
+
                 if (executor.IsAttacking)
                     return Node.Status.Running;
                 startedAttack = false;
                 return Node.Status.Success;
             }
 
-            executor.ExecuteAttack(enemyChar, latestPos, ai.GetTargetPos(), ai.GetGridData());
+            ai.SubmitAttack(enemyChar, latestPos, ai.GetTargetPos(), ai.GetGridData());
             startedAttack = true;
             return Node.Status.Running;
         } 
@@ -216,8 +237,8 @@ namespace BehaviourTrees
 
             target.Heal(healAmount);
 
-            Debug.Log($"Cleric healed {target.Name} for {healAmount} HP. " +
-                    $"Current HP: {target.HP}/{target.MaxHp}");
+            // Debug.Log($"Cleric healed {target.Name} for {healAmount} HP. " +
+            //         $"Current HP: {target.HP}/{target.MaxHp}");
 
             return Node.Status.Success;
         }
@@ -242,7 +263,11 @@ namespace BehaviourTrees
 
     public class MoveToBackline : MoveStrategyBase
     {
-        public MoveToBackline(EnemyAIControllerBase ai) : base(ai) {}
+        private readonly int safeDistance;
+        public MoveToBackline(EnemyAIControllerBase ai, int safeDistance) : base(ai)
+        {
+            this.safeDistance = safeDistance;
+        }
 
         protected override Vector3Int SelectTargetTile(
             Vector3Int current,
@@ -252,6 +277,18 @@ namespace BehaviourTrees
             var enemies = ai.GetGridData().GetEnemyTeamUnit(character.Team);
 
             if (enemies == null || enemies.Count == 0) return current;
+
+            int nearestEnemyCost = int.MaxValue;
+            foreach (var (enemyPos, enemy) in enemies)
+            {
+                if (enemy.HP <= 0) continue;
+
+                int cost = ai.GetPreview().PathCost(enemyPos, current);
+                if (cost < nearestEnemyCost)
+                    nearestEnemyCost = cost;
+            }
+
+            if (nearestEnemyCost >= safeDistance) return current;
 
             Vector3Int bestTile = current;
             int bestMinDist = int.MinValue;
@@ -291,6 +328,80 @@ namespace BehaviourTrees
             CharacterObject character)
         {
             return ai.FindMoveAwayFrom(current, ai.GetTargetPos(), reachable);
+        }
+    }
+
+    public class IsTooFarFromTeam : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+        private readonly int followRange;
+
+        public IsTooFarFromTeam(EnemyAIControllerBase ai, int followRange = 2)
+        {
+            this.ai = ai;
+            this.followRange = followRange;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null)
+                return Node.Status.Failure;
+
+            var allies = ai.GetGridData().GetUnitsByTeam(self.Team);
+
+            foreach (var (pos, ally) in allies)
+            {
+                if (ally == self) continue;
+                if (ally.HP <= 0) continue;
+
+                int dist = ai.GetPreview().PathCost(currentPos, pos);
+                if (dist <= followRange)
+                    return Node.Status.Failure;
+            }
+
+            return Node.Status.Success;
+        }
+    }
+
+    public class MoveTowardTeam : MoveStrategyBase
+    {
+        private readonly int followRange;
+
+        public MoveTowardTeam(EnemyAIControllerBase ai, int followRange = 2) : base(ai)
+        {
+            this.followRange = followRange;
+        }
+
+        protected override Vector3Int SelectTargetTile(
+            Vector3Int current,
+            HashSet<Vector3Int> reachable,
+            CharacterObject character)
+        {
+            var allies = ai.GetGridData().GetUnitsByTeam(character.Team);
+
+            Vector3Int nearestAllyPos = current;
+            int nearestCost = int.MaxValue;
+
+            foreach (var (pos, ally) in allies)
+            {
+                if (ally == character) continue;
+                if (ally.HP <= 0) continue;
+
+                int cost = ai.GetPreview().PathCost(current, pos);
+                if (cost < nearestCost)
+                {
+                    nearestCost = cost;
+                    nearestAllyPos = pos;
+                }
+            }
+
+            if (nearestCost <= followRange)
+                return current;
+
+            return ai.FindMoveToward(current, nearestAllyPos, reachable);
         }
     }
 
@@ -355,7 +466,7 @@ namespace BehaviourTrees
             {
                 if (character.HP <= 0) continue;
 
-                int dist = Mathf.Abs(currentPos.x - pos.x) + Mathf.Abs(currentPos.y - pos.y);
+                int dist = ai.GetPreview().PathCost(currentPos, pos);
 
                 if (character.HP < lowestHP || (character.HP == lowestHP && dist < bestDist))
                 {
@@ -441,6 +552,29 @@ namespace BehaviourTrees
         }
     }
 
+    public class MoveTowardWounded : MoveStrategyBase
+    {
+        private readonly int healRange;
+
+        public MoveTowardWounded(EnemyAIControllerBase ai, int healRange = 2) : base(ai)
+        {
+            this.healRange = healRange;
+        }
+
+        protected override Vector3Int SelectTargetTile(
+            Vector3Int current,
+            HashSet<Vector3Int> reachable,
+            CharacterObject character)
+        {
+            Vector3Int woundedPos = ai.GetTargetPos();
+    
+            int distToWounded = ai.GetPreview().PathCost(current, woundedPos);
+            if (distToWounded <= healRange) return current;
+
+            return ai.FindMoveToward(current, woundedPos, reachable);
+        }
+    }
+
     public class MoveForRanged : MoveStrategyBase
     {
         public MoveForRanged(EnemyAIControllerBase ai) : base(ai) {}
@@ -466,9 +600,9 @@ namespace BehaviourTrees
         }
     }
 
-    public class MoveTowardPlayer : MoveStrategyBase
+    public class MoveTowardTarget : MoveStrategyBase
     {
-        public MoveTowardPlayer(EnemyAIControllerBase ai) : base(ai) {}
+        public MoveTowardTarget(EnemyAIControllerBase ai) : base(ai) {}
 
         protected override Vector3Int SelectTargetTile(
             Vector3Int current,
@@ -495,6 +629,16 @@ namespace BehaviourTrees
     
             if (startedMovement)
             {
+
+                if (ai.HasObservingAgent())
+                {
+                    if (!ai.ConsumeBTActionComplete())
+                        return Node.Status.Running;
+
+                    startedMovement = false;
+                    return Node.Status.Success;
+                }
+
                 if (executor.IsMoving)
                     return Node.Status.Running;
 
@@ -526,7 +670,7 @@ namespace BehaviourTrees
             }
                 
 
-            executor.ExecuteMove(enemyChar, latestPos, bestMove, gridData);
+            ai.SubmitMove(enemyChar, latestPos, bestMove, gridData);
 
             startedMovement = true;
             return Node.Status.Running;

@@ -21,7 +21,7 @@ public class EnemyAIController_1 : EnemyAIControllerBase
         combat.AddChild(tryAttack);
 
         Sequence moveAndAttack = new Sequence("MoveAndAttack");
-        moveAndAttack.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardPlayer(this)));
+        moveAndAttack.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardTarget(this)));
         moveAndAttack.AddChild(new Leaf("IsInRange2 ", new IsInRange(this)));
         moveAndAttack.AddChild(new Leaf("DoAttack2", new Attack(this)));
         combat.AddChild(moveAndAttack);

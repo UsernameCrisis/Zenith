@@ -23,7 +23,7 @@ public class EnemyAIController_3 : EnemyAIControllerBase
         combat.AddChild(tryAttack);
 
         ProbabilitySelector randomMove2 = new ProbabilitySelector("RandomMove", new List<float> { 0.7f, 0.3f });
-        randomMove2.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardPlayer(this)));
+        randomMove2.AddChild(new Leaf("MoveTowardPlayer", new MoveTowardTarget(this)));
         randomMove2.AddChild(new Leaf("MoveRandom2", new MoveToRandomTile(this)));
         combat.AddChild(randomMove2);
 

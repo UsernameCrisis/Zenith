@@ -1,15 +1,12 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerSystem : MonoBehaviour, ITurnActor
 {
     [Header("References")]
     [SerializeField] GameObject mouseIndicator, cellIndicator;
     [SerializeField] private InputManager inputManager;
-    [SerializeField] private CombatAgent combatAgent;
+    [SerializeField] private CombatAgent2 combatAgent;
     [SerializeField] private CombatExecutor combatExecutor;
     [SerializeField] private Grid grid;
     [SerializeField] private GameObject gridVisualization;
@@ -27,9 +24,11 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private GridData objectsData;
     private GameObject selectedChar;
     private CharacterObject currentTurnUnit;
+    private TurnManager turnManager;
     private bool isInActionMode = false;
     private string currentAction = null;
     private bool isTurnComplete = false;
+    private int controlledTeam = 1;
 
     public bool IsTurnComplete() => isTurnComplete;
     public bool IsPlayer => true;
@@ -55,6 +54,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     void Start()
     {
+        turnManager = GetComponentInParent<TurnManager>();
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         cellIndicatorMaterial = cellIndicatorRenderer.material;
         defaultColor = cellIndicatorMaterial.color;
@@ -92,8 +92,10 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         objectsData = gridData;
         currentTurnUnit = unit;
         isTurnComplete = false;
+        inputManager.OnColliderClicked -= ColliderClicked;
         inputManager.OnColliderClicked += ColliderClicked;
     }
+    public void SetControlledTeam(int team) => controlledTeam = team;
 
     public void EndTurn()
     {
@@ -122,21 +124,30 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
             // agak janky ini code
             if (inputManager.GetSelectMode())
             {
-                GameObject selectedCharTemp = collider.transform.parent.gameObject;
-                Vector3Int currentPos = grid.WorldToCell(selectedCharTemp.transform.position);
-                CharacterObject charObj = objectsData.GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+                GameObject candidateGO = collider.transform.parent.gameObject;
+                Vector3Int candidatePos = grid.WorldToCell(candidateGO.transform.position);
+                CharacterObject candidateChar = objectsData.GetTileAt(candidatePos)?.PlacedObject as CharacterObject;
 
-                if (charObj == currentTurnUnit)
+                if (candidateChar != null && candidateChar.Team == controlledTeam
+                    && candidateChar == currentTurnUnit)
                     SelectCharacter(collider);
                 else
                     print("Not this unit's turn!");
             }
         } else
         {
-            if (collider.CompareTag("Player"))
+            if (inputManager.GetSelectMode())
             {
-                SelectCharacter(collider);
-                return;
+                GameObject candidateGO = collider.transform.parent.gameObject;
+                Vector3Int candidatePos = grid.WorldToCell(candidateGO.transform.position);
+                CharacterObject candidateChar = objectsData.GetTileAt(candidatePos)?.PlacedObject as CharacterObject;
+
+                if (candidateChar != null && candidateChar.Team == controlledTeam
+                    && candidateChar == currentTurnUnit)
+                    SelectCharacter(collider);
+                else
+                    print("Not this unit's turn!");
+                // TODO: clicking any other unit (ally or enemy) will show their stats here.
             }
         }
 
@@ -168,7 +179,9 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                 break;
 
             case "Attack":
-                if (collider.CompareTag("Enemy") && movePreview.IsTileAttackable(clickedGrid) && charObj.CanStillAttack())
+                CharacterObject targetChar = objectsData.GetTileAt(clickedGrid)?.PlacedObject as CharacterObject;
+                bool isValidTarget = targetChar != null && targetChar.Team != controlledTeam;
+                if (isValidTarget && movePreview.IsTileAttackable(clickedGrid) && charObj.CanStillAttack())
                 {
                     if (isForHeuristicAgent)
                         combatAgent.SetManualAction(1, clickedGrid);
@@ -181,7 +194,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                 break;
 
             default:
-                Debug.Log($"Unhandled action: {currentAction}");
+                Debug.LogWarning($"Unhandled action: {currentAction}");
                 break;
         }
     }
@@ -277,6 +290,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
 
+        if (turnManager.State != CombatState.Playing) return;
+
         if (combatExecutor.IsAttacking || combatExecutor.IsMoving)
             StartCoroutine(ShowMenuAfterAnimation());
         else
@@ -286,6 +301,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private IEnumerator ShowMenuAfterAnimation()
     {
         yield return new WaitUntil(() => !combatExecutor.IsAttacking && !combatExecutor.IsMoving);
+
+        if (turnManager.State != CombatState.Playing) yield break;
 
         if (selectedChar == null) yield break;
 

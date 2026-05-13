@@ -46,4 +46,9 @@ public class ObjectData
     {
         Defense = def;
     }
+
+    public void setHP(int hp)
+    {
+        HP = hp;
+    }
 } 

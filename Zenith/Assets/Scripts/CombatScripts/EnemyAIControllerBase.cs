@@ -13,9 +13,12 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     private CombatExecutor combatExecutor;
     private CharacterObject myCharacter;
+    private CombatAgent2 observingAgent = null;
     
     private bool isTurnComplete = false;
+    
     public bool IsTurnComplete() => isTurnComplete;
+    private bool btActionComplete = false;
     private bool isMoving = false;
     public bool IsMoving => isMoving;
     public bool IsPlayer => false;
@@ -27,6 +30,48 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         previewSystem = GetComponentInParent<MovementPreview>();
         combatExecutor = GetComponentInParent<CombatExecutor>();
         turnManager = GetComponentInParent<TurnManager>();
+    }
+
+    public void SetObservingAgent(CombatAgent2 agent)
+    {
+        observingAgent = agent;
+    }
+
+    public bool HasObservingAgent() => observingAgent != null;
+
+    public void SubmitMove(CharacterObject character, Vector3Int from, 
+                            Vector3Int to, GridData gridData)
+    {
+        if (observingAgent != null)
+        {
+            observingAgent.RegisterBTActionCallback(OnAgentActionComplete);
+            observingAgent.SetManualAction(0, to);
+        }
+            
+        else
+            combatExecutor.ExecuteMove(character, from, to, gridData);
+    }
+
+    public void SubmitAttack(CharacterObject character, Vector3Int from,
+                                Vector3Int to, GridData gridData)
+    {
+        if (observingAgent != null)
+        {
+            observingAgent.RegisterBTActionCallback(OnAgentActionComplete);
+            observingAgent.SetManualAction(1, to);
+        }
+            
+        else
+            combatExecutor.ExecuteAttack(character, from, to, gridData);
+    }
+
+    public bool ConsumeBTActionComplete()
+    {
+        if (!btActionComplete) return false;
+        if (observingAgent != null && !observingAgent.IsBTActionFullyProcessed()) 
+            return false;
+        btActionComplete = false;
+        return true;
     }
 
     public void BeginTurn(GridData gridData, CharacterObject character)
@@ -103,6 +148,21 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
             enemyChar.ResetMovement();
             enemyChar.EnableAttack();
         }
+
+        if (observingAgent != null && !observingAgent.IsTurnComplete())
+        {
+            StartCoroutine(WaitForAgentThenComplete());
+            return;
+        }
+        isTurnComplete = true;
+    }
+
+    private IEnumerator WaitForAgentThenComplete()
+    {
+        yield return new WaitUntil(() => 
+            observingAgent == null || observingAgent.IsBTActionFullyProcessed());
+
+        observingAgent?.ForceComplete();
         isTurnComplete = true;
     }
 
@@ -252,6 +312,11 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     private int Manhattan(Vector3Int a, Vector3Int b)
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+
+    private void OnAgentActionComplete()
+    {
+        btActionComplete = true;
     }
     
     public GridData GetGridData() => gridData;

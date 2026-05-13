@@ -18,9 +18,6 @@ public class TrainingMapGenerator
     private readonly int minTraversablePaths;
     private readonly bool useMaxFlow;
     private readonly bool isFullyRandom;
-
-    // Delegates provided by PopulateMap so this class never touches
-    // GridData or GameObjects directly.
     private readonly Func<Vector3Int, bool> isOccupied;
     private readonly Func<Vector3Int, bool> isWalkable;
     private readonly Action<Vector3Int, int> placeObject;
@@ -82,17 +79,28 @@ public class TrainingMapGenerator
             team2Center = GetFarthestTile(team1Center);
         }
 
-        SpawnTeam(team1Center, 4, 6); // team 1 IDs
-        SpawnTeam(team2Center, 1, 3); // team 2 IDs
+        SpawnTeam(team1Center, 0, 2, 1); // team 1 IDs
+        SpawnTeam(team2Center, 3, 5, 2); // team 2 IDs
     }
 
-    private void SpawnTeam(Vector3Int center, int minID, int maxID)
+    private void SpawnTeam(Vector3Int center, int minID, int maxID, int teamID)
     {
-        int units = 3;
         int attempts = 0;
         int maxAttempts = 200;
+        List<int> idsToSpawn = new List<int>();
 
-        while (units > 0 && attempts < maxAttempts)
+        if (teamID == 1)
+        {
+            for (int id = minID; id <= maxID; id++)
+                idsToSpawn.Add(id);
+        }
+        else
+        {
+            for (int i = 0; i < 3; i++)
+                idsToSpawn.Add(Random.Range(minID, maxID + 1));
+        }
+
+        while (idsToSpawn.Count > 0 && attempts < maxAttempts)
         {
             attempts++;
 
@@ -105,14 +113,14 @@ public class TrainingMapGenerator
 
             if (isOccupied(pos)) continue;
 
-            int id = Random.Range(minID, maxID + 1);
+            int id = idsToSpawn[0];
 
             placeObject(pos, id);
 
-            units--;
+            idsToSpawn.RemoveAt(0);
         }
-        if (units > 0)
-            Debug.LogWarning($"SpawnTeam: only spawned {3 - units}/3 units after {maxAttempts} attempts.");
+        if (idsToSpawn.Count > 0)
+            Debug.LogWarning($"SpawnTeam: only spawned {3 - idsToSpawn.Count}/3 units after {maxAttempts} attempts.");
     }
 
     // --- Obstacle spawning ---

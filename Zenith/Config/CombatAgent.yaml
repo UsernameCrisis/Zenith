@@ -3,8 +3,8 @@ behaviors:
   Combat Behavior:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2048
-      buffer_size: 102400
+      batch_size: 1024
+      buffer_size: 131072
       learning_rate: 0.0003
       beta: 0.02
       epsilon: 0.2
@@ -38,8 +38,8 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     even_checkpoints: false
-    max_steps: 2000000
-    time_horizon: 256
+    max_steps: 5000000
+    time_horizon: 512
     summary_freq: 100000
     threaded: false
     self_play: null
@@ -63,7 +63,7 @@ engine_settings:
   no_graphics_monitor: false
 environment_parameters: null
 checkpoint_settings:
-  run_id: multiEnvCombatAgent_50Turn_shapedReward
+  run_id: multiEnvCombatAgent_200Turn_5M_ModshapedReward
   initialize_from: null
   load_model: false
   resume: false

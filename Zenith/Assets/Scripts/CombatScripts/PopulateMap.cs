@@ -3,6 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class StatVarianceConfig
+{
+    public int unitID;
+
+    [Header("HP range")]
+    public int minHP;
+    public int maxHP;
+
+    [Header("Damage range")]
+    public int minDamage;
+    public int maxDamage;
+
+    [Header("Defense range")]
+    public int minDefense;
+    public int maxDefense;
+}
+
 public class PopulateMap : MonoBehaviour
 {
     [Header("References")]
@@ -20,9 +38,12 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private int minTraversablePaths = 2;
     [SerializeField] private float obstacleDensity = 0.15f;
     [SerializeField] private int clusterLimit = 2;
-    [SerializeField] private int obstacleID = 7;
+    [SerializeField] private int obstacleID = 6;
     [SerializeField] private int teamDist = 6;
     [SerializeField] private int width, height;
+
+    [Header("Player team stat variance (training only)")]
+    [SerializeField] private List<StatVarianceConfig> playerTeamVariance = new();
 
     private int minX, maxX, minY, maxY, offsetX, offsetY;
     private TurnManager turnManager;
@@ -38,10 +59,11 @@ public class PopulateMap : MonoBehaviour
         offsetY = height / 2;
 
         minX = -offsetX; maxX = offsetX - 1; minY = -offsetY; maxY = offsetY - 1;
+        turnManager = GetComponentInParent<TurnManager>();
     }
     void Start()
     {
-        turnManager = GetComponentInParent<TurnManager>();
+        
     }
 
     public void Generate()
@@ -128,7 +150,13 @@ public class PopulateMap : MonoBehaviour
             useMaxFlow, isFullyRandom,
             isOccupied: pos => objectsData.GetTileAt(pos) != null,
             isWalkable: IsWalkable,
-            placeObject: (pos, id) => PlaceObject(pos, id),
+            placeObject: (pos, id) =>
+            {
+                if (IsPlayerTeamID(id) && forTrainingAgent)
+                    PlaceObjectWithVariance(pos, id);
+                else
+                    PlaceObject(pos, id);
+            },
             removeLastObject: pos =>
             {
                 objectsData.RemoveObjectAt(pos);
@@ -137,6 +165,39 @@ public class PopulateMap : MonoBehaviour
             });
 
         generator.Generate();
+    }
+
+    private bool IsPlayerTeamID(int id) => id >= 0 && id <= 2;
+
+    private void PlaceObjectWithVariance(Vector3Int gridPos, int id)
+    {
+        ObjectData data = database.objectsData.Find(d => d.ID == id);
+        if (data == null)
+        {
+            Debug.LogError($"PlaceObjectWithVariance: no ObjectData found for ID {id}");
+            return;
+        }
+
+        StatVarianceConfig config = playerTeamVariance.Find(c => c.unitID == id);
+
+        if (config != null)
+        {
+            int origHP      = data.HP;
+            int origDamage  = data.Damage;
+            int origDefense = data.Defense;
+
+            data.setHP(Random.Range(config.minHP, config.maxHP + 1));
+            data.setDamage(Random.Range(config.minDamage, config.maxDamage + 1));
+            data.setDefense(Random.Range(config.minDefense, config.maxDefense + 1));
+
+            PlaceObject(gridPos, id);
+
+            data.setHP(origHP);
+            data.setDamage(origDamage);
+            data.setDefense(origDefense);
+        }
+        else
+            PlaceObject(gridPos, id);
     }
 
     private void PopulateFromGridJSON()
@@ -175,31 +236,34 @@ public class PopulateMap : MonoBehaviour
     private void PopulateManually()
     {
         PlaceObject(new Vector3Int(-3, 1, 0), 0);
-        PlaceObject(new Vector3Int(2, -1, 0), 1);
-        PlaceObject(new Vector3Int(-1, -2, 0), 2);
-        PlaceObject(new Vector3Int(-1, -3, 0), 3);
+        PlaceObject(new Vector3Int(-4, 1, 0), 1);
+        PlaceObject(new Vector3Int(-3, 0, 0), 2);
+
+        PlaceObject(new Vector3Int(2, -1, 0), 3);
+        PlaceObject(new Vector3Int(-1, -2, 0), 4);
+        PlaceObject(new Vector3Int(-1, -3, 0), 5);
 
         //Obstacle
-        PlaceObject(new Vector3Int(0, 0, 0), 7);
-        PlaceObject(new Vector3Int(0, -1, 0), 7);
-        PlaceObject(new Vector3Int(-1, -1, 0), 7);
-        PlaceObject(new Vector3Int(-1, 0, 0), 7);
+        PlaceObject(new Vector3Int(0, 0, 0), 6);
+        PlaceObject(new Vector3Int(0, -1, 0), 6);
+        PlaceObject(new Vector3Int(-1, -1, 0), 6);
+        PlaceObject(new Vector3Int(-1, 0, 0), 6);
 
-        PlaceObject(new Vector3Int(3, 3, 0), 7);
-        PlaceObject(new Vector3Int(3, 2, 0), 7);
-        PlaceObject(new Vector3Int(2, 3, 0), 7);
+        PlaceObject(new Vector3Int(3, 3, 0), 6);
+        PlaceObject(new Vector3Int(3, 2, 0), 6);
+        PlaceObject(new Vector3Int(2, 3, 0), 6);
 
-        PlaceObject(new Vector3Int(-4, 3, 0), 7);
-        PlaceObject(new Vector3Int(-3, 3, 0), 7);
-        PlaceObject(new Vector3Int(-4, 2, 0), 7);
+        PlaceObject(new Vector3Int(-4, 3, 0), 6);
+        PlaceObject(new Vector3Int(-3, 3, 0), 6);
+        PlaceObject(new Vector3Int(-4, 2, 0), 6);
 
-        PlaceObject(new Vector3Int(3, -4, 0), 7);
-        PlaceObject(new Vector3Int(3, -3, 0), 7);
-        PlaceObject(new Vector3Int(2, -4, 0), 7);
+        PlaceObject(new Vector3Int(3, -4, 0), 6);
+        PlaceObject(new Vector3Int(3, -3, 0), 6);
+        PlaceObject(new Vector3Int(2, -4, 0), 6);
         
-        PlaceObject(new Vector3Int(-4, -4, 0), 7);
-        PlaceObject(new Vector3Int(-4, -3, 0), 7);
-        PlaceObject(new Vector3Int(-3, -4, 0), 7);
+        PlaceObject(new Vector3Int(-4, -4, 0), 6);
+        PlaceObject(new Vector3Int(-4, -3, 0), 6);
+        PlaceObject(new Vector3Int(-3, -4, 0), 6);
     }
 
     // Core placement
@@ -263,7 +327,7 @@ public class PopulateMap : MonoBehaviour
     {
         if (tile.PlacedGameObject.CompareTag("Player"))
         {
-            SceneManager.LoadScene("Tavern");
+            // SceneManager.LoadScene("Tavern");
         } 
         else if (tile.PlacedGameObject.CompareTag("Enemy"))
         {

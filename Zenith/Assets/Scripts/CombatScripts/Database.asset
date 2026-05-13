@@ -16,7 +16,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 200
+    <Damage>k__BackingField: 20
     <Speed>k__BackingField: 15
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0
@@ -26,11 +26,37 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
     <Portrait>k__BackingField: {fileID: 1952440101, guid: 646e9486f53bfee44a8064ce61d283bf, type: 3}
-  - <Name>k__BackingField: Enemy1
+  - <Name>k__BackingField: Cleric
     <ID>k__BackingField: 1
     <HP>k__BackingField: 100
+    <Damage>k__BackingField: 20
+    <Speed>k__BackingField: 14
+    <Defense>k__BackingField: 3
+    <currentATB>k__BackingField: 0
+    <Type>k__BackingField: 2
+    <IsPlayer>k__BackingField: 0
+    <Team>k__BackingField: 1
+    <AtkRange>k__BackingField: 3
+    <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: ef162c73931dbd94db82bbb32aff3054, type: 3}
+    <Portrait>k__BackingField: {fileID: -1390184236, guid: 3925d6554e98f8b4588c637160bccb0c, type: 3}
+  - <Name>k__BackingField: Warrior
+    <ID>k__BackingField: 2
+    <HP>k__BackingField: 100
+    <Damage>k__BackingField: 20
+    <Speed>k__BackingField: 13
+    <Defense>k__BackingField: 7
+    <currentATB>k__BackingField: 0
+    <Type>k__BackingField: 2
+    <IsPlayer>k__BackingField: 0
+    <Team>k__BackingField: 1
+    <AtkRange>k__BackingField: 1
+    <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: 985645dc5c6a45b4e8b08c7619387192, type: 3}
+    <Portrait>k__BackingField: {fileID: 0}
+  - <Name>k__BackingField: Floating Eye
+    <ID>k__BackingField: 3
+    <HP>k__BackingField: 100
     <Damage>k__BackingField: 15
-    <Speed>k__BackingField: 10
+    <Speed>k__BackingField: 13
     <Defense>k__BackingField: 3
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
@@ -39,11 +65,11 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 3
     <Prefab>k__BackingField: {fileID: 920729524746998805, guid: d4c7b775fbdcbd648ab24b3a8231de32, type: 3}
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
-  - <Name>k__BackingField: Enemy2
-    <ID>k__BackingField: 2
+  - <Name>k__BackingField: Slime
+    <ID>k__BackingField: 4
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 18
-    <Speed>k__BackingField: 8
+    <Damage>k__BackingField: 20
+    <Speed>k__BackingField: 10
     <Defense>k__BackingField: 5
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
@@ -52,11 +78,11 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
     <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
-  - <Name>k__BackingField: Enemy3
-    <ID>k__BackingField: 3
+  - <Name>k__BackingField: Bat
+    <ID>k__BackingField: 5
     <HP>k__BackingField: 100
     <Damage>k__BackingField: 12
-    <Speed>k__BackingField: 14
+    <Speed>k__BackingField: 15
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
@@ -65,8 +91,21 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: d427d3ca2c039d245b7d74d564dd9ee3, type: 3}
     <Portrait>k__BackingField: {fileID: 1466295960, guid: 6b6aea6b09ae650479d233ca540ba809, type: 3}
+  - <Name>k__BackingField: Wall Obstacle
+    <ID>k__BackingField: 6
+    <HP>k__BackingField: 0
+    <Damage>k__BackingField: 0
+    <Speed>k__BackingField: 0
+    <Defense>k__BackingField: 0
+    <currentATB>k__BackingField: 0
+    <Type>k__BackingField: 0
+    <IsPlayer>k__BackingField: 0
+    <Team>k__BackingField: 0
+    <AtkRange>k__BackingField: 0
+    <Prefab>k__BackingField: {fileID: 7899849923332508408, guid: 7e5228f2b3302584fbea2f17e5305e54, type: 3}
+    <Portrait>k__BackingField: {fileID: 0}
   - <Name>k__BackingField: Enemy1_Team1
-    <ID>k__BackingField: 4
+    <ID>k__BackingField: 7
     <HP>k__BackingField: 100
     <Damage>k__BackingField: 15
     <Speed>k__BackingField: 10
@@ -79,7 +118,7 @@ MonoBehaviour:
     <Prefab>k__BackingField: {fileID: 920729524746998805, guid: e8b2cca6cfebbe64bb761a7105b0abc2, type: 3}
     <Portrait>k__BackingField: {fileID: -1841963896, guid: dba77126c8ecf3342824e480b4b6f8dc, type: 3}
   - <Name>k__BackingField: Enemy2_Team1
-    <ID>k__BackingField: 5
+    <ID>k__BackingField: 8
     <HP>k__BackingField: 100
     <Damage>k__BackingField: 18
     <Speed>k__BackingField: 8
@@ -92,7 +131,7 @@ MonoBehaviour:
     <Prefab>k__BackingField: {fileID: 704811883864513440, guid: f72ec13739bdb69499405fe5ffb84a6e, type: 3}
     <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
   - <Name>k__BackingField: Enemy3_Team1
-    <ID>k__BackingField: 6
+    <ID>k__BackingField: 9
     <HP>k__BackingField: 100
     <Damage>k__BackingField: 12
     <Speed>k__BackingField: 14
@@ -104,16 +143,3 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: dfb39ca92d3f0fa4e8faecafaf40d24c, type: 3}
     <Portrait>k__BackingField: {fileID: 1466295960, guid: 6b6aea6b09ae650479d233ca540ba809, type: 3}
-  - <Name>k__BackingField: Wall Obstacle
-    <ID>k__BackingField: 7
-    <HP>k__BackingField: 0
-    <Damage>k__BackingField: 0
-    <Speed>k__BackingField: 0
-    <Defense>k__BackingField: 0
-    <currentATB>k__BackingField: 0
-    <Type>k__BackingField: 0
-    <IsPlayer>k__BackingField: 0
-    <Team>k__BackingField: 0
-    <AtkRange>k__BackingField: 0
-    <Prefab>k__BackingField: {fileID: 7899849923332508408, guid: 7e5228f2b3302584fbea2f17e5305e54, type: 3}
-    <Portrait>k__BackingField: {fileID: 0}

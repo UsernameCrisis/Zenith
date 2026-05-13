@@ -32,7 +32,7 @@ public class CombatAgent : Agent, ITurnActor
     private List<CharacterObject> enemySlots = new();
     private int chosenActionType = 2; // default to end turn
     private int chosenTileIndex = 55; // center tile
-    private int _currentAgentTeam = 1;
+    private int _currentAgentTeam = 2;
     private GridData _gridData;
     private int activeUnitIndex;
     private const int MapMin = -5;

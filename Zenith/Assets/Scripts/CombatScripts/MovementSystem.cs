@@ -102,7 +102,7 @@ public class MovementSystem
                 if (!gridData.IsWithinBounds(tilePos)) continue;
 
                 TileData tile = gridData.GetTileAt(tilePos);
-                if (tile?.PlacedObject is CharacterObject target && target.Team != startTeam)
+                if (tile?.PlacedObject is CharacterObject target && target.Team != startTeam && target.HP > 0)
                 {
                     if (HasLineOfSight(startPos, tilePos))
                         result.Add(tilePos);

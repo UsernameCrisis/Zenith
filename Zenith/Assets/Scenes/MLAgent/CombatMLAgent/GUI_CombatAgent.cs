@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GUI_CombatAgent : MonoBehaviour
 {
-    [SerializeField] private CombatAgent _combatAgent;
+    [SerializeField] private CombatAgent2 _combatAgent;
 
     private GUIStyle _defaultStyle = new GUIStyle();
     private GUIStyle _positiveStyle = new GUIStyle();

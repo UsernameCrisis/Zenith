@@ -16,16 +16,17 @@ public class CombatAgent2 : Agent, ITurnActor
 
     [Header("Settings")]
     [SerializeField] private bool isManualMode = false;
+    [SerializeField] private bool isBTRecordingMode = false;
+    [SerializeField] private bool isRecording = false;
 
     [Header("Shaped Reward Weights")]
-    [SerializeField] private float damageDealtRewardScale = 0.3f;
-    [SerializeField] private float damageTakenPenaltyScale = 0.15f;
-    [SerializeField] private float inRangeBonus = 0.05f;
+    [SerializeField] private float inRangeBonus = 0.002f;
 
     [Header("Stat Normalization Ceilings")]
     [SerializeField] private float maxPossibleHP     = 215f;
     [SerializeField] private float maxPossibleDamage = 55f;
     [SerializeField] private float maxPossibleDef    = 20f;
+    [SerializeField] private float maxPossibleRange  = 3f;
 
     private const int NumUnitTypes = 6;
     private const int ObsPerUnit = 12;
@@ -40,23 +41,30 @@ public class CombatAgent2 : Agent, ITurnActor
     private List<CharacterObject> enemySlots = new();
     private int chosenActionType = 2; // default to end turn
     private int chosenTileIndex = 55; // center tile
-    private int _currentAgentTeam = 1;
+    private int _currentAgentTeam = 2;
     private GridData _gridData;
     private int activeUnitIndex;
     private const int MapMin = -5;
     private const int MapMax = 5;
     private const int MapSize  = 10;
     private const int MapOffset =  5;
+    private const int TileActionCount = MapSize * MapSize;
+    private const int MoveOffset   = 0;
+    private const int AttackOffset = TileActionCount;
+    private const int EndTurnAction = TileActionCount * 2;
     private float _maxTurn;
     private bool hasAction = false;
     private bool hasMoved = false;
     private bool hasAttacked = false;
     private bool isTurnComplete = false;
+    private bool btActionFullyProcessed = true;
+    public bool IsBTActionFullyProcessed() => btActionFullyProcessed;
     private List<DamageListener> damageListeners = new();
     private float episodeDifficultyScore = 0f;
     private StatsRecorder statsRecorder;
 
     public Action OnTurnEnded;
+    private Action onBTActionComplete;
     public bool IsPlayer => false;
     public bool IsTurnComplete() => isTurnComplete;
 
@@ -76,6 +84,7 @@ public class CombatAgent2 : Agent, ITurnActor
 
     public override void OnEpisodeBegin()
     {
+        if (!enabled) return;
         if (groundRenderer != null && CumulativeReward != 0f)
         {
             Color flashColor = (CumulativeReward > 0f) ? Color.green : Color.red;
@@ -114,6 +123,15 @@ public class CombatAgent2 : Agent, ITurnActor
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        if (_gridData == null)
+        {
+            // Pad with zeros so the observation vector size stays consistent
+            int totalObs = (MapSize * MapSize) + (3 * ObsPerUnit) + (3 * ObsPerUnit) + 3 + 5;
+            for (int i = 0; i < totalObs; i++)
+                sensor.AddObservation(0f);
+            return;
+        }
+
         CharacterObject active = IsValidActiveUnit() ? allySlots[activeUnitIndex] : null;
         Vector3Int currPos = active != null ? active.Position : Vector3Int.zero;
 
@@ -140,12 +158,12 @@ public class CombatAgent2 : Agent, ITurnActor
 
         // ALLY UNIT DATA
         for (int i = 0; i < 3; i++)
-            ObserveUnit(sensor, allySlots[i], currPos);
+            ObserveAlly(sensor, allySlots[i], currPos);
     
         //  ENEMY UNIT DATA
         for (int i = 0; i < 3; i++)
         {
-            ObserveUnit(sensor, enemySlots[i], currPos);
+            ObserveEnemy(sensor, enemySlots[i], currPos);
         }
 
         // WHICH UNIT IS ACTING
@@ -154,6 +172,8 @@ public class CombatAgent2 : Agent, ITurnActor
 
         // TURN INFO
         sensor.AddObservation(turnManager.currentTurn / _maxTurn);
+        sensor.AddObservation(hasMoved ? 1f : 0f);
+        sensor.AddObservation(hasAttacked ? 1f : 0f);
         sensor.AddObservation(CountAlive(allySlots) / 3f); // num allies alive
         sensor.AddObservation(CountAlive(enemySlots) / 3f); // num enemies alive
     }
@@ -164,13 +184,11 @@ public class CombatAgent2 : Agent, ITurnActor
 
         if (!hasAction)
         {
-            discrete[0] = 2; // EndTurn
-            discrete[1] = GridPosToTileIndex(Vector3Int.zero);
+            discrete[0] = EndTurnAction;
             return;
         }
 
-        discrete[0] = chosenActionType;
-        discrete[1] = chosenTileIndex;
+        discrete[0] = EncodeAction(chosenActionType, chosenTileIndex);
         hasAction = false;
     }
 
@@ -190,9 +208,10 @@ public class CombatAgent2 : Agent, ITurnActor
             return;
         }
 
-        PenalizePerTurn();
-        int actionType = actions.DiscreteActions[0];
-        int tileIndex = actions.DiscreteActions[1]; 
+        // PenalizePerTurn();
+        int encodedAction = actions.DiscreteActions[0];
+
+        DecodeAction(encodedAction,out int actionType,out int tileIndex);
 
         Vector3Int targetPos = TileIndexToGridPos(tileIndex);
 
@@ -224,7 +243,7 @@ public class CombatAgent2 : Agent, ITurnActor
                 break;
         }
 
-        SurvivalBonusReward();
+        // SurvivalBonusReward();
         
         CumulativeReward = GetCumulativeReward();
     }
@@ -245,42 +264,31 @@ public class CombatAgent2 : Agent, ITurnActor
         HashSet<Vector3Int> reachable = previewSystem.ComputeReachableTiles(currentPos, character.RemainingMoveRange);
         HashSet<Vector3Int> attackable = previewSystem.ComputeAttackableTiles(currentPos, character.AtkRange);
 
-        // MASK ACTION TYPE
-        bool canMove = reachable.Count > 0 && !hasMoved;
-        bool canAttack = attackable.Count > 0 && !hasAttacked;
+        for (int i = 0; i <= EndTurnAction; i++)
+            actionMask.SetActionEnabled(0, i, false); // disables all action
 
-        if (!canMove)
-            actionMask.SetActionEnabled(0, 0, false); // disable MOVE
-
-        if (!canAttack)
-            actionMask.SetActionEnabled(0, 1, false); // disable ATTACK
-
-        // MASK X/Y
-        // Build allowed positions
-        HashSet<int> validTiles = new();
-
-        if (canMove)
+        // Enable move actions
+        if (!hasMoved)
         {
             foreach (Vector3Int pos in reachable)
-                validTiles.Add(GridPosToTileIndex(pos));
+            {
+                int tile = GridPosToTileIndex(pos);
+                actionMask.SetActionEnabled(0, MoveOffset + tile, true);
+            }
         }
-    
-        if (canAttack)
+
+        // Enable attack actions
+        if (!hasAttacked)
         {
             foreach (Vector3Int pos in attackable)
-                validTiles.Add(GridPosToTileIndex(pos));
+            {
+                int tile = GridPosToTileIndex(pos);
+                actionMask.SetActionEnabled(0, AttackOffset + tile, true);
+            }
         }
-    
-        // ALWAYS include current position as fallback
-        validTiles.Add(GridPosToTileIndex(currentPos));
-    
-        // Apply mask
-        int totalTiles = MapSize * MapSize;
-        for (int i = 0; i < totalTiles; i++)
-        {
-            if (!validTiles.Contains(i))
-                actionMask.SetActionEnabled(1, i, false);
-        }
+
+        // Always allow end turn
+        actionMask.SetActionEnabled(0, EndTurnAction, true);
     }
 
     // Turn management
@@ -297,7 +305,7 @@ public class CombatAgent2 : Agent, ITurnActor
         hasMoved = false;
         hasAttacked = false;
 
-        RequestDecision();
+        if (!isRecording) RequestDecision();
     }
 
     public void ForceComplete() => isTurnComplete = true;
@@ -309,8 +317,13 @@ public class CombatAgent2 : Agent, ITurnActor
         chosenActionType = actionType;
         chosenTileIndex = (targetPos.y + 5) * 10 + targetPos.x + 5;
         hasAction = true;
+        btActionFullyProcessed = false;
 
         RequestDecision();
+    }
+    public void RegisterBTActionCallback(Action callback)
+    {
+        onBTActionComplete = callback;
     }
 
     public void SetAgentTeam(int team) => _currentAgentTeam = team;
@@ -346,6 +359,12 @@ public class CombatAgent2 : Agent, ITurnActor
         // RewardValidAction();
         hasAttacked = true;
         combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
+
+        if (isBTRecordingMode)
+        {
+            StartCoroutine(WaitForAttackThenNotifyBT(character));
+            return;
+        }
         DecideOrEnd(character);
     }
 
@@ -356,7 +375,25 @@ public class CombatAgent2 : Agent, ITurnActor
         
         if (turnManager.TurnAlreadyEnded) yield break;
 
+        if (isBTRecordingMode)
+        {
+            btActionFullyProcessed = true;
+            NotifyBTActionComplete();
+            yield break;
+        }
+
         DecideOrEnd(character);
+    }
+
+    private IEnumerator WaitForAttackThenNotifyBT(CharacterObject character)
+    {
+        while (combatExecutor.IsAttacking)
+            yield return null;
+
+        if (turnManager.TurnAlreadyEnded) yield break;
+
+        btActionFullyProcessed = true;
+        NotifyBTActionComplete();
     }
 
     private void EndTurn(CharacterObject character)
@@ -392,6 +429,9 @@ public class CombatAgent2 : Agent, ITurnActor
             ForceComplete();
             return;
         }
+
+        if (isBTRecordingMode) return;
+
         bool canMove = !hasMoved && character.RemainingMoveRange > 0;
         bool canAttack = !hasAttacked;
 
@@ -402,6 +442,43 @@ public class CombatAgent2 : Agent, ITurnActor
             else
                 RequestDecision();
         }
+    }
+
+    private int EncodeAction(int actionType, int tileIndex)
+    {
+        return actionType switch
+        {
+            0 => MoveOffset + tileIndex,
+            1 => AttackOffset + tileIndex,
+            2 => EndTurnAction,
+            _ => EndTurnAction
+        };
+    }
+
+    private void DecodeAction(int action, out int actionType, out int tileIndex)
+    {
+        if (action < AttackOffset)
+        {
+            actionType = 0;
+            tileIndex = action;
+        }
+        else if (action < EndTurnAction)
+        {
+            actionType = 1;
+            tileIndex = action - AttackOffset;
+        }
+        else
+        {
+            actionType = 2;
+            tileIndex = GridPosToTileIndex(Vector3Int.zero);
+        }
+    }
+
+    private void NotifyBTActionComplete()
+    {
+        var callback = onBTActionComplete;
+        onBTActionComplete = null;
+        callback?.Invoke();
     }
 
     // Reward helpers
@@ -425,18 +502,51 @@ public class CombatAgent2 : Agent, ITurnActor
         }
     }
 
-    private void SurvivalBonusReward()
-    {
-        int totalAliveAllies = CountAlive(allySlots);
-        AddReward(0.005f * totalAliveAllies);
-    }
     private void PenalizePerTurn() => AddReward(-0.005f);
-    private void PenalizeInvalidAction() => AddReward(-0.1f);
+    private void PenalizeInvalidAction() => AddReward(-0.01f);
     private void RewardValidAction() => AddReward(0.02f);
+    public void OnVictory() => AddReward(1f);
+    public void OnDefeat()
+    {
+        float defeatPenalty = -1f;
+        int deadEnemies = 3 - CountAlive(enemySlots);
+        float partialCredit = deadEnemies * (1f/3f);
+        AddReward(defeatPenalty + partialCredit);
+    }
+    public void OnGlobalTurnEnd() => AddReward(-0.002f);
+    public void OnUnitKilled(CharacterObject unit)
+    {
+        if (unit.Team == _currentAgentTeam)
+            AddReward(-0.25f);
+        else
+            AddReward(+0.25f);
+    }
 
     // Observation helpers
 
-    private void ObserveUnit(VectorSensor sensor, CharacterObject unit, Vector3Int relativeTo)
+    private void ObserveAlly(VectorSensor sensor, CharacterObject unit, Vector3Int relativeTo)
+    {
+        if (unit == null || unit.HP <= 0)
+        {
+            // Padding if fewer units
+            for (int i = 0; i < ObsPerUnit; i++)
+                sensor.AddObservation(0f);
+            return;
+        }
+
+        int typeIndex = Mathf.Clamp(unit.ID, 0, NumUnitTypes - 1);
+        for (int i = 0; i < NumUnitTypes; i++)
+            sensor.AddObservation(i == typeIndex ? 1f : 0f);
+
+        sensor.AddObservation((float)unit.HP / unit.MaxHp);
+        sensor.AddObservation(unit.Damage / maxPossibleDamage);
+        sensor.AddObservation(unit.Defense / maxPossibleDef);
+        sensor.AddObservation(unit.AtkRange / maxPossibleRange);
+        sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
+        sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);
+    }
+
+    private void ObserveEnemy(VectorSensor sensor, CharacterObject unit, Vector3Int relativeTo)
     {
         if (unit == null || unit.HP <= 0)
         {
@@ -454,7 +564,6 @@ public class CombatAgent2 : Agent, ITurnActor
         sensor.AddObservation(unit.MaxHp / maxPossibleHP);
         sensor.AddObservation(unit.Damage / maxPossibleDamage);
         sensor.AddObservation(unit.Defense / maxPossibleDef);
-        // Position is relative to the active unit so the agent learns spatial reasoning
         sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
         sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);
     }
@@ -468,15 +577,20 @@ public class CombatAgent2 : Agent, ITurnActor
         {
             if (enemy == null) continue;
 
-            float power = (enemy.MaxHp  / maxPossibleHP)     * 0.4f
-                        + (enemy.Damage / maxPossibleDamage)  * 0.4f
-                        + (enemy.Defense / maxPossibleDef)    * 0.2f;
+            float power = ComputeUnitPower(enemy);
 
             totalPower += power;
             count++;
         }
 
         return count > 0 ? totalPower / count : 0f;
+    }
+
+    private float ComputeUnitPower(CharacterObject unit)
+    {
+        return (unit.MaxHp  / maxPossibleHP)      * 0.4f
+             + (unit.Damage / maxPossibleDamage)  * 0.4f
+             + (unit.Defense / maxPossibleDef)    * 0.2f;
     }
 
     private int CountAlive(List<CharacterObject> slots)
@@ -553,15 +667,19 @@ public class CombatAgent2 : Agent, ITurnActor
     private void OnEnemyTookDamage(int finalDamage, CharacterObject enemy)
     {
         if (enemy.MaxHp <= 0) return;
-        float normalised = (float)finalDamage / enemy.MaxHp;
-        AddReward(normalised * damageDealtRewardScale);
+        // float normalised = (float)finalDamage / enemy.MaxHp;
+        // AddReward(normalised * damageDealtRewardScale);
+        float power = ComputeUnitPower(enemy);
+        AddReward(0.01f + (0.02f * power));
     }
 
     private void OnAllyTookDamage(int finalDamage, CharacterObject ally)
     {
         if (ally.MaxHp <= 0) return;
-        float normalised = (float)finalDamage / ally.MaxHp;
-        AddReward(-(normalised * damageTakenPenaltyScale));
+        // float normalised = (float)finalDamage / ally.MaxHp;
+        // AddReward(-(normalised * damageTakenPenaltyScale));
+        float power = ComputeUnitPower(ally);
+        AddReward(-0.01f + (-0.02f * power));
     }
 
     private class DamageListener

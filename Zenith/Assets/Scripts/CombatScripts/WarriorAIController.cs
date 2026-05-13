@@ -20,7 +20,18 @@ public class WarriorAIController : EnemyAIControllerBase
         tryAttack.AddChild(new Leaf("Attack", new Attack(this)));
         combat.AddChild(tryAttack);
 
-        combat.AddChild(new Leaf("MoveTowardWeakest", new MoveTowardPlayer(this)));
+        Sequence moveAndAttack = new Sequence("MoveAndAttack");
+        moveAndAttack.AddChild(new Leaf("MoveTowardWeakest", new MoveTowardTarget(this)));
+
+        Selector tryAttackAfterMove = new Selector("TryAttackAfterMove");
+        Sequence tryAttackAfterMoveSeq = new Sequence("TryAttackAfterMoveSeq");
+        tryAttackAfterMoveSeq.AddChild(new Leaf("IsInRange", new IsInRange(this)));
+        tryAttackAfterMoveSeq.AddChild(new Leaf("Attack", new Attack(this)));
+        tryAttackAfterMove.AddChild(tryAttackAfterMoveSeq);
+
+        tryAttackAfterMove.AddChild(new Leaf("AlwaysSucceed", new AlwaysSucceed()));
+        moveAndAttack.AddChild(tryAttackAfterMove);
+        combat.AddChild(moveAndAttack);
 
         root.AddChild(combat);
         return root;

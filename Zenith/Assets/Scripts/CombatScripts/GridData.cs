@@ -149,7 +149,11 @@ public class GridData
         else if (team == 2)
             return GetUnitsByTeam(1);
         else
+        {
+            Debug.LogWarning("Invalid team, returning team 1 unit!");
             return GetUnitsByTeam(1);
+        }
+            
         
     }
 
@@ -161,9 +165,9 @@ public class GridData
         return new List<(Vector3Int, CharacterObject)>();
     }
 
-    public List<(Vector3Int pos, CharacterObject character)> GetAllFriendlies()
+    public List<(Vector3Int pos, CharacterObject character)> GetAllFriendlies(int team)
     {
-        return GetUnitsByTeam(1);
+        return GetUnitsByTeam(team);
     }
 
     public List<(Vector3Int pos, CharacterObject character)> GetAllPlayers()

@@ -13,6 +13,8 @@ TagManager:
   - Interactable
   - Wall
   - Goal
+  - Cleric
+  - Warrior
   layers:
   - Default
   - TransparentFX
@@ -28,7 +30,7 @@ TagManager:
   - ArenaObstacle
   - EnemySprite
   - Enemy
-  - 
+  - CharacterSprite
   - 
   - 
   - 

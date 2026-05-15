@@ -47,12 +47,14 @@ public class OverworldUI : MonoBehaviour
     void Update()
     {
         bool isGifting = InventoryManager.Instance != null && InventoryManager.Instance.isGifting;
+        bool isShopping = InventoryManager.Instance != null && InventoryManager.Instance.isShopping;
 
-        if (isGifting && inventoryObject.activeSelf)
+        if ((isGifting || isShopping) && inventoryObject.activeSelf)
         {
             if (Input.GetKeyDown(KeyCode.Escape) || InputSystem.actions.FindAction("Inventory").WasPressedThisFrame())
             {
-                CancelGifting();
+                if (isGifting) CancelGifting();
+                else if (isShopping) CancelShopping();
                 return;
             }
         }
@@ -90,6 +92,30 @@ public class OverworldUI : MonoBehaviour
         if (dm != null)
         {
             dm.optionsPanel.SetActive(true);
+        }
+    }
+
+    private void CancelShopping()
+    {
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.isShopping = false;
+        }
+
+        if (inventoryDisplay != null && inventoryDisplay.tooltipPanel != null)
+        {
+            inventoryDisplay.tooltipPanel.GetComponent<TooltipUI>()?.HideTooltip();
+        }
+
+        var contextMenu = FindFirstObjectByType<ItemContextMenu>(FindObjectsInactive.Include);
+        if (contextMenu != null) contextMenu.Hide();
+
+        if (inventoryObject != null) inventoryObject.SetActive(false);
+
+        DialogueManager dm = FindFirstObjectByType<DialogueManager>();
+        if (dm != null)
+        {
+            dm.CloseShopUI();
         }
     }
 

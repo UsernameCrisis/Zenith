@@ -23,10 +23,8 @@ public class ItemContextMenu : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            // Check if the mouse is NOT over the context menu rect
             if (!RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition))
             {
-                // We clicked outside, so hide.
                 Hide();
             }
         }
@@ -39,7 +37,6 @@ public class ItemContextMenu : MonoBehaviour
         transform.position = position;
 
         actionButton.gameObject.SetActive(false);
-
         switch (stack.itemData.type)
         {
             case ItemType.Equipment:
@@ -50,27 +47,29 @@ public class ItemContextMenu : MonoBehaviour
                 actionButton.gameObject.SetActive(true);
                 actionText.text = "Use";
                 break;
-            case ItemType.Junk:
-                break;
         }
 
-        DialogueManager dm = FindFirstObjectByType<DialogueManager>();
-        if (dm == null || !dm.dialoguePanel.activeInHierarchy)
+        if (InventoryManager.Instance.isGifting)
         {
-            InventoryManager.Instance.isGifting = false;
+            trashText.text = "Gift";
         }
-        trashText.text = InventoryManager.Instance.isGifting ? "Gift" : "Trash";
+        else if (InventoryManager.Instance.isShopping)
+        {
+            trashText.text = "Sell";
+        }
+        else
+        {
+            trashText.text = "Trash";
+        }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
     }
 
     public void OnActionClick()
     {
-        Debug.Log("Action Button Clicked!");
         if (currentStack != null)
         {
             InventoryManager.Instance.UseItem(currentStack);
-
             if (!InventoryManager.Instance.mainInventory.Contains(currentStack))
                 Hide();
         }
@@ -85,19 +84,20 @@ public class ItemContextMenu : MonoBehaviour
             InventoryManager.Instance.GiftItem(currentStack);
             Hide();
         }
-        else
+        else if (InventoryManager.Instance.isShopping)
         {
-            Debug.Log("Trash Button Clicked!");
-            InventoryManager.Instance.RemoveItem(currentStack.itemData, 1);
+            InventoryManager.Instance.SellItem(currentStack);
 
             if (!InventoryManager.Instance.mainInventory.Contains(currentStack))
-            {
                 Hide();
-            }
+        }
+        else
+        {
+            InventoryManager.Instance.RemoveItem(currentStack.itemData, 1);
+            if (!InventoryManager.Instance.mainInventory.Contains(currentStack))
+                Hide();
         }
     }
 
     public void Hide() => gameObject.SetActive(false);
-
-
 }

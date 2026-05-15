@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     [Header("External References")]
     public PlayerMovement player;
     public GameObject inventoryUIPanel;
+    public GameObject shopUIPanel;
 
     [Header("UI Containers")]
     public GameObject dialoguePanel;
@@ -188,7 +189,6 @@ public class DialogueManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         optionsPanel.SetActive(false);
         dialogueText.text = "";
-
         if (player != null) player.canMove(true);
 
         StartCoroutine(InteractionCooldown());
@@ -306,6 +306,43 @@ public class DialogueManager : MonoBehaviour
 
         isAIResponding = true;
         optionsPanel.SetActive(false);
+    }
+
+    public void OnShopButtonPressed()
+    {
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.isGifting = false;
+            InventoryManager.Instance.isShopping = true;
+        }
+
+        isShowingOptions = false;
+        isDialogueActive = false;
+        dialoguePanel.SetActive(false);
+        optionsPanel.SetActive(false);
+
+        shopUIPanel.SetActive(true);
+        inventoryUIPanel.SetActive(true);
+    }
+
+    public void CloseShopUI()
+    {
+        if (shopUIPanel != null)
+        {
+            shopUIPanel.SetActive(false);
+        }
+
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.isShopping = false;
+        }
+
+        if (player != null)
+        {
+            player.canMove(true);
+        }
+
+        StartCoroutine(InteractionCooldown());
     }
 
     public void ReceiveGift(BaseItem item)

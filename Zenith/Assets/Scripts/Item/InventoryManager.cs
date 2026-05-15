@@ -33,6 +33,7 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance;
     public event Action OnInventoryChanged;
     public bool isGifting;
+    public bool isShopping;
 
     [Header("Inventory Settings")]
     public List<ItemStack> mainInventory = new();
@@ -246,6 +247,34 @@ public class InventoryManager : MonoBehaviour
                 ui.inventoryDisplay.tooltipPanel.SetActive(false);
             }
         }
+    }
+
+    public void SellItem(ItemStack stack)
+    {
+        if (stack.itemData == null) return;
+
+        int goldEarned = stack.itemData.sellPrice;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.gold += goldEarned;
+            GameManager.Instance.gold_spent += goldEarned;
+            Debug.Log($"Sold {stack.itemData.itemName} for {goldEarned} gold.");
+        }
+
+        var playerAttr = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerOverworldAttributes>();
+        if (playerAttr != null)
+        {
+            playerAttr.gold = GameManager.Instance.gold;
+        }
+
+        OverworldUI ui = FindFirstObjectByType<OverworldUI>();
+        if (ui != null && ui.inventoryDisplay != null)
+        {
+            ui.inventoryDisplay.tooltipPanel.GetComponent<TooltipUI>()?.HideTooltip();
+        }
+
+        RemoveItem(stack.itemData, 1);
     }
 
     public void UseItem(ItemStack stack)

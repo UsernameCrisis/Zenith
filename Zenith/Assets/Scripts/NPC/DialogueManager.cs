@@ -294,7 +294,7 @@ public class DialogueManager : MonoBehaviour
             SetPartyStatus(currentNPCID, false);
             dialogueText.text = $"{styleOpen}{currentNPCID} has left your party.{styleClose}";
         }
-        else if (npcData.friendship >= 0)
+        else if (npcData.friendship >= 1000)
         {
             SetPartyStatus(currentNPCID, true);
             dialogueText.text = $"{styleOpen}{currentNPCID} has joined your party!{styleClose}";

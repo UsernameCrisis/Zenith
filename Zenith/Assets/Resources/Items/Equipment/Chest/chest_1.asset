@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee6605798303e424590243a4ff2110e2, type: 3}
   m_Name: chest_1
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemID: chest_1
   icon: {fileID: 21300000, guid: 663ef29a57f354d4d8050e8614ad97b2, type: 3}
   itemName: Iron Armor
   description: Standard quality iron armor. +3 DEF +70 MaxHP
@@ -19,8 +20,8 @@ MonoBehaviour:
   rarity: 2
   isStackable: 0
   maxStackSize: 1
-  sellPrice: 100
-  weight: 10
+  sellPrice: 250
+  weight: 20
   slot: 2
   attackBonus: 0
   defenseBonus: 3

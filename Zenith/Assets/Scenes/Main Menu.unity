@@ -6258,10 +6258,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bbf6e97b0a78dc438ba0a3ace1109b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
+  isGifting: 0
+  isShopping: 0
   mainInventory: []
   maxWeight: 80
   currentWeight: 0
-  database: {fileID: 0}
+  database: {fileID: 11400000, guid: 8f219ee562f9e744383a361ab6cf2afc, type: 2}
 --- !u!4 &1440005662
 Transform:
   m_ObjectHideFlags: 0
@@ -9158,6 +9160,18 @@ MonoBehaviour:
   playerAtk: 10
   playerDef: 0
   playerSpeed: 5
+  clericHP: 100
+  clericMaxHP: 100
+  clericAtk: 10
+  clericDef: 0
+  clericSpeed: 5
+  clericInParty: 0
+  warriorHP: 100
+  warriorMaxHP: 100
+  warriorAtk: 10
+  warriorDef: 0
+  warriorSpeed: 5
+  warriorInParty: 0
   hasData: 0
   ViewedOverworldTutorial: 0
   combatSceneName: Combat_test1

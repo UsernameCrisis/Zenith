@@ -185636,7 +185636,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1759745151}
   - component: {fileID: 1759745150}
-  - component: {fileID: 1759745152}
   m_Layer: 0
   m_Name: InventoryManager
   m_TagString: Untagged
@@ -185656,6 +185655,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bbf6e97b0a78dc438ba0a3ace1109b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
+  isGifting: 0
+  isShopping: 0
   mainInventory: []
   maxWeight: 80
   currentWeight: 0
@@ -185675,21 +185676,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1759745152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1759745149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 419153f122e62324393fe7c655d37e4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryTester
-  potion: {fileID: 11400000, guid: 607c83f350de4234aa10760180ef9709, type: 2}
-  sword: {fileID: 11400000, guid: 4ed8259167e43044f8bbde5598d2befd, type: 2}
-  junk: {fileID: 11400000, guid: 6e0b4731a44c8414bb619befaa3d2b23, type: 2}
 --- !u!1 &1760655579
 GameObject:
   m_ObjectHideFlags: 0

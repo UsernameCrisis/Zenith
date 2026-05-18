@@ -435,4 +435,9 @@ public class InventoryManager : MonoBehaviour
 
         Debug.Log(debugLog);
     }
+
+    public void TriggerInventoryChanged()
+    {
+        OnInventoryChanged?.Invoke();
+    }
 }

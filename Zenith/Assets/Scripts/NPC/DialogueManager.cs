@@ -22,6 +22,7 @@ public class DialogueManager : MonoBehaviour
     public RectTransform leftPortraitRect;
     public RectTransform rightPortraitRect;
     public RectTransform textPanelRect;
+    public FriendshipUI friendshipUI;
 
     [Header("Interaction Buttons")]
     public GameObject talkButton;
@@ -102,6 +103,8 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(DialogueData data, string npcID)
     {
+        if (friendshipUI != null) friendshipUI.DisplayFriendship(npcID);
+
         if (isDialogueActive || isShowingOptions || !canInteract) return;
 
         if (player != null) player.canMove(false);
@@ -184,6 +187,7 @@ public class DialogueManager : MonoBehaviour
 
     public void CloseAllDialogue()
     {
+        if (friendshipUI != null) friendshipUI.HideFriendship();
         isShowingOptions = false;
         isDialogueActive = false;
         dialoguePanel.SetActive(false);
@@ -420,6 +424,7 @@ public class DialogueManager : MonoBehaviour
 
             Debug.Log($"[GIFT SYSTEM] {item.itemName} | Base: {baseScore} | Multiplier: {multiplier:F2} | Final: {finalScore}");
             GameManager.Instance.UpdateNPC(currentNPCID, finalScore, false);
+            if (friendshipUI != null) friendshipUI.DisplayFriendship(currentNPCID);
         });
     }
 
@@ -431,6 +436,7 @@ public class DialogueManager : MonoBehaviour
         float normalizedValue = (price - 50f) / 450f;
         return 1f + (4f * Mathf.Pow(normalizedValue, 0.7f));
     }
+
     public void SendChatToAI()
     {
         string userText = chatInputField.text;
@@ -536,8 +542,10 @@ public class DialogueManager : MonoBehaviour
             {
                 GameManager.Instance.UpdateNPC(currentNPCID, 0, true);
             }
+            if (friendshipUI != null) friendshipUI.DisplayFriendship(currentNPCID);
         });
     }
+
     private bool IsInParty(string npcID)
     {
         if (npcID == "Thorek") return GameManager.Instance.warriorInParty;
@@ -575,19 +583,19 @@ public class DialogueManager : MonoBehaviour
 
     private string GetRejectionText(string npcID)
     {
-        // Using <i> for italics and <color> to make it look like a system/narration message
         string styleOpen = "<color=#AAAAAA><i>*";
         string styleClose = "*</i></color>";
 
         string[] lines = {
-        $"{npcID} doesn't seem to trust you enough to risk their life.",
-        $"{npcID} politely declines; your bond isn't quite strong enough yet.",
-        $"{npcID} watches you with skepticism. You'll need more influence to recruit them.",
-        $"You haven't earned {npcID}'s loyalty yet. Keep talking and gifting!"
-    };
+            $"{npcID} doesn't seem to trust you enough to risk their life.",
+            $"{npcID} politely declines; your bond isn't quite strong enough yet.",
+            $"{npcID} watches you with skepticism. You'll need more influence to recruit them.",
+            $"You haven't earned {npcID}'s loyalty yet. Keep talking and gifting!"
+        };
 
         return styleOpen + lines[Random.Range(0, lines.Length)] + styleClose;
     }
+
     private void AddLineToHistory(string line)
     {
         if (string.IsNullOrWhiteSpace(line) || line.Length < 3) return;
@@ -624,6 +632,29 @@ public class DialogueManager : MonoBehaviour
     void Update()
     {
         if (chatInputField != null && chatInputField.isFocused) return;
+
+        // --- DEV CHEAT KEY BINDINGS ---
+        // Only allow cheating when we have a valid current NPC conversation active
+        if (!string.IsNullOrEmpty(currentNPCID))
+        {
+            // Press UP ARROW to add +25 friendship
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                GameManager.Instance.UpdateNPC(currentNPCID, 25, true);
+                if (friendshipUI != null) friendshipUI.DisplayFriendship(currentNPCID);
+                Debug.Log($"[CHEAT] Added 25 friendship to {currentNPCID}");
+            }
+
+            // Press DOWN ARROW to subtract -25 friendship
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                GameManager.Instance.UpdateNPC(currentNPCID, -25, true);
+                if (friendshipUI != null) friendshipUI.DisplayFriendship(currentNPCID);
+                Debug.Log($"[CHEAT] Subtracted 25 friendship from {currentNPCID}");
+            }
+        }
+        // ------------------------------
+
         if (isWaitingForAI) return;
 
         if (isDialogueActive)

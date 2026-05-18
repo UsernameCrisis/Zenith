@@ -9,6 +9,12 @@ public class PurchasableItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPoint
     [Header("Item Configuration")]
     public BaseItem shopItem;
 
+    [Header("Special Upgrade Settings")]
+    [Tooltip("Check this if this specific slot sells the max weight backpack upgrade instead of a standard item.")]
+    public bool isWeightUpgrade = false;
+    [Tooltip("The amount of max weight capacity added to the player when purchased.")]
+    [SerializeField] private float weightCapacityIncrement = 10f;
+
     [Header("UI References")]
     public Image itemIcon;
     public TMP_Text priceText;
@@ -59,9 +65,19 @@ public class PurchasableItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPoint
 
         bool hasEnoughGold = GameManager.Instance.gold >= calculatedBuyPrice;
 
-        bool canCarry = (InventoryManager.Instance.currentWeight + shopItem.weight) <= InventoryManager.Instance.maxWeight;
+        bool purchaseValid = false;
 
-        if (hasEnoughGold && canCarry)
+        if (isWeightUpgrade)
+        {
+            purchaseValid = hasEnoughGold;
+        }
+        else
+        {
+            bool canCarry = (InventoryManager.Instance.currentWeight + shopItem.weight) <= InventoryManager.Instance.maxWeight;
+            purchaseValid = hasEnoughGold && canCarry;
+        }
+
+        if (purchaseValid)
         {
             ExecutePurchase(calculatedBuyPrice);
         }
@@ -73,6 +89,7 @@ public class PurchasableItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPoint
 
     private void ExecutePurchase(int finalCost)
     {
+        // 1. Deduct cost from account records
         GameManager.Instance.gold -= finalCost;
 
         var playerAttr = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerOverworldAttributes>();
@@ -81,14 +98,22 @@ public class PurchasableItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPoint
             playerAttr.gold = GameManager.Instance.gold;
         }
 
-        InventoryManager.Instance.AddItem(shopItem, 1);
+        if (isWeightUpgrade)
+        {
+            InventoryManager.Instance.maxWeight += weightCapacityIncrement;
+            InventoryManager.Instance.TriggerInventoryChanged();
+        }
+        else
+        {
+            InventoryManager.Instance.AddItem(shopItem, 1);
+        }
 
         if (tooltip != null && tooltip.gameObject.activeSelf)
         {
             tooltip.UpdateTooltip(shopItem);
         }
 
-        Debug.Log($"Successfully purchased: {shopItem.itemName} for {finalCost}g");
+        Debug.Log($"Successfully purchased: {shopItem.itemName} for {finalCost}g. (Is Upgrade: {isWeightUpgrade})");
     }
 
     private void TriggerFailureFeedback()
@@ -119,6 +144,7 @@ public class PurchasableItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPoint
         itemIcon.color = normalColor;
         isAnimating = false;
     }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (shopItem != null && tooltip != null)

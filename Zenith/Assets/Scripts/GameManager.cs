@@ -35,17 +35,17 @@ public class GameManager : MonoBehaviour
     public int playerDef = 0;
     public int playerSpeed = 5;
 
-    public int clericHP = 100;
-    public int clericMaxHP = 100;
-    public int clericAtk = 10;
+    public int clericHP = 80;
+    public int clericMaxHP = 80;
+    public int clericAtk = 5;
     public int clericDef = 0;
     public int clericSpeed = 5;
     public bool clericInParty = false;
 
-    public int warriorHP = 100;
-    public int warriorMaxHP = 100;
-    public int warriorAtk = 10;
-    public int warriorDef = 0;
+    public int warriorHP = 120;
+    public int warriorMaxHP = 120;
+    public int warriorAtk = 12;
+    public int warriorDef = 1;
     public int warriorSpeed = 5;
     public bool warriorInParty = false;
 

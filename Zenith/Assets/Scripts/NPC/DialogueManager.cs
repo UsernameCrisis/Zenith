@@ -525,7 +525,9 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator GetFriendshipRating(string playerMsg, string aiMsg)
     {
         string ratingPrompt =
-            $"Rate the player's message based on the reply. Scale -1 to 10. " +
+            $"Rate the friendlyness from player's message based on the reply." +
+            $"Assume the Player is a human player while the reply is an NPC in a RPG Style video game" +
+            $"Scale -1 to 10. " +
             $"Player: {playerMsg}. Reply: {aiMsg}. " +
             $"Return only the integer number.";
 

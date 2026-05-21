@@ -197,6 +197,56 @@ public class MovementSystem
         return path.Count == 0 ? int.MaxValue : path.Count;
     }
 
+    public int PathCostWithBlocked(Vector3Int start, Vector3Int goal, 
+                                HashSet<Vector3Int> blocked)
+    {
+        PriorityQueue<Vector3Int> openSet = new();
+        openSet.Enqueue(start, 0);
+    
+        Dictionary<Vector3Int, Vector3Int> cameFrom = new();
+        Dictionary<Vector3Int, int> costSoFar = new();
+        cameFrom[start] = start;
+        costSoFar[start] = 0;
+    
+        while (openSet.Count > 0)
+        {
+            Vector3Int current = openSet.Dequeue();
+            if (current == goal) break;
+    
+            foreach (var dir in directions)
+            {
+                Vector3Int next = current + dir;
+    
+                if (!gridData.IsWithinBounds(next)) continue;
+    
+                // This is the only difference from the standard version —
+                // treat any tile in the blocked set as impassable.
+                if (blocked != null && blocked.Contains(next) && next != goal)
+                    continue;
+    
+                TileData tile = gridData.GetTileAt(next);
+                if (tile != null && tile.PlacedObject != null 
+                    && tile.PlacedObject is not CharacterObject)
+                    continue;
+    
+                bool occupiedByCharacter = next != goal 
+                    && tile?.PlacedObject is CharacterObject;
+                int stepCost = occupiedByCharacter ? 5 : 1;
+    
+                int newCost = costSoFar[current] + stepCost;
+                if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
+                {
+                    costSoFar[next] = newCost;
+                    openSet.Enqueue(next, newCost + Heuristic(next, goal));
+                    cameFrom[next] = current;
+                }
+            }
+        }
+    
+        // If the goal was never reached, return MaxValue to signal no path exists.
+        return costSoFar.ContainsKey(goal) ? costSoFar[goal] : int.MaxValue;
+    }
+
     public bool HasLineOfSight(Vector3Int start, Vector3Int end)
     {
         int x0 = start.x, y0 = start.y;

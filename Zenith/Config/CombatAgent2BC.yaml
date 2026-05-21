@@ -44,11 +44,11 @@ behaviors:
     threaded: false
     self_play: null
     behavioral_cloning:
-      demo_path: Assets/Demonstrations/MonsterDemonstrations/
+      demo_path: Assets/Demonstrations/MonsterDemonstrations
       strength: 0.5
-      steps: 150000
+      steps: 500000
       batch_size: 1024
-      samples_per_update: 1024
+      samples_per_update: 8192
       num_epoch: 3
 env_settings:
   env_path: null
@@ -69,7 +69,7 @@ engine_settings:
   no_graphics_monitor: false
 environment_parameters: null
 checkpoint_settings:
-  run_id: multiCombatAgent2_D_5M_200T_1024BA_131072BU_PartialDefeatCred_NoVar_BC_150K_05S
+  run_id: multiCombatAgent2_NewBT_202AS_D_1024BA_131072BU_PartialDefeatCred_NoVar_BC_500K_05S_8192SPU
   initialize_from: null
   load_model: false
   resume: false

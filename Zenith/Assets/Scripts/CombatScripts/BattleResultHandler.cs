@@ -182,6 +182,7 @@ public class BattleResultHandler : MonoBehaviour
     {
         Cleanup();
         GetComponent<CombatExecutor>().ResetState();
+        combatAgent.ResetState();
         DefeatedEnemyNames.Clear();
 
         mapPopulator = GetComponentInChildren<PopulateMap>();
@@ -253,7 +254,7 @@ public class BattleResultHandler : MonoBehaviour
 
     private IEnumerator ResetAfterDelay()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
         GetComponent<TurnManager>().ResetEnv();
     }
 }

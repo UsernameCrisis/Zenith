@@ -15,6 +15,7 @@ TagManager:
   - Goal
   - Cleric
   - Warrior
+  - Allies
   layers:
   - Default
   - TransparentFX

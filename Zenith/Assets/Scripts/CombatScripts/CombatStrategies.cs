@@ -63,6 +63,65 @@ namespace BehaviourTrees
         }
     }
 
+    public class IsAloneOnTeam : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+
+        public IsAloneOnTeam(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null) return Node.Status.Failure;
+
+            var teammates = ai.GetGridData().GetUnitsByTeam(self.Team);
+
+            foreach (var (_, ally) in teammates)
+            {
+                if (ally == self) continue;
+                if (ally.HP > 0) return Node.Status.Failure;
+            }
+
+            return Node.Status.Success;
+        }
+    }
+
+    public class AllyWithIDExists : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+        private readonly int targetID;
+
+        public AllyWithIDExists(EnemyAIControllerBase ai, int targetID)
+        {
+            this.ai = ai;
+            this.targetID = targetID;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null) return Node.Status.Failure;
+
+            var teammates = ai.GetGridData().GetUnitsByTeam(self.Team);
+
+            foreach (var (_, ally) in teammates)
+            {
+                if (ally == self) continue;
+                if (ally.ID == targetID && ally.HP > 0)
+                    return Node.Status.Success;
+            }
+
+            return Node.Status.Failure;
+        }
+    }
+
     public class FindClosest : IStrategy
     {
         EnemyAIControllerBase ai;
@@ -147,7 +206,6 @@ namespace BehaviourTrees
             var targetPos = ai.GetTargetPos();
 
             int dist = ai.GetPreview().PathCost(enemyPos, targetPos);
-            int minRange = 3;
             return dist < minRange ? Node.Status.Success : Node.Status.Failure;
         }
     }
@@ -435,7 +493,7 @@ namespace BehaviourTrees
             if (clericPos.HasValue)
                 return ai.FindMoveToward(current, clericPos.Value, reachable);
 
-            return ai.FindMoveAwayFrom(current, ai.GetTargetPos(), reachable);
+            return ai.FindMoveToward(current, ai.GetTargetPos(), reachable);
         }
     }
 
@@ -686,5 +744,339 @@ namespace BehaviourTrees
             HashSet<Vector3Int> reachable,
             CharacterObject character
         );
+    }
+
+    public class FindMostKillable : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+
+        public FindMostKillable(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null)
+                return Node.Status.Failure;
+
+            var enemies = ai.GetGridData().GetEnemyTeamUnit(self.Team);
+
+            if (enemies == null || enemies.Count == 0)
+                return Node.Status.Failure;
+
+            Vector3Int bestPos = currentPos;
+            float bestKillScore = float.MaxValue;
+            int bestDist = int.MaxValue;
+            bool foundAny = false;
+
+            foreach (var (pos, enemy) in enemies)
+            {
+                if (enemy.HP <= 0) continue;
+
+                int effectiveDamage = Mathf.Max(self.Damage - enemy.Defense, 1);
+                int remainingHP = Mathf.Max(enemy.HP - effectiveDamage, 0);
+
+                float killScore = enemy.MaxHp > 0
+                    ? (float)remainingHP / enemy.MaxHp
+                    : 0f;
+
+                int dist = ai.GetPreview().PathCost(currentPos, pos);
+
+                bool betterKill = killScore < bestKillScore;
+                bool sameKillCloser = Mathf.Approximately(killScore, bestKillScore) && dist < bestDist;
+
+                if (betterKill || sameKillCloser)
+                {
+                    bestKillScore = killScore;
+                    bestDist = dist;
+                    bestPos = pos;
+                    foundAny = true;
+                }
+            }
+
+            if (!foundAny)
+                return Node.Status.Failure;
+
+            ai.SetTargetPos(bestPos);
+            return Node.Status.Success;
+        }
+    }
+
+    public class FindHighestThreat : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+
+        public FindHighestThreat(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null)
+                return Node.Status.Failure;
+
+            var enemies = ai.GetGridData().GetEnemyTeamUnit(self.Team);
+
+            if (enemies == null || enemies.Count == 0)
+                return Node.Status.Failure;
+
+            Vector3Int bestPos = currentPos;
+            float bestThreat = float.MinValue;
+            bool foundAny = false;
+
+            foreach (var (pos, enemy) in enemies)
+            {
+                if (enemy.HP <= 0) continue;
+
+                float damageEfficiency = (float)enemy.Damage / (enemy.Defense + 1);
+                float hpFraction = enemy.MaxHp > 0 ? (float)enemy.HP / enemy.MaxHp : 0f;
+                float threat = damageEfficiency * hpFraction;
+
+                if (threat > bestThreat)
+                {
+                    bestThreat = threat;
+                    bestPos = pos;
+                    foundAny = true;
+                }
+            }
+
+            if (!foundAny)
+                return Node.Status.Failure;
+
+            ai.SetTargetPos(bestPos);
+            return Node.Status.Success;
+        }
+    }
+
+    public class IsAlreadyInRange : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+
+        public IsAlreadyInRange(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null)
+                return Node.Status.Failure;
+
+            bool inRange = ai.IsInRange(currentPos, ai.GetTargetPos(), self.AtkRange);
+            bool hasLos = ai.HasLineOfSight(currentPos, ai.GetTargetPos());
+
+            return (inRange && hasLos) ? Node.Status.Success : Node.Status.Failure;
+        }
+    }
+
+    public class CanKillTarget : IStrategy
+    {
+        private readonly EnemyAIControllerBase ai;
+
+        public CanKillTarget(EnemyAIControllerBase ai)
+        {
+            this.ai = ai;
+        }
+
+        public Node.Status Process()
+        {
+            Vector3Int currentPos = ai.GetCurrentPosition();
+            CharacterObject self = ai.GetGridData().GetTileAt(currentPos)?.PlacedObject as CharacterObject;
+
+            if (self == null)
+                return Node.Status.Failure;
+
+            CharacterObject target = ai.GetGridData().GetTileAt(ai.GetTargetPos())?.PlacedObject as CharacterObject;
+
+            if (target == null || target.HP <= 0)
+                return Node.Status.Failure;
+
+            int effectiveDamage = Mathf.Max(self.Damage - target.Defense, 1);
+            return effectiveDamage >= target.HP ? Node.Status.Success : Node.Status.Failure;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // MoveToAttackRangeOf
+    //
+    // Positions the unit at exactly its maximum attack range from the target,
+    // with line of sight, rather than moving as close as possible.
+    //
+    // This is the critical positioning strategy for ranged units. A unit with
+    // AtkRange=3 should stand 3 tiles away from the target, not 1. The existing
+    // MoveForRanged strategy already does something similar but uses a hardcoded
+    // minRange=2, which doesn't generalize. This version uses the unit's actual
+    // AtkRange as both min and max, so the unit always tries to sit at exactly
+    // maximum range — maximizing safety while maintaining attack capability.
+    //
+    // If no tile at exactly max range is reachable, it falls back to the closest
+    // reachable tile to the target (approach behavior) rather than staying still.
+    // ─────────────────────────────────────────────────────────────────────────
+    public class MoveToAttackRangeOf : MoveStrategyBase
+    {
+        private readonly int rangeTolerance;
+
+        public MoveToAttackRangeOf(EnemyAIControllerBase ai, int rangeTolerance = 1) : base(ai)
+        {
+            this.rangeTolerance = rangeTolerance;
+        }
+
+        protected override Vector3Int SelectTargetTile(
+            Vector3Int current,
+            HashSet<Vector3Int> reachable,
+            CharacterObject character)
+        {
+            Vector3Int targetPos = ai.GetTargetPos();
+            int maxRange = character.AtkRange;
+            int minRange = Mathf.Max(1, maxRange - rangeTolerance);
+
+            Vector3Int bestRangedTile = current;
+            float bestRangedScore = float.MinValue;
+            bool foundRangedTile = false;
+
+            foreach (var tile in reachable)
+            {
+                int dist = Mathf.Abs(tile.x - targetPos.x) + Mathf.Abs(tile.y - targetPos.y);
+
+                if (dist < minRange || dist > maxRange)
+                    continue;
+
+                if (!ai.HasLineOfSight(tile, targetPos))
+                    continue;
+
+                float score = dist;
+
+                if (score > bestRangedScore)
+                {
+                    bestRangedScore = score;
+                    bestRangedTile = tile;
+                    foundRangedTile = true;
+                }
+            }
+
+            if (foundRangedTile)
+                return bestRangedTile;
+
+            return ai.FindMoveToward(current, targetPos, reachable);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // MoveToFrontline
+    //
+    // Tank-specific positioning. Moves toward the most threatening enemy,
+    // prioritizing tiles that place the tank BETWEEN the threat and the
+    // unit's own team. This demonstrates protective positioning rather than
+    // just blind aggression — the tank absorbs damage by being in the way.
+    //
+    // Scoring: each reachable tile is scored by how well it intercepts the
+    // line between the threat and the closest ally. The tile that minimizes
+    // the enemy's path cost to any ally (other than the tank itself) is best,
+    // because the tank standing there forces the enemy to deal with the tank
+    // before reaching the backline.
+    // ─────────────────────────────────────────────────────────────────────────
+    public class MoveToFrontline : MoveStrategyBase
+    {
+        public MoveToFrontline(EnemyAIControllerBase ai) : base(ai) {}
+
+        protected override Vector3Int SelectTargetTile(
+            Vector3Int current,
+            HashSet<Vector3Int> reachable,
+            CharacterObject character)
+        {
+            Vector3Int threatPos = ai.GetTargetPos();
+            var allies = ai.GetGridData().GetUnitsByTeam(character.Team);
+
+            if (allies == null || allies.Count <= 1)
+                return ai.FindMoveToward(current, threatPos, reachable);
+
+            // Vector3Int mostExposedAllyPos = current;
+            // int closestAllyToThreat = int.MaxValue;
+            Dictionary<Vector3Int, int> baselineCosts = new();
+            foreach (var (allyPos, ally) in allies)
+            {
+                if (ally == character) continue;
+                if (ally.HP <= 0) continue;
+
+                // int distThreatToAlly = ai.GetPreview().PathCost(threatPos, allyPos);
+                baselineCosts[allyPos] = ai.GetPreview().PathCost(threatPos, allyPos);
+
+                // if (distThreatToAlly < closestAllyToThreat)
+                // {
+                //     closestAllyToThreat = distThreatToAlly;
+                //     mostExposedAllyPos = allyPos;
+                // }   
+            }
+
+            // int baselineCost = ai.GetPreview().PathCost(threatPos, mostExposedAllyPos);
+
+            Vector3Int bestTile = current;
+            float bestScore = float.MinValue;
+            HashSet<Vector3Int> blocked = new HashSet<Vector3Int>();
+
+            foreach (var tile in reachable)
+            {
+                int distToThreat = ai.GetPreview().PathCost(tile, threatPos);
+                float proximityToThreat = distToThreat == int.MaxValue
+                    ? float.MinValue
+                    : -distToThreat;
+                // if (distToThreat == int.MaxValue) continue;
+
+                float interceptionScore = 0f;
+                int allyCount = 0;
+
+                blocked.Clear();
+                blocked.Add(tile);
+                // int blockedCost = ai.GetPreview().PathCostWithBlocked(threatPos, mostExposedAllyPos, blocked);
+
+                // int detourValue = blockedCost == int.MaxValue
+                //     ? 1000
+                //     : blockedCost - baselineCost;
+
+                
+
+                foreach (var (allyPos, ally) in allies)
+                {
+                    if (ally == character) continue;
+                    if (ally.HP <= 0) continue;
+
+                    int baseline = baselineCosts.TryGetValue(allyPos, out int b) ? b : 0;
+                    int blockedCost = ai.GetPreview().PathCostWithBlocked(
+                        threatPos, allyPos, blocked);
+
+                    int detour = blockedCost == int.MaxValue ? 1000 : blockedCost - baseline;
+
+                    // interceptionScore += threatToAllyViaThisTile;
+                    interceptionScore += detour;
+                    allyCount++;
+                }
+
+                if (allyCount > 0)
+                    interceptionScore /= allyCount;
+
+                float totalScore = (proximityToThreat * 0.6f) + (interceptionScore * 0.4f);
+
+                // float score = (detourValue * 2f) - (distToThreat * 1f);
+
+                if (totalScore > bestScore)
+                {
+                    bestScore = totalScore;
+                    bestTile = tile;
+                }
+            }
+
+            return bestTile;
+        }
     }
 }

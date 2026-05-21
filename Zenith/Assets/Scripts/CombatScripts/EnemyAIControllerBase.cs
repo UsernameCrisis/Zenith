@@ -16,6 +16,8 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     private CombatAgent2 observingAgent = null;
     
     private bool isTurnComplete = false;
+    private bool btHasMoved = false;
+    private bool btHasAttacked = false;
     
     public bool IsTurnComplete() => isTurnComplete;
     private bool btActionComplete = false;
@@ -42,6 +44,13 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     public void SubmitMove(CharacterObject character, Vector3Int from, 
                             Vector3Int to, GridData gridData)
     {
+        if (btHasMoved)
+        {
+            Debug.LogWarning($"BT tried to move twice in one turn for {character.Name}! Ignoring.");
+            return;
+        }
+        btHasMoved = true;
+
         if (observingAgent != null)
         {
             observingAgent.RegisterBTActionCallback(OnAgentActionComplete);
@@ -55,6 +64,13 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     public void SubmitAttack(CharacterObject character, Vector3Int from,
                                 Vector3Int to, GridData gridData)
     {
+        if (btHasAttacked)
+        {
+            Debug.LogWarning($"BT tried to attack twice in one turn for {character.Name}! Ignoring.");
+            return;
+        }
+        btHasAttacked = true;
+
         if (observingAgent != null)
         {
             observingAgent.RegisterBTActionCallback(OnAgentActionComplete);
@@ -79,6 +95,8 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         this.gridData = gridData;
         myCharacter = character;
         isTurnComplete = false;
+        btHasMoved = false;
+        btHasAttacked = false;
 
         tree = new BehaviourTree(GetTreeName());
         Node root = BuildTree();
@@ -151,6 +169,8 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
         if (observingAgent != null && !observingAgent.IsTurnComplete())
         {
+            observingAgent.RegisterBTActionCallback(OnAgentActionComplete);
+            observingAgent.SetManualAction(2, Vector3Int.zero);
             StartCoroutine(WaitForAgentThenComplete());
             return;
         }

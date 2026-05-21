@@ -23,6 +23,30 @@ public class ClericAIController : EnemyAIControllerBase
 
         Selector combat = new Selector("Combat");
 
+        Sequence aloneMode = new Sequence("AloneMode");
+        aloneMode.AddChild(new Leaf("IsAloneOnTeam", new IsAloneOnTeam(this)));
+
+        Selector aloneRangedCombat = new Selector("AloneRangedCombat");
+        Sequence attackIfInRange = new Sequence("AttackIfInRange");
+        attackIfInRange.AddChild(new Leaf("IsAlreadyInRange", new IsAlreadyInRange(this)));
+        attackIfInRange.AddChild(new Leaf("Attack", new Attack(this)));
+        aloneRangedCombat.AddChild(attackIfInRange);
+
+        Sequence repositionAndFire = new Sequence("RepositionAndFire");
+        repositionAndFire.AddChild(new Leaf("MoveToRange", new MoveToAttackRangeOf(this, rangeTolerance: 1)));
+
+        Selector tryFireAfterReposition = new Selector("TryFireAfterReposition");
+        Sequence fireIfReached = new Sequence("FireIfReached");
+        fireIfReached.AddChild(new Leaf("IsAlreadyInRange", new IsAlreadyInRange(this)));
+        fireIfReached.AddChild(new Leaf("Attack", new Attack(this)));
+        tryFireAfterReposition.AddChild(fireIfReached);
+        tryFireAfterReposition.AddChild(new Leaf("AlwaysSucceed", new AlwaysSucceed()));
+
+        repositionAndFire.AddChild(tryFireAfterReposition);
+        aloneRangedCombat.AddChild(repositionAndFire);
+        aloneMode.AddChild(aloneRangedCombat);
+        combat.AddChild(aloneMode);
+
         Sequence reposition = new Sequence("Reposition");
         reposition.AddChild(new Leaf("IsTooClose", new IsTooClose(this, SafeDistance)));
         reposition.AddChild(new Leaf("MoveToBackline", new MoveToBackline(this, SafeDistance)));
@@ -58,6 +82,7 @@ public class ClericAIController : EnemyAIControllerBase
         tryHealAfterMove.AddChild(healAfterMove);
 
         tryHealAfterMove.AddChild(new Leaf("AlwaysSucceed", new AlwaysSucceed()));
+        chaseWounded.AddChild(tryHealAfterMove);
         tryMoveUsefully.AddChild(chaseWounded);
 
         ProbabilitySelector combatOrFollow = new ProbabilitySelector("CombatOrFollow", 

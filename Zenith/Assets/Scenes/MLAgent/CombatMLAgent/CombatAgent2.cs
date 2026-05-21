@@ -49,9 +49,10 @@ public class CombatAgent2 : Agent, ITurnActor
     private const int MapSize  = 10;
     private const int MapOffset =  5;
     private const int TileActionCount = MapSize * MapSize;
-    private const int MoveOffset   = 0;
-    private const int AttackOffset = TileActionCount;
-    private const int EndTurnAction = TileActionCount * 2;
+    private const int NoOpAction    = 0;
+    private const int MoveOffset   = 1;
+    private const int AttackOffset = TileActionCount + 1;
+    private const int EndTurnAction = (TileActionCount * 2) + 1;
     private float _maxTurn;
     private bool hasAction = false;
     private bool hasMoved = false;
@@ -85,6 +86,14 @@ public class CombatAgent2 : Agent, ITurnActor
     public override void OnEpisodeBegin()
     {
         if (!enabled) return;
+
+        hasMoved = false;
+        hasAttacked = false;
+        isTurnComplete = false;
+        btActionFullyProcessed = true;
+        chosenActionType = 2;
+        chosenTileIndex = GridPosToTileIndex(Vector3Int.zero);
+        hasAction = false;
         if (groundRenderer != null && CumulativeReward != 0f)
         {
             Color flashColor = (CumulativeReward > 0f) ? Color.green : Color.red;
@@ -211,6 +220,11 @@ public class CombatAgent2 : Agent, ITurnActor
         // PenalizePerTurn();
         int encodedAction = actions.DiscreteActions[0];
 
+        if (encodedAction == 0 && isBTRecordingMode && !IsBTActionFullyProcessed())
+        {
+            return;
+        }
+
         DecodeAction(encodedAction,out int actionType,out int tileIndex);
 
         Vector3Int targetPos = TileIndexToGridPos(tileIndex);
@@ -237,6 +251,18 @@ public class CombatAgent2 : Agent, ITurnActor
 
             case 2:
                 EndTurn(character);
+                break;
+            
+            case 3:
+                if (isBTRecordingMode)
+                {
+                    btActionFullyProcessed = true;
+                    NotifyBTActionComplete();
+                }
+                else if (!isManualMode)
+                {
+                    RequestDecision();
+                }
                 break;
             default:
                 Debug.Log("DEFAULT TRIGGERED");
@@ -266,6 +292,8 @@ public class CombatAgent2 : Agent, ITurnActor
 
         for (int i = 0; i <= EndTurnAction; i++)
             actionMask.SetActionEnabled(0, i, false); // disables all action
+
+        actionMask.SetActionEnabled(0, NoOpAction, false);
 
         // Enable move actions
         if (!hasMoved)
@@ -305,7 +333,28 @@ public class CombatAgent2 : Agent, ITurnActor
         hasMoved = false;
         hasAttacked = false;
 
-        if (!isRecording) RequestDecision();
+        chosenActionType = 2;
+        chosenTileIndex = GridPosToTileIndex(Vector3Int.zero); // center tile, safe fallback
+        hasAction = false;
+
+        if (!isRecording && !isManualMode && !isBTRecordingMode) RequestDecision();
+    }
+
+    public void ResetState()
+    {
+        StopAllCoroutines();
+        if (groundRenderer != null && groundMaterial.color != defaultGroundColor)
+        {
+            flashGroundCoroutine = StartCoroutine(
+                FlashGround(groundMaterial.color, 2f));
+        }
+        hasMoved = false;
+        hasAttacked = false;
+        chosenActionType = 2;
+        chosenTileIndex = 0;
+        hasAction = false;
+        isTurnComplete = false;
+        btActionFullyProcessed = true;
     }
 
     public void ForceComplete() => isTurnComplete = true;
@@ -315,7 +364,9 @@ public class CombatAgent2 : Agent, ITurnActor
     public void SetManualAction(int actionType, Vector3Int targetPos)
     {
         chosenActionType = actionType;
-        chosenTileIndex = (targetPos.y + 5) * 10 + targetPos.x + 5;
+        chosenTileIndex = actionType == 2
+            ? GridPosToTileIndex(Vector3Int.zero)
+            : (targetPos.y + 5) * 10 + targetPos.x + 5;
         hasAction = true;
         btActionFullyProcessed = false;
 
@@ -330,6 +381,8 @@ public class CombatAgent2 : Agent, ITurnActor
     public void SetActiveUnitIndex(int index) => activeUnitIndex = index;
     public void SetAllySlots(List<CharacterObject> slots) => allySlots = slots;
     public void SetGridData(GridData data) => _gridData = data;
+    public void SetHasMoved(bool value) => hasMoved = value;
+    public void SetHasAttacked(bool value) => hasAttacked = value;
     public bool GetIsManualMode() => isManualMode;
 
     // Private helpers
@@ -339,7 +392,13 @@ public class CombatAgent2 : Agent, ITurnActor
         if (!previewSystem.ComputeReachableTiles(currentPos, character.RemainingMoveRange).Contains(targetPos))
         {
             PenalizeInvalidAction();
-            RequestDecision();
+            if (isBTRecordingMode)
+            {
+                btActionFullyProcessed = true;
+                NotifyBTActionComplete(); 
+            }
+            else if (!isManualMode)
+                RequestDecision();
             return;
         }
         // RewardValidAction();
@@ -353,7 +412,13 @@ public class CombatAgent2 : Agent, ITurnActor
         if (!previewSystem.ComputeAttackableTiles(currentPos, character.AtkRange).Contains(targetPos))
         {
             PenalizeInvalidAction();
-            RequestDecision();
+            if (isBTRecordingMode)
+            {
+                btActionFullyProcessed = true;
+                NotifyBTActionComplete();
+            }
+            else if (!isManualMode)
+                RequestDecision();
             return;
         }
         // RewardValidAction();
@@ -457,10 +522,15 @@ public class CombatAgent2 : Agent, ITurnActor
 
     private void DecodeAction(int action, out int actionType, out int tileIndex)
     {
-        if (action < AttackOffset)
+        if (action == NoOpAction)
+        {
+            actionType = 3;
+            tileIndex = 0;
+        }
+        else if (action < AttackOffset)
         {
             actionType = 0;
-            tileIndex = action;
+            tileIndex = action - MoveOffset;
         }
         else if (action < EndTurnAction)
         {

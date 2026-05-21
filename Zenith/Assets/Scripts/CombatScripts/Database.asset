@@ -16,9 +16,9 @@ MonoBehaviour:
   - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 20
-    <Speed>k__BackingField: 15
-    <Defense>k__BackingField: 5
+    <Damage>k__BackingField: 12
+    <Speed>k__BackingField: 5
+    <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 1
@@ -28,10 +28,10 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: 1952440101, guid: 646e9486f53bfee44a8064ce61d283bf, type: 3}
   - <Name>k__BackingField: Cleric
     <ID>k__BackingField: 1
-    <HP>k__BackingField: 100
-    <Damage>k__BackingField: 20
-    <Speed>k__BackingField: 14
-    <Defense>k__BackingField: 3
+    <HP>k__BackingField: 80
+    <Damage>k__BackingField: 9
+    <Speed>k__BackingField: 5
+    <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
@@ -41,23 +41,23 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: -1390184236, guid: 3925d6554e98f8b4588c637160bccb0c, type: 3}
   - <Name>k__BackingField: Warrior
     <ID>k__BackingField: 2
-    <HP>k__BackingField: 100
-    <Damage>k__BackingField: 20
-    <Speed>k__BackingField: 13
-    <Defense>k__BackingField: 7
+    <HP>k__BackingField: 120
+    <Damage>k__BackingField: 15
+    <Speed>k__BackingField: 5
+    <Defense>k__BackingField: 2
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
     <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: 985645dc5c6a45b4e8b08c7619387192, type: 3}
-    <Portrait>k__BackingField: {fileID: 0}
+    <Portrait>k__BackingField: {fileID: 794109832, guid: 5b21458085a05934bb35028741af7646, type: 3}
   - <Name>k__BackingField: Floating Eye
     <ID>k__BackingField: 3
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 15
-    <Speed>k__BackingField: 13
-    <Defense>k__BackingField: 3
+    <Damage>k__BackingField: 11
+    <Speed>k__BackingField: 5
+    <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
@@ -68,9 +68,9 @@ MonoBehaviour:
   - <Name>k__BackingField: Slime
     <ID>k__BackingField: 4
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 20
-    <Speed>k__BackingField: 10
-    <Defense>k__BackingField: 5
+    <Damage>k__BackingField: 12
+    <Speed>k__BackingField: 5
+    <Defense>k__BackingField: 2
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2
     <IsPlayer>k__BackingField: 0
@@ -80,9 +80,9 @@ MonoBehaviour:
     <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
   - <Name>k__BackingField: Bat
     <ID>k__BackingField: 5
-    <HP>k__BackingField: 100
-    <Damage>k__BackingField: 12
-    <Speed>k__BackingField: 15
+    <HP>k__BackingField: 80
+    <Damage>k__BackingField: 13
+    <Speed>k__BackingField: 5
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
     <Type>k__BackingField: 2

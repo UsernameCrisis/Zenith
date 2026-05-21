@@ -2041,7 +2041,7 @@ MonoBehaviour:
   gridSelect: {fileID: 331495578}
   turnOrderUI: {fileID: 2049846321}
   combatAgent: {fileID: 1666468182}
-  controlMode: 2
+  controlMode: 4
   currentAgentTeam: 2
   useAnimation: 0
   showTurnOrderUI: 1
@@ -2079,9 +2079,10 @@ MonoBehaviour:
   turnOrderUI: {fileID: 2049846321}
   combatAgent: {fileID: 1666468182}
   combatOverUI: {fileID: 1854387147}
-  controlMode: 2
+  controlMode: 4
   currentAgentTeam: 2
   showTurnOrderUI: 1
+  isRecordingMode: 0
   maxTurn: 500
 --- !u!1 &800820801
 GameObject:
@@ -4170,12 +4171,12 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: c9000000
-    VectorActionSize: c9000000
+      BranchSizes: ca000000
+    VectorActionSize: ca000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: c6e246a98a59f7a4e87c9082edc02da2, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: fe3fdee7158f00942b067fc60ce9bfad, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Combat Behavior
@@ -4221,6 +4222,7 @@ MonoBehaviour:
   groundRenderer: {fileID: 0}
   isManualMode: 0
   isBTRecordingMode: 0
+  isRecording: 0
   inRangeBonus: 0.05
   maxPossibleHP: 215
   maxPossibleDamage: 55

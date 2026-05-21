@@ -63,7 +63,7 @@ engine_settings:
   no_graphics_monitor: false
 environment_parameters: null
 checkpoint_settings:
-  run_id: multiCombatAgent2_D_5M_200T_1024BA_131072BU_PartialDefeatCred_NoVar
+  run_id: multiCombatAgent2_NewBT_202AS_D_1024BA_131072BU_PartialDefeatCred_NoVar
   initialize_from: null
   load_model: false
   resume: false

@@ -24,15 +24,18 @@ public class PlayerAIController : EnemyAIControllerBase
         Sequence kiteAndRetreat = new Sequence("KiteAndRetreat");
         kiteAndRetreat.AddChild(new Leaf("IsLowHealth", new IsLowHealth(this, LowHealthThreshold)));
 
-        Selector tryKiteOrSkip = new Selector("TryKiteOrSkip");
+        Selector lowHealthResponse = new Selector("LowHealthResponse");
+        Sequence clericAliveResponse = new Sequence("ClericAliveResponse");
+        clericAliveResponse.AddChild(new Leaf("ClericIsAlive", new AllyWithIDExists(this, ClericID)));
 
+        Selector tryKiteOrSkip = new Selector("TryKiteOrSkip");
         Sequence tryKiteAttack = new Sequence("TryKiteAttack");
         tryKiteAttack.AddChild(new Leaf("IsInRange", new IsInRange(this)));
         tryKiteAttack.AddChild(new Leaf("Attack", new Attack(this)));
         tryKiteOrSkip.AddChild(tryKiteAttack);
 
         tryKiteOrSkip.AddChild(new Leaf("AlwaysSucceed", new AlwaysSucceed()));
-        kiteAndRetreat.AddChild(tryKiteOrSkip);
+        clericAliveResponse.AddChild(tryKiteOrSkip);
 
         ProbabilitySelector fightOrFlight = new ProbabilitySelector("FightOrFlight", new List<float> { FleeWeight, FightWeight });
 
@@ -49,7 +52,24 @@ public class PlayerAIController : EnemyAIControllerBase
         tryFightBack.AddChild(new Leaf("AlwaysSucceed", new AlwaysSucceed()));
         standAndFight.AddChild(tryFightBack);
         fightOrFlight.AddChild(standAndFight);
-        kiteAndRetreat.AddChild(fightOrFlight);
+        clericAliveResponse.AddChild(fightOrFlight);
+        lowHealthResponse.AddChild(clericAliveResponse);
+
+        Sequence noClericFight = new Sequence("NoClericFight");
+
+        Selector tryAttackFirst = new Selector("TryAttackFirst");
+        Sequence attackIfInRange = new Sequence("AttackIfInRange");
+        attackIfInRange.AddChild(new Leaf("IsInRange", new IsInRange(this)));
+        attackIfInRange.AddChild(new Leaf("Attack", new Attack(this)));
+        tryAttackFirst.AddChild(attackIfInRange);
+
+        tryAttackFirst.AddChild(new Leaf("AlwaysSucceed", new AlwaysSucceed()));
+        noClericFight.AddChild(tryAttackFirst);
+        
+        noClericFight.AddChild(new Leaf("MoveTowardEnemy", new MoveTowardTarget(this)));
+        lowHealthResponse.AddChild(noClericFight);
+
+        kiteAndRetreat.AddChild(lowHealthResponse);
         combat.AddChild(kiteAndRetreat);
 
         Sequence tryAttack = new Sequence("TryAttack");

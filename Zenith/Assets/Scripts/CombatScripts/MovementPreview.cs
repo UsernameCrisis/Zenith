@@ -101,6 +101,10 @@ public class MovementPreview : MonoBehaviour
     public List<Vector3Int> FindPathAStar(Vector3Int start, Vector3Int goal) =>
         movementSystem.FindPathAStar(start, goal);
     public int PathCost(Vector3Int start, Vector3Int goal) => movementSystem.PathCost(start, goal);
+    public int PathCostWithBlocked(Vector3Int start, Vector3Int goal, HashSet<Vector3Int> blocked)
+    {
+        return movementSystem.PathCostWithBlocked(start, goal, blocked);
+    }
     public bool HasLineOfSight(Vector3Int start, Vector3Int end) => movementSystem.HasLineOfSight(start, end);
     public Vector3Int StartTilePos => movementSystem.StartTilePos;
 }

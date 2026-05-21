@@ -49,12 +49,12 @@ public class CombatLLMChatManager : MonoBehaviour
             int y = int.Parse(match.Groups[3].Value);
 
             Debug.Log($"AI Decision Parsed: {action} at ({x},{y})");
-            callback?.Invoke(action, x, y);
+            callback?.Invoke(action, x, y); // passing the parameters to action function ExecuteNPCAction
         }
         else
         {
             Debug.LogWarning($"AI returned invalid format: '{rawResponse}'. Defaulting to Move(0,0)");
-            callback?.Invoke("Move", 0, 0);
+            callback?.Invoke("Move", 0, 0); // fallback to do nothing, move to, or to behavior tree
         }
     }
 }

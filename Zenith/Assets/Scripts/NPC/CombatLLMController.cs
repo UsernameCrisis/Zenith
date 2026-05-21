@@ -54,9 +54,32 @@ public class CombatLLMController : MonoBehaviour
         statusText.text = $"{npcName} decided to {action} at ({x},{y})!";
         Debug.Log($"[Combat] {npcName} performs {action} at tile {x}, {y}");
 
-        Invoke("CloseUI", 1.0f);
+        CombatLLMChatManager actingBrain = (npcName == "Thorek") ? warriorBrain : clericBrain;
+        string finalAction = action.ToLower();
 
-        // execute npc actions...
+        if (finalAction == "heal" && actingBrain.npcRole == CombatLLMChatManager.Archetype.Warrior)
+        {
+            Debug.Log("Warrior cannot heal! Falling back to Move.");
+            finalAction = "move";
+        }
+
+        switch (action.ToLower())
+        {
+            case "attack":
+                // Call your actual BattleManager.Attack(x, y);
+                break;
+            case "move":
+                // Call your actual BattleManager.Move(x, y);
+                break;
+            case "heal":
+                // Call your actual BattleManager.Heal(x, y);
+                break;
+            default:
+                Debug.LogWarning("Unknown action received: " + action);
+                break;
+        }
+
+        Invoke("CloseUI", 1.0f);
     }
 
     private void CloseUI()

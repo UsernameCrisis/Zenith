@@ -38,7 +38,7 @@ public class OllamaChatProvider : MonoBehaviour
         LoadSettings();
     }
 
-    public IEnumerator SendChatRequest(string userPrompt, Action<string> onResponseReceived, bool isCombat = false)
+    public IEnumerator SendChatRequest(string userPrompt, string systemPrompt, Action<string> onResponseReceived, bool isCombat = false)
     {
         string modelToUse = isCombat ? combatModel : conversationModel;
 
@@ -46,6 +46,7 @@ public class OllamaChatProvider : MonoBehaviour
         {
             model = modelToUse,
             prompt = userPrompt,
+            system = systemPrompt,
             stream = false
         };
 
@@ -86,6 +87,7 @@ public class OllamaChatProvider : MonoBehaviour
     {
         public string model;
         public string prompt;
+        public string system;
         public bool stream;
         public Options options = new Options();
     }

@@ -377,7 +377,7 @@ public class DialogueManager : MonoBehaviour
             $"- DO NOT mention 'stats', 'sell value', or 'items description' technicalities.\n" +
             $"- {currentNPCID}:";
 
-        StartCoroutine(ollamaProvider.SendChatRequest(giftPrompt, (aiResponse) => {
+        StartCoroutine(ollamaProvider.SendChatRequest(giftPrompt, "", (aiResponse) => {
             isWaitingForAI = false;
             ProcessGiftResponse(aiResponse, item, identity.lore);
         }));
@@ -406,7 +406,7 @@ public class DialogueManager : MonoBehaviour
             $"Scale: -5 (hates it) to 50 (loves it).\n" +
             $"Return ONLY the integer. If no number is found or you are unsure, return 5.";
 
-        yield return ollamaProvider.SendChatRequest(ratingPrompt, (scoreText) => {
+        yield return ollamaProvider.SendChatRequest(ratingPrompt, "", (scoreText) => {
             int baseScore = 5;
 
             Match match = Regex.Match(scoreText, @"-?\d+");
@@ -471,7 +471,7 @@ public class DialogueManager : MonoBehaviour
             $"Player: {userText}\n" +
             $"{currentNPCID}:";
 
-        StartCoroutine(ollamaProvider.SendChatRequest(chatPrompt, (aiResponse) => {
+        StartCoroutine(ollamaProvider.SendChatRequest(chatPrompt, "", (aiResponse) => {
             isWaitingForAI = false;
             ProcessDialogueResponse(aiResponse, userText);
         }));
@@ -531,7 +531,7 @@ public class DialogueManager : MonoBehaviour
             $"Player: {playerMsg}. Reply: {aiMsg}. " +
             $"Return only the integer number.";
 
-        yield return ollamaProvider.SendChatRequest(ratingPrompt, (scoreText) => {
+        yield return ollamaProvider.SendChatRequest(ratingPrompt, "", (scoreText) => {
             Match match = Regex.Match(scoreText, @"-?\d+");
             if (match.Success)
             {

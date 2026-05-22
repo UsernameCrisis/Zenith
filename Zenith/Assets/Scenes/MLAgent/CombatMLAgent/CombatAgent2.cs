@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class CombatAgent2 : Agent, ITurnActor
+public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
 {
     [Header("References")]
     [SerializeField] private MovementPreview previewSystem;
@@ -572,9 +572,7 @@ public class CombatAgent2 : Agent, ITurnActor
         }
     }
 
-    private void PenalizePerTurn() => AddReward(-0.005f);
     private void PenalizeInvalidAction() => AddReward(-0.01f);
-    private void RewardValidAction() => AddReward(0.02f);
     public void OnVictory() => AddReward(1f);
     public void OnDefeat()
     {

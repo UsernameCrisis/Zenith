@@ -17,7 +17,8 @@ public enum CombatControlMode
     PlayerVsAgent,
     EnemyPlayer,
     BTRecording,
-    Demonstration
+    Demonstration,
+    MultiAgent
 }
 
 public class TurnManager : MonoBehaviour
@@ -39,6 +40,7 @@ public class TurnManager : MonoBehaviour
     public int currentTurn = 1;
     public bool TurnAlreadyEnded { get; set; } = false;
     public List<string> DefeatedEnemyNames => resultHandler.DefeatedEnemyNames;
+    public List<UnitAgentBase> ActiveUnitAgents { get; private set; } = new();
 
     private GridData gridData;
     private BattleResultHandler resultHandler;
@@ -268,7 +270,39 @@ public class TurnManager : MonoBehaviour
             }
             return;
         }
+
+        if (controlMode == CombatControlMode.MultiAgent)
+        {
+            if (current.Team == currentAgentTeam)
+                AssignMultiAgentActor(current);
+            else
+                AssignBehaviorTreeActor(current);
+            return;
+        }
         AssignBehaviorTreeActor(current);
+    }
+
+    private void AssignMultiAgentActor(CharacterObject current)
+    {
+        TileData tile = gridData.GetTileAt(current.Position);
+        if (tile?.PlacedGameObject == null)
+        {
+            Debug.LogWarning($"AssignMultiAgentActor: no GameObject for {current.Name}");
+            return;
+        }
+
+        UnitAgentBase unitAgent = tile.PlacedGameObject.GetComponent<UnitAgentBase>();
+        if (unitAgent == null)
+        {
+            Debug.LogWarning($"AssignMultiAgentActor: no UnitAgentBase found on {current.Name}. " +
+                            $"Make sure SlimeAgent/FloatingEyeAgent/BatAgent is on the prefab.");
+            // Fall back to BT so the turn does not get stuck.
+            AssignBehaviorTreeActor(current);
+            return;
+        }
+
+        unitAgent.BeginTurn(gridData, current);
+        actor = unitAgent;
     }
 
     private void AssignBTRecordingActor(CharacterObject current)
@@ -378,6 +412,8 @@ public class TurnManager : MonoBehaviour
     {
         if (deadActor is CombatAgent2 agent)
             agent.ForceComplete();
+        else if (deadActor is UnitAgentBase unitAgent)
+            unitAgent.ForceComplete();
         else if (deadActor is EnemyAIControllerBase enemy)
             enemy.ForceComplete();
         else if (deadActor is PlayerSystem player)
@@ -397,6 +433,7 @@ public class TurnManager : MonoBehaviour
             CombatControlMode.Demonstration => demoControlledTeam,
             CombatControlMode.MLAgent => currentAgentTeam,
             CombatControlMode.BTRecording => currentAgentTeam,
+            CombatControlMode.MultiAgent => currentAgentTeam,
             _ => 1
         };
         gridSelect.SetControlledTeam(humanControlledTeam);
@@ -404,6 +441,8 @@ public class TurnManager : MonoBehaviour
         var units = gridData.GetAllUnits();
         List<CharacterObject> characters = new();
         allySlots = new List<CharacterObject>(3);
+
+        ActiveUnitAgents.Clear();
 
         foreach (var u in units)
         {
@@ -416,17 +455,81 @@ public class TurnManager : MonoBehaviour
 
             if (agentControlsThisUnit)
                 allySlots.Add(c);
-    
+
+            if (controlMode == CombatControlMode.MultiAgent && c.Team == currentAgentTeam)
+            {
+                TileData tile = gridData.GetTileAt(u.pos);
+                UnitAgentBase unitAgent = tile?.PlacedGameObject?.GetComponent<UnitAgentBase>();
+
+                if (unitAgent != null)
+                    ActiveUnitAgents.Add(unitAgent);
+                else
+                    Debug.LogWarning($"InitializeTurnQueue: no UnitAgentBase on {c.Name}'s GameObject.");
+            }
+
             resultHandler.SubscribeCharacterDeath(u.character);
         }
+
+        if (controlMode == CombatControlMode.MultiAgent)
+            NotifyAllUnitAgents();
 
         while (allySlots.Count < 3)
             allySlots.Add(null);
 
-        combatAgent.SetAllySlots(allySlots);
-        turnQueue = new TurnQueue(characters, 10); // Sementara simulate 10 turn ahead
-        // print("Total units: " + turnQueue.allUnits.Count);
+        if (controlMode != CombatControlMode.MultiAgent)
+            combatAgent.SetAllySlots(allySlots);
+        turnQueue = new TurnQueue(characters, 10);
         RefreshTurnOrderUI();
+    }
+
+    private void NotifyAllUnitAgents()
+    {
+        var enemyUnits = gridData.GetUnitsByTeam(currentAgentTeam == 1 ? 2 : 1);
+        List<CharacterObject> enemies = new();
+        for (int i = 0; i < 3; i++)
+            enemies.Add(i < enemyUnits.Count ? enemyUnits[i].character : null);
+
+        var monsterUnits = gridData.GetUnitsByTeam(currentAgentTeam);
+
+        foreach (UnitAgentBase agent in ActiveUnitAgents)
+        {
+            CharacterObject self = null;
+            foreach (var (pos, character) in monsterUnits)
+            {
+                TileData tile = gridData.GetTileAt(pos);
+                if (tile?.PlacedGameObject?.GetComponent<UnitAgentBase>() == agent)
+                {
+                    self = character;
+                    break;
+                }
+            }
+
+            if (self == null)
+            {
+                Debug.LogWarning("NotifyAllUnitAgents: could not find CharacterObject for an agent.");
+                continue;
+            }
+
+            List<CharacterObject> teammates = new();
+            foreach (UnitAgentBase other in ActiveUnitAgents)
+            {
+                if (other == agent) continue;
+                foreach (var (pos, character) in monsterUnits)
+                {
+                    TileData tile = gridData.GetTileAt(pos);
+                    if (tile?.PlacedGameObject?.GetComponent<UnitAgentBase>() == other)
+                    {
+                        teammates.Add(character);
+                        break;
+                    }
+                }
+            }
+
+            while (teammates.Count < 2)
+                teammates.Add(null);
+
+            agent.NotifyUnitAssignment(self, currentAgentTeam, teammates, enemies, gridData);
+        }
     }
 
     private void HandleEnvReset(GridData newGridData)

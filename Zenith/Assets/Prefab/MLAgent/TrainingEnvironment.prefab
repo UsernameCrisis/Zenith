@@ -160,6 +160,9 @@ MonoBehaviour:
   grid: {fileID: 3029980769564673723}
   loadFromSave: 0
   forTrainingAgent: 1
+  forMultiAgent: 1
+  poolSizePerType: 3
+  monsterTeamIDs: 030000000400000005000000
   useMaxFlow: 1
   isFullyRandom: 0
   minTraversablePaths: 3
@@ -631,7 +634,7 @@ MonoBehaviour:
   gridSelect: {fileID: 5126143606620060392}
   turnOrderUI: {fileID: 0}
   combatAgent: {fileID: 6880062522039445120}
-  controlMode: 1
+  controlMode: 0
   currentAgentTeam: 2
   useAnimation: 0
   showTurnOrderUI: 0

@@ -48,9 +48,6 @@ public class EnemyAIController_3 : EnemyAIControllerBase
         Sequence attackFirst = new Sequence("AttackFirst");
         attackFirst.AddChild(new Leaf("IsAlreadyInRange", new IsAlreadyInRange(this)));
         attackFirst.AddChild(new Leaf("Attack", new Attack(this)));
-        // After attacking, try to move toward the same target to ensure we stay
-        // close for the next unit in our team's rotation. This avoids the unit
-        // standing still after attacking when it could reposition.
         attackFirst.AddChild(new Leaf("CloseIn", new MoveTowardTarget(this)));
         combat.AddChild(attackFirst);
 

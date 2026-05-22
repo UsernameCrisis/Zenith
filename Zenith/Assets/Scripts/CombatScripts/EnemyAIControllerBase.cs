@@ -13,15 +13,15 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
 
     private CombatExecutor combatExecutor;
     private CharacterObject myCharacter;
-    private CombatAgent2 observingAgent = null;
+    private IObservableAgent observingAgent = null;
     
     private bool isTurnComplete = false;
     private bool btHasMoved = false;
     private bool btHasAttacked = false;
-    
-    public bool IsTurnComplete() => isTurnComplete;
     private bool btActionComplete = false;
     private bool isMoving = false;
+
+    public bool IsTurnComplete() => isTurnComplete;
     public bool IsMoving => isMoving;
     public bool IsPlayer => false;
 
@@ -34,7 +34,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         turnManager = GetComponentInParent<TurnManager>();
     }
 
-    public void SetObservingAgent(CombatAgent2 agent)
+    public void SetObservingAgent(IObservableAgent agent)
     {
         observingAgent = agent;
     }
@@ -350,4 +350,13 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     {
         StopAllCoroutines();
     }
+}
+
+public interface IObservableAgent
+{
+    void RegisterBTActionCallback(System.Action callback);
+    void SetManualAction(int actionType, Vector3Int targetPos);
+    bool IsBTActionFullyProcessed();
+    bool IsTurnComplete();
+    void ForceComplete();
 }

@@ -67,9 +67,6 @@ public class EnemyAIController_2 : EnemyAIControllerBase
         idealPosition.AddChild(new Leaf("Attack", new Attack(this)));
         combat.AddChild(idealPosition);
 
-        // Branch B: An enemy is dangerously close. This is the kiting response.
-        // The unit decides whether to attack first (punish the aggressor) or
-        // just flee immediately depending on whether it can still fire.
         Sequence tooCloseResponse = new Sequence("TooCloseResponse");
         tooCloseResponse.AddChild(new Leaf("IsTooClose", new IsTooClose(this, SafeDistance)));
 
@@ -86,9 +83,6 @@ public class EnemyAIController_2 : EnemyAIControllerBase
         tooCloseResponse.AddChild(new Leaf("Reposition", new MoveToAttackRangeOf(this, rangeTolerance: 1)));
         combat.AddChild(tooCloseResponse);
 
-        // Branch C: Default approach — move to optimal range, then try to attack.
-        // MoveToAttackRangeOf will position at max attack range if possible,
-        // or approach if no good tile is reachable this turn.
         Sequence positionAndFire = new Sequence("PositionAndFire");
         positionAndFire.AddChild(new Leaf("MoveToRange", new MoveToAttackRangeOf(this, rangeTolerance: 1)));
 

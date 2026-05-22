@@ -32,6 +32,11 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private bool loadFromSave = true;
     [SerializeField] private bool forTrainingAgent = false;
 
+    [Header("Multi-Agent Pool settings (requires forTrainingAgent = true)")]
+    [SerializeField] private bool forMultiAgent = false;
+    [SerializeField] private int poolSizePerType = 3;
+    [SerializeField] private List<int> monsterTeamIDs = new() { 3, 4, 5 };
+
     [Header("Training generation settings")]
     [SerializeField] private bool useMaxFlow = false;
     [SerializeField] private bool isFullyRandom = false;
@@ -51,6 +56,10 @@ public class PopulateMap : MonoBehaviour
     public GridData objectsData;
     public List<GameObject> placedGameObjects = new();
 
+    private Dictionary<int, List<GameObject>> unitPool = new();
+    private Dictionary<int, int> poolNextIndex = new();
+    private List<GameObject> activePooledObjects = new();
+
     void Awake()
     {
         objectsData = new();
@@ -63,12 +72,48 @@ public class PopulateMap : MonoBehaviour
     }
     void Start()
     {
-        
+        if (forMultiAgent)
+            InitialisePool();
+    }
+
+    private void InitialisePool()
+    {
+        foreach (int id in monsterTeamIDs)
+        {
+            ObjectData data = database.objectsData.Find(d => d.ID == id);
+            if (data == null)
+            {
+                Debug.LogError($"InitialisePool: no ObjectData found for ID {id}");
+                continue;
+            }
+
+            List<GameObject> pool = new List<GameObject>();
+
+            for (int i = 0; i < poolSizePerType; i++)
+            {
+                GameObject go = Instantiate(data.Prefab, spawnedObjectContainer);
+                go.SetActive(false);
+                pool.Add(go);
+            }
+
+            unitPool[id] = pool;
+            poolNextIndex[id] = 0;
+        }
+
+        Debug.Log($"[PopulateMap] Pool initialised: {monsterTeamIDs.Count} types × {poolSizePerType} = " +
+                  $"{monsterTeamIDs.Count * poolSizePerType} pooled GameObjects.");
     }
 
     public void Generate()
     {
         ClearMap();
+
+        if (forMultiAgent)
+        {
+            foreach (int id in monsterTeamIDs)
+                poolNextIndex[id] = 0;
+            activePooledObjects.Clear();
+        }
 
         if (loadFromSave)
             PopulateFromGridJSON();
@@ -82,9 +127,29 @@ public class PopulateMap : MonoBehaviour
 
     public void ClearMap()
     {
-        foreach (var obj in placedGameObjects)
-            if (obj != null) Destroy(obj);
-
+        if (forMultiAgent)
+        {
+            foreach (var go in activePooledObjects)
+            {
+                if (go == null) continue;
+ 
+                SetUnitVisualsActive(go, false);
+                go.SetActive(false);
+            }
+            activePooledObjects.Clear();
+ 
+            foreach (var go in placedGameObjects)
+            {
+                if (go == null) continue;
+                if (IsPooledObject(go)) continue;
+                Destroy(go);
+            }
+        }
+        else
+        {
+            foreach (var obj in placedGameObjects)
+                if (obj != null) Destroy(obj);
+        }
         placedGameObjects.Clear();
         objectsData.Clear();
     }
@@ -97,6 +162,16 @@ public class PopulateMap : MonoBehaviour
         TileData tile = objectsData.GetTileAt(pos.Value);
 
         var view = character.View;
+
+        if (forMultiAgent && IsMonsterTeamCharacter(character))
+        {
+            if (view != null && turnManager.GetUseAnimation())
+                StartCoroutine(HandleDeathRoutineMultiAgent(character, pos.Value, tile, view, onRemoved));
+            else
+                HandleDeathInstantMultiAgent(character, pos.Value, tile, onRemoved);
+
+            return;
+        }
 
         if (view != null && turnManager.GetUseAnimation())
         {
@@ -113,6 +188,43 @@ public class PopulateMap : MonoBehaviour
             objectsData.RemoveObjectAt(pos.Value);
             onRemoved?.Invoke();
         }
+    }
+
+    private IEnumerator HandleDeathRoutineMultiAgent(
+        CharacterObject character, Vector3Int pos, TileData tile, UnitView view,
+        System.Action onRemoved)
+    {
+        bool finished = false;
+        void OnFinished() => finished = true;
+        view.OnDeathFinished += OnFinished;
+
+        // Death animation plays normally, the visual dies, the agent survives.
+        yield return new WaitUntil(() => finished);
+        view.OnDeathFinished -= OnFinished;
+
+        FinaliseMultiAgentDeath(character, pos, tile, onRemoved);
+    }
+
+    private void HandleDeathInstantMultiAgent(
+        CharacterObject character, Vector3Int pos, TileData tile,
+        System.Action onRemoved)
+    {
+        FinaliseMultiAgentDeath(character, pos, tile, onRemoved);
+    }
+
+    private void FinaliseMultiAgentDeath(
+        CharacterObject character, Vector3Int pos, TileData tile,
+        System.Action onRemoved)
+    {
+        if (tile.PlacedGameObject != null)
+            SetUnitVisualsActive(tile.PlacedGameObject, false);
+
+        objectsData.RemoveObjectAt(pos);
+
+        UnitAgentBase agent = tile.PlacedGameObject?.GetComponent<UnitAgentBase>();
+        agent?.NotifyUnitDied();
+
+        onRemoved?.Invoke();
     }
 
     private IEnumerator HandleDeathRoutine(CharacterObject character, Vector3Int pos, TileData tile, UnitView view, System.Action onRemoved)
@@ -159,8 +271,35 @@ public class PopulateMap : MonoBehaviour
             },
             removeLastObject: pos =>
             {
+                if (forMultiAgent)
+                {
+                    TileData tile = objectsData.GetTileAt(pos);
+                    if (tile?.PlacedGameObject != null && IsPooledObject(tile.PlacedGameObject))
+                    {
+                        SetUnitVisualsActive(tile.PlacedGameObject, false);
+                        tile.PlacedGameObject.SetActive(false);
+                        activePooledObjects.Remove(tile.PlacedGameObject);
+
+                        foreach (var kvp in unitPool)
+                        {
+                            int idx = kvp.Value.IndexOf(tile.PlacedGameObject);
+                            if (idx >= 0)
+                            {
+                                poolNextIndex[kvp.Key] = Mathf.Max(0, poolNextIndex[kvp.Key] - 1);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Destroy(placedGameObjects[^1]);
+                    }
+                }
+                else
+                {
+                    Destroy(placedGameObjects[^1]);
+                }
                 objectsData.RemoveObjectAt(pos);
-                Destroy(placedGameObjects[^1]);
                 placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
             });
 
@@ -282,8 +421,31 @@ public class PopulateMap : MonoBehaviour
         //     data.setDamage(GameManager.Instance.playerAtk);
         //     data.setDefense(GameManager.Instance.playerMaxHP);
         // }
-        GameObject newObject = Instantiate(data.Prefab, spawnedObjectContainer);
-        newObject.transform.position = grid.CellToWorld(gridPos);
+        GameObject newObject;
+
+        if (forMultiAgent && IsMonsterTeamID(ID))
+        {
+            // Pool path: retrieve a pre-existing GameObject instead of instantiating.
+            newObject = GetFromPool(ID);
+            if (newObject == null)
+            {
+                Debug.LogError($"PlaceObject (pool): pool exhausted for ID {ID}! " +
+                                $"Increase poolSizePerType ({poolSizePerType}).");
+                return;
+            }
+
+            newObject.transform.position = grid.CellToWorld(gridPos);
+            SetUnitVisualsActive(newObject, true);
+            newObject.SetActive(true);
+            activePooledObjects.Add(newObject);
+        }
+        else
+        {
+            newObject = Instantiate(data.Prefab, spawnedObjectContainer);
+            newObject.transform.position = grid.CellToWorld(gridPos);
+        }
+
+
         placedGameObjects.Add(newObject);
         PlacedObject placedObj = CreatePlacedObjectFromData(data);
 
@@ -303,6 +465,50 @@ public class PopulateMap : MonoBehaviour
 
         objectsData.AddObjectAt(gridPos, placedObj, placedGameObjects.Count - 1, newObject);
     }
+
+    private GameObject GetFromPool(int id)
+    {
+        if (!unitPool.TryGetValue(id, out var pool))
+        {
+            Debug.LogError($"GetFromPool: no pool exists for ID {id}. " +
+                            $"Is {id} in monsterTeamIDs?");
+            return null;
+        }
+
+        int index = poolNextIndex[id];
+        if (index >= pool.Count)
+        {
+            Debug.LogError($"GetFromPool: pool exhausted for ID {id} at index {index}.");
+            return null;
+        }
+
+        poolNextIndex[id]++;
+        return pool[index];
+    }
+
+    private bool IsPooledObject(GameObject go)
+    {
+        foreach (var pool in unitPool.Values)
+            if (pool.Contains(go)) return true;
+        return false;
+    }
+
+    private void SetUnitVisualsActive(GameObject go, bool active)
+    {
+        var sr = go.GetComponentInChildren<SpriteRenderer>();
+        if (sr != null) sr.enabled = active;
+
+        var anim = go.GetComponentInChildren<Animator>();
+        if (anim != null) anim.enabled = active;
+
+        foreach (var col in go.GetComponentsInChildren<Collider>())
+            col.enabled = active;
+        foreach (var col2d in go.GetComponentsInChildren<Collider2D>())
+            col2d.enabled = active;
+    }
+
+    private bool IsMonsterTeamID(int id) => monsterTeamIDs.Contains(id);
+    private bool IsMonsterTeamCharacter(CharacterObject c) => monsterTeamIDs.Contains(c.ID);
 
     private PlacedObject CreatePlacedObjectFromData(ObjectData data)
     {

@@ -24,13 +24,18 @@ public class BattleResultHandler : MonoBehaviour
     public System.Action<CharacterObject> OnCharacterDied;
     public System.Action<GridData> OnEnvReset;
     private PopulateMap mapPopulator;
-    void Start()
+    private TurnManager turnManager;
+    void Awake()
     {
-        mapPopulator = GetComponentInChildren<PopulateMap>();
+        turnManager  = GetComponent<TurnManager>();
         bool agentNeeded = controlMode == CombatControlMode.MLAgent || 
                             controlMode == CombatControlMode.PlayerVsAgent ||
                             controlMode == CombatControlMode.BTRecording;
         combatAgent.gameObject.SetActive(agentNeeded);
+    }
+    void Start()
+    {
+        mapPopulator = GetComponentInChildren<PopulateMap>();
     }
 
     public void SubscribeCharacterDeath(CharacterObject character)
@@ -49,6 +54,12 @@ public class BattleResultHandler : MonoBehaviour
             controlMode == CombatControlMode.PlayerVsAgent)
         {
             combatAgent.OnUnitKilled(character);
+        }
+
+        if (controlMode == CombatControlMode.MultiAgent)
+        {
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                agent.OnUnitKilled(character);
         }
 
         OnCharacterDied?.Invoke(character);
@@ -87,6 +98,14 @@ public class BattleResultHandler : MonoBehaviour
             gridSelect.ExitCharacter();
             GetComponent<TurnManager>().StopTurnLoop();
             StartCoroutine(ResetAfterDelay());
+            return true;
+        }
+
+        if (controlMode == CombatControlMode.MultiAgent)
+        {
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                agent.OnVictory();
+            StartCoroutine(EndEpisodeNextFrameMultiAgent());
             return true;
         }
 
@@ -134,6 +153,14 @@ public class BattleResultHandler : MonoBehaviour
             return true;
         }
 
+        if (controlMode == CombatControlMode.MultiAgent)
+        {
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                agent.OnDefeat();
+            StartCoroutine(EndEpisodeNextFrameMultiAgent());
+            return true;
+        }
+
         ShowPlayerDefeatUI();
         return true;
     }
@@ -165,6 +192,23 @@ public class BattleResultHandler : MonoBehaviour
             combatAgent.OnGlobalTurnEnd();
         }
 
+        if (controlMode == CombatControlMode.MultiAgent)
+        {
+            if (currentTurn > maxTurn)
+            {
+                foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                    agent.OnDefeat();
+                StartCoroutine(EndEpisodeNextFrameMultiAgent());
+                return true;
+            }
+
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+            {
+                if (!agent.IsDeadThisEpisode)
+                    agent.OnGlobalTurnEnd();
+            }
+        }
+
         if (controlMode == CombatControlMode.Demonstration)
         {
             if (currentTurn > maxTurn)
@@ -182,7 +226,7 @@ public class BattleResultHandler : MonoBehaviour
     {
         Cleanup();
         GetComponent<CombatExecutor>().ResetState();
-        combatAgent.ResetState();
+        
         DefeatedEnemyNames.Clear();
 
         mapPopulator = GetComponentInChildren<PopulateMap>();
@@ -191,12 +235,19 @@ public class BattleResultHandler : MonoBehaviour
         GridData newGridData = mapPopulator.objectsData;
         GridData = newGridData;
 
-        if (combatAgent != null)
+        if (combatAgent && combatAgent.gameObject.activeSelf)
         {
+            combatAgent.ResetState();
             combatAgent.SetGridData(newGridData);
             combatAgent.SetAgentTeam(currentAgentTeam);
         }
-        
+
+        if (controlMode == CombatControlMode.MultiAgent)
+        {
+            print(turnManager);
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                agent.SetGridData(newGridData);
+        }
 
         OnEnvReset?.Invoke(newGridData);
 
@@ -250,6 +301,47 @@ public class BattleResultHandler : MonoBehaviour
             combatAgent.ForceComplete();
         }
         combatAgent.EndEpisode();
+    }
+
+    private IEnumerator EndEpisodeNextFrameMultiAgent()
+    {
+        yield return null;
+
+        if (isRecordingMode)
+        {
+            float safetyTimer = 0f;
+            bool allProcessed = false;
+
+            while (!allProcessed && safetyTimer < 2f)
+            {
+                allProcessed = true;
+
+                foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                {
+                    if (!agent.IsBTActionFullyProcessed())
+                    {
+                        allProcessed = false;
+                        break;
+                    }
+                }
+
+                if (!allProcessed)
+                {
+                    safetyTimer += Time.deltaTime;
+                    yield return null;
+                }
+            }
+
+            if (safetyTimer >= 2f)
+                Debug.LogWarning("EndEpisodeNextFrameMultiAgent: safety timeout waiting for BT actions.");
+
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+                agent.ForceComplete();
+        }
+
+        foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+            agent.EndEpisode();
+        turnManager.ResetEnv();
     }
 
     private IEnumerator ResetAfterDelay()

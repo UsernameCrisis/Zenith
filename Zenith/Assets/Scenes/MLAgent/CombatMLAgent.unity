@@ -4615,6 +4615,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2937932412013154433, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: forMultiAgent
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
@@ -4645,9 +4649,13 @@ PrefabInstance:
       propertyPath: selectionLayerMask.m_Bits
       value: 1024
       objectReference: {fileID: 0}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3539061122232183149, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: Record
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3539061122232183149, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: NumStepsToRecord
@@ -4662,16 +4670,24 @@ PrefabInstance:
       value: D:/Unity/Unity Projects/Zenith/Zenith/Zenith/Assets/Demonstrations/MonsterDemonstrations/
       objectReference: {fileID: 0}
     - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: combatAgent
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: isRecordingMode
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: combatAgent
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: showTurnOrderUI
@@ -4687,15 +4703,15 @@ PrefabInstance:
       objectReference: {fileID: 330585548}
     - target: {fileID: 5126143606620060392, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: isForHeuristicAgent
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6880062522039445120, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: isRecording
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6880062522039445120, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: isBTRecordingMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_Name

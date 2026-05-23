@@ -893,6 +893,18 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: controlMode
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: controlMode
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -923,7 +935,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -978,6 +990,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2937932412013154433, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: pauseMenu
       value: 
@@ -994,6 +1010,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -1024,7 +1044,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1381,6 +1401,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -1411,7 +1435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1466,6 +1490,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2937932412013154433, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3067620392877770110, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: pauseMenu
       value: 
@@ -1482,6 +1510,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -1512,7 +1544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1958,6 +1990,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -1988,7 +2024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2059,6 +2095,18 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: controlMode
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: controlMode
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -2089,7 +2137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3111,6 +3159,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -3141,7 +3193,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3212,6 +3264,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -3242,7 +3298,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4524,6 +4580,10 @@ PrefabInstance:
       propertyPath: sceneCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3538249264204869504, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
       value: 
@@ -4554,7 +4614,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117766667203326166, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4612,6 +4672,10 @@ PrefabInstance:
     - target: {fileID: 2937932412013154433, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_Model
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2937932412013154433, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2937932412013154433, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: m_BehaviorType
@@ -4672,7 +4736,7 @@ PrefabInstance:
     - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: combatAgent
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1329992772}
     - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
       value: 7
@@ -4684,7 +4748,7 @@ PrefabInstance:
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: combatAgent
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1329992772}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
       value: 7

@@ -18,7 +18,8 @@ public enum CombatControlMode
     EnemyPlayer,
     BTRecording,
     Demonstration,
-    MultiAgent
+    MultiAgent,
+    LLMAgent
 }
 
 public class TurnManager : MonoBehaviour
@@ -27,6 +28,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private PlayerSystem gridSelect;
     [SerializeField] private TurnOrderUI turnOrderUI;
     [SerializeField] private CombatAgent2 combatAgent;
+    [SerializeField] private CombatLLMController llmController;
 
     [Header("Settings")]
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
@@ -277,6 +279,24 @@ public class TurnManager : MonoBehaviour
                 AssignMultiAgentActor(current);
             else
                 AssignBehaviorTreeActor(current);
+            return;
+        }
+
+        if (controlMode == CombatControlMode.LLMAgent)
+        {
+            if (current.Team == 1 && !current.IsPlayer)
+            {
+                llmController.BeginTurn(gridData, current);
+                actor = llmController;
+                return;
+            }
+            if (current.IsPlayer)
+            {
+                gridSelect.BeginTurn(gridData, current);
+                actor = gridSelect;
+                return;
+            }
+            AssignBehaviorTreeActor(current); // enemy uses BT
             return;
         }
         AssignBehaviorTreeActor(current);

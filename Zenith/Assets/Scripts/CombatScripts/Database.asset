@@ -26,7 +26,7 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: f90029b800a38ac4b945901c452da9b2, type: 3}
     <Portrait>k__BackingField: {fileID: 1952440101, guid: 646e9486f53bfee44a8064ce61d283bf, type: 3}
-  - <Name>k__BackingField: Cleric
+  - <Name>k__BackingField: Iris
     <ID>k__BackingField: 1
     <HP>k__BackingField: 80
     <Damage>k__BackingField: 9
@@ -39,7 +39,7 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 3
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: ef162c73931dbd94db82bbb32aff3054, type: 3}
     <Portrait>k__BackingField: {fileID: -1390184236, guid: 3925d6554e98f8b4588c637160bccb0c, type: 3}
-  - <Name>k__BackingField: Warrior
+  - <Name>k__BackingField: Thorek
     <ID>k__BackingField: 2
     <HP>k__BackingField: 120
     <Damage>k__BackingField: 15

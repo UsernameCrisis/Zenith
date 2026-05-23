@@ -2093,8 +2093,9 @@ MonoBehaviour:
   gridSelect: {fileID: 331495578}
   turnOrderUI: {fileID: 2049846321}
   combatAgent: {fileID: 1666468182}
-  controlMode: 4
-  currentAgentTeam: 2
+  llmController: {fileID: 841280049}
+  controlMode: 8
+  currentAgentTeam: 1
   useAnimation: 0
   showTurnOrderUI: 1
   demoControlledTeam: 1
@@ -2131,8 +2132,8 @@ MonoBehaviour:
   turnOrderUI: {fileID: 2049846321}
   combatAgent: {fileID: 1666468182}
   combatOverUI: {fileID: 1854387147}
-  controlMode: 4
-  currentAgentTeam: 2
+  controlMode: 8
+  currentAgentTeam: 1
   showTurnOrderUI: 1
   isRecordingMode: 0
   maxTurn: 500
@@ -2299,6 +2300,10 @@ MonoBehaviour:
   inputElements: {fileID: 2015404301}
   playerCommandInput: {fileID: 1016366770}
   statusText: {fileID: 1552087849}
+  clericNpcName: Iris
+  warriorNpcName: Thorek
+  clericHealAmount: 10
+  healRange: 2
 --- !u!4 &841280050
 Transform:
   m_ObjectHideFlags: 0
@@ -2331,7 +2336,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &841742091
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3381,6 +3386,9 @@ MonoBehaviour:
   grid: {fileID: 780557240}
   loadFromSave: 0
   forTrainingAgent: 0
+  forMultiAgent: 0
+  poolSizePerType: 3
+  monsterTeamIDs: 030000000400000005000000
   useMaxFlow: 0
   isFullyRandom: 0
   minTraversablePaths: 2
@@ -5342,7 +5350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1717942309
 RectTransform:
   m_ObjectHideFlags: 0

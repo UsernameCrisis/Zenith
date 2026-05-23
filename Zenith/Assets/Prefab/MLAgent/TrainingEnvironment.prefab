@@ -634,7 +634,7 @@ MonoBehaviour:
   gridSelect: {fileID: 5126143606620060392}
   turnOrderUI: {fileID: 0}
   combatAgent: {fileID: 6880062522039445120}
-  controlMode: 0
+  controlMode: 7
   currentAgentTeam: 2
   useAnimation: 0
   showTurnOrderUI: 0
@@ -672,7 +672,7 @@ MonoBehaviour:
   turnOrderUI: {fileID: 0}
   combatAgent: {fileID: 6880062522039445120}
   combatOverUI: {fileID: 0}
-  controlMode: 1
+  controlMode: 7
   currentAgentTeam: 2
   showTurnOrderUI: 0
   isRecordingMode: 0

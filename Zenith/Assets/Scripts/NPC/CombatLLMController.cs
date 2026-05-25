@@ -21,8 +21,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
     [SerializeField] private int clericHealAmount = 10;
     [SerializeField] private int healRange = 2;
 
-
-    // Needed below to turn this into actor for turn manager
     private CombatExecutor combatExecutor;
     private MovementPreview previewSystem;
     private TurnManager turnManager;
@@ -39,20 +37,16 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         turnManager = GetComponentInParent<TurnManager>();
     }
 
-    // ITURNACTOR
     public void BeginTurn(GridData gridData, CharacterObject character)
     {
         this.gridData = gridData;
         this.currentUnit = character;
         isTurnComplete = false;
-
         OpenCommandInterface(character.Name);
-        // Use the name from character (sudah input nama dalam database)
     }
 
-    public void EndTurn(){}
+    public void EndTurn() { }
 
-    // UI
     public void OpenCommandInterface(string npcName)
     {
         commandOverlay.SetActive(true);
@@ -65,16 +59,16 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
     public void OnSendButtonPressed()
     {
         inputElements.SetActive(false);
-
         StartCoroutine(RunLLMTurn());
     }
 
-    // CORE TURN COROUTINE
+    // ---- CHANGED: extracts mainCharPos and passes it to RequestCombatAction ----
     public IEnumerator RunLLMTurn()
     {
         string npcName = currentUnit.Name;
         string battlefieldInfo = GenerateBattlefieldContext();
         string playerOrder = playerCommandInput.text;
+        string mainCharPos = GetMainCharacterPosition(); // NEW
 
         CombatLLMChatManager brain = (npcName == warriorNpcName) ? warriorBrain : clericBrain;
 
@@ -84,7 +78,7 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         int llmX = 0, llmY = 0;
         bool responseReceived = false;
 
-        brain.RequestCombatAction(playerOrder, battlefieldInfo, (action, x, y) =>
+        brain.RequestCombatAction(playerOrder, battlefieldInfo, mainCharPos, (action, x, y) =>
         {
             playerCommandInput.text = "";
             llmAction = action;
@@ -100,24 +94,32 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
             Debug.LogWarning("Combat State is not Playing");
             yield break;
         }
-            
 
         statusText.text = $"{npcName} decided to {llmAction} at ({llmX},{llmY})!";
         Debug.Log($"[Combat] {npcName} performs {llmAction} at tile {llmX}, {llmY}");
 
-        yield return new WaitForSeconds(0.8f); // For player to read (boleh hapus kalau tidak perlu)
-
+        yield return new WaitForSeconds(0.8f);
         yield return StartCoroutine(ExecuteWithFallback(llmAction, llmX, llmY));
-
-        yield return new WaitForSeconds(1.0f); // pengganti delay Invoke closeUI, code dalam closeUI masuk dalam Finish Turn
+        yield return new WaitForSeconds(1.0f);
 
         FinishTurn();
     }
 
+    // ---- NEW: finds the Main Character's position from gridData ----
+    private string GetMainCharacterPosition()
+    {
+        // "Main Character" is on the same team as the current NPC
+        var allies = gridData.GetUnitsByTeam(currentUnit.Team);
+        foreach (var (pos, ally) in allies)
+        {
+            if (ally.Name == "Main Character" && ally.HP > 0)
+                return $"({pos.x},{pos.y})";
+        }
+        return "(unknown)";
+    }
+
     private IEnumerator ExecuteWithFallback(string action, int x, int y)
     {
-        // Fallback and check for heal moved to case "heal"
-
         Vector3Int currentPos = currentUnit.Position;
         Vector3Int targetPos = new Vector3Int(x, y, 0);
 
@@ -158,7 +160,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
     {
         CharacterObject target = gridData.GetTileAt(targetPos)?.PlacedObject as CharacterObject;
 
-        // Validate the target is a living enemy
         if (target == null || target.HP <= 0 || target.Team == currentUnit.Team)
         {
             Debug.LogWarning($"[LLM] Invalid attack target at {targetPos}. Running BT fallback.");
@@ -166,7 +167,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
             yield break;
         }
 
-        // Already in range? go attack
         HashSet<Vector3Int> attackable = previewSystem.ComputeAttackableTiles(fromPos, currentUnit.AtkRange);
         if (attackable.Contains(targetPos) && currentUnit.CanStillAttack())
         {
@@ -175,7 +175,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
             yield break;
         }
 
-        // Move closer if enemy too far
         bool moved = false;
         if (currentUnit.CanStillMove)
         {
@@ -185,11 +184,10 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
                 combatExecutor.ExecuteMove(currentUnit, fromPos, approach, gridData);
                 yield return new WaitUntil(() => !combatExecutor.IsMoving);
                 moved = true;
-                fromPos = currentUnit.Position; // position updated by executor
+                fromPos = currentUnit.Position;
             }
         }
 
-        // Re-check range after moving then try attack if in range
         if (currentUnit.CanStillAttack())
         {
             attackable = previewSystem.ComputeAttackableTiles(fromPos, currentUnit.AtkRange);
@@ -201,7 +199,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
             }
         }
 
-        // Last fallback
         if (!moved)
         {
             Debug.LogWarning("[LLM] Can't reach attack range and can't move. Running BT fallback.");
@@ -240,7 +237,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
 
         int dist = Mathf.Abs(fromPos.x - targetPos.x) + Mathf.Abs(fromPos.y - targetPos.y);
 
-        // Move closer if needed
         if (dist > healRange && currentUnit.CanStillMove)
         {
             Vector3Int approach = FindClosestReachableTileToTarget(fromPos, targetPos);
@@ -253,7 +249,6 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
             }
         }
 
-        // Heal if now in range
         if (dist <= healRange)
         {
             healTarget.Heal(clericHealAmount);
@@ -267,20 +262,18 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
 
     private IEnumerator RunBTFallback()
     {
-        statusText.text = $"{currentUnit.Name}: using Behavior Tree fallback"; // boleh hapus
+        statusText.text = $"{currentUnit.Name}: using Behavior Tree fallback";
 
         Vector3Int? pos = gridData.GetPositionOf(currentUnit);
         if (pos == null) yield break;
 
         TileData tile = gridData.GetTileAt(pos.Value);
         EnemyAIControllerBase bt = tile?.PlacedGameObject?.GetComponent<EnemyAIControllerBase>();
-
         if (bt == null)
         {
             Debug.LogWarning($"[LLM] No EnemyAIControllerBase found on {currentUnit.Name}. Skipping fallback.");
             yield break;
         }
-
         bt.BeginTurn(gridData, currentUnit);
         yield return new WaitUntil(() => bt.IsTurnComplete());
     }

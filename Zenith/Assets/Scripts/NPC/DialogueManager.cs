@@ -459,14 +459,14 @@ public class DialogueManager : MonoBehaviour
             $"Name: {currentNPCID}\n" +
             $"Persona: {identity.role}\n" +
             $"Current Attitude: {attitude}\n\n" +
-            $"### INJECTED MEMORY/LORE (Use this to inform your answer, do not repeat it): \n" +
+            $"### INJECTED MEMORY: \n" +
             $"{identity.lore}\n\n" +
-            $"### IMPORTANT RULES:\n" +
-            $"- STAY IN CHARACTER AT ALL COSTS.\n" +
-            $"- Respond in one short, natural sentence.\n" +
-            $"- DO NOT repeat the Injected Memory word-for-word.\n" +
-            $"- DO NOT act like a virtual assistant, AI, or helpful bot.\n\n" +
-            $"### DIALOGUE HISTORY:\n" +
+            $"### RULES:\n" +
+            $"- STAY IN CHARACTER.\n" +
+            $"- Respond in exactly one sentence.\n" +
+            $"- Do not roleplay for the player.\n" +
+            $"- Stop immediately after your response.\n\n" +
+            $"### DIALOGUE:\n" +
             $"{string.Join("\n", currentConversationHistory)}\n" +
             $"Player: {userText}\n" +
             $"{currentNPCID}:";

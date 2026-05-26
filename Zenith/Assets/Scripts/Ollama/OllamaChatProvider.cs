@@ -66,7 +66,10 @@ public class OllamaChatProvider : MonoBehaviour
                 try
                 {
                     OllamaResponse res = JsonUtility.FromJson<OllamaResponse>(request.downloadHandler.text);
-                    onResponseReceived?.Invoke(res.response);
+
+                    string cleanedResponse = SanitizeAIResponse(res.response);
+
+                    onResponseReceived?.Invoke(cleanedResponse);
                 }
                 catch (Exception e)
                 {
@@ -80,6 +83,26 @@ public class OllamaChatProvider : MonoBehaviour
                 onResponseReceived?.Invoke("Connection to the brain failed.");
             }
         }
+    }
+
+    private string SanitizeAIResponse(string response)
+    {
+        if (string.IsNullOrEmpty(response)) return response;
+
+        string[] stopTriggers = { "##", "\n\n", "###", "END" };
+
+        int shortestIndex = response.Length;
+
+        foreach (string trigger in stopTriggers)
+        {
+            int index = response.IndexOf(trigger);
+            if (index != -1 && index < shortestIndex)
+            {
+                shortestIndex = index;
+            }
+        }
+
+        return response.Substring(0, shortestIndex).Trim();
     }
 
     [Serializable]

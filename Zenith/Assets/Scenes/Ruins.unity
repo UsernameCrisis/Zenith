@@ -117515,6 +117515,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1147574629}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1148874807 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3557052376036837506, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+  m_PrefabInstance: {fileID: 1437518396}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1150766107
 GameObject:
   m_ObjectHideFlags: 0
@@ -147527,6 +147538,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3263816883682605926, guid: a7304e832723af14880c15ff57e892a2, type: 3}
+      propertyPath: trashText
+      value: 
+      objectReference: {fileID: 1148874807}
     - target: {fileID: 3835590873399808524, guid: a7304e832723af14880c15ff57e892a2, type: 3}
       propertyPath: m_Name
       value: Overworld_UI

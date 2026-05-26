@@ -47,7 +47,6 @@ public class PlayerCombatMenuController : MonoBehaviour
                 return;
 
             case MenuState.None:
-                // If a character is selected, deselect before opening the menu.
                 if (IsCharacterSelected)
                 {
                     OnRequestDeselectCharacter?.Invoke();

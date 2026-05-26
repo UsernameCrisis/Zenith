@@ -160,7 +160,7 @@ MonoBehaviour:
   grid: {fileID: 3029980769564673723}
   loadFromSave: 0
   forTrainingAgent: 1
-  forMultiAgent: 1
+  forMultiAgent: 0
   poolSizePerType: 3
   monsterTeamIDs: 030000000400000005000000
   useMaxFlow: 1
@@ -172,6 +172,7 @@ MonoBehaviour:
   teamDist: 6
   width: 10
   height: 10
+  isStaticComposition: 0
   playerTeamVariance: []
   placedGameObjects: []
 --- !u!1 &1690132567902862896
@@ -576,6 +577,7 @@ GameObject:
   - component: {fileID: 3623620154553805043}
   - component: {fileID: 2538016240396351783}
   - component: {fileID: 3591238914798871949}
+  - component: {fileID: 2591995594871997899}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -634,7 +636,8 @@ MonoBehaviour:
   gridSelect: {fileID: 5126143606620060392}
   turnOrderUI: {fileID: 0}
   combatAgent: {fileID: 6880062522039445120}
-  controlMode: 7
+  llmController: {fileID: 0}
+  controlMode: 1
   currentAgentTeam: 2
   useAnimation: 0
   showTurnOrderUI: 0
@@ -672,11 +675,30 @@ MonoBehaviour:
   turnOrderUI: {fileID: 0}
   combatAgent: {fileID: 6880062522039445120}
   combatOverUI: {fileID: 0}
-  controlMode: 7
+  controlMode: 1
   currentAgentTeam: 2
   showTurnOrderUI: 0
   isRecordingMode: 0
   maxTurn: 200
+  testRecorder: {fileID: 2591995594871997899}
+--- !u!114 &2591995594871997899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5113064155641185134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 736179b3f0781fe459e44fa7c189dce2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TestRecorder
+  modes: []
+  currentModeIndex: 0
+  isGatheringData: 0
+  battleResultHandler: {fileID: 3591238914798871949}
+  turnManager: {fileID: 3623620154553805043}
+  combatAgent2: {fileID: 6880062522039445120}
 --- !u!1 &5163076560049013693
 GameObject:
   m_ObjectHideFlags: 0

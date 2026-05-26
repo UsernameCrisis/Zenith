@@ -28,6 +28,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private bool isInActionMode = false;
     private string currentAction = null;
     private bool isTurnComplete = false;
+    public bool IsTryToAttack = false;
+    public bool IsTryToMove = false;
     private int controlledTeam = 1;
 
     public bool IsTurnComplete() => isTurnComplete;
@@ -213,12 +215,14 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         {
             case "Move":
                 movePreview.ShowMovementRange(startPos, charObj.RemainingMoveRange);
+                IsTryToMove = true;
                 ShowGrid();
                 break;
 
             case "Attack":
                 if (charObj.CanStillAttack())
                     movePreview.ShowAttackableTiles(startPos, charObj.AtkRange);
+                IsTryToAttack = true;
                 ShowGrid();
                 break;
 
@@ -260,6 +264,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
         selectedChar = null;
         isInActionMode = false;
+        IsTryToMove = false;
+        IsTryToAttack = false;
         currentAction = null;
 
         inputManager.SetSelectMode(true);
@@ -272,8 +278,22 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
     private void HandleDeselectRequest()
     {
-        ExitCharacter();
-        inputManager.OnColliderClicked += ColliderClicked;
+        
+        if (IsTryToAttack || IsTryToMove)
+        {
+            gridVisualization.SetActive(false);
+            cellIndicator.SetActive(false);
+            movePreview.ClearAll();
+            actionMenu.Show(Camera.main.WorldToScreenPoint(selectedChar.transform.position));
+            currentAction = null;
+            IsTryToMove = false;
+            IsTryToAttack = false;
+        }
+        else
+        {
+            ExitCharacter();
+            inputManager.OnColliderClicked += ColliderClicked;
+        }
     }
 
     private void HandleAgentTurnEnded()
@@ -285,6 +305,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void EndAction()
     {
         isInActionMode = false;
+        IsTryToMove = false;
+        IsTryToAttack = false;
         currentAction = null;
         
         gridVisualization.SetActive(false);

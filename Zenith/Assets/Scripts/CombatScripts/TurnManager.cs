@@ -144,7 +144,7 @@ public class TurnManager : MonoBehaviour
             yield break;
         }
         yield return null;
-        float timeout = 20f;
+        float timeout = 7200f;
         float timer = 0f;
 
         yield return new WaitUntil(() =>

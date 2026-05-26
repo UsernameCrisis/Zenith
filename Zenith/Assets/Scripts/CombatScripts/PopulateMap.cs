@@ -46,6 +46,7 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private int obstacleID = 6;
     [SerializeField] private int teamDist = 6;
     [SerializeField] private int width, height;
+    [SerializeField] private bool isStaticComposition = false;
 
     [Header("Player team stat variance (training only)")]
     [SerializeField] private List<StatVarianceConfig> playerTeamVariance = new();
@@ -254,6 +255,7 @@ public class PopulateMap : MonoBehaviour
     private void GenerateTrainingMap()
     {
         var generator = new TrainingMapGenerator(
+            isStaticComposition,
             width, height,
             minX, maxX, minY, maxY,
             teamDist, obstacleID,

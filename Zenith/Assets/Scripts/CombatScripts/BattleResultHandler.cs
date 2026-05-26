@@ -16,9 +16,15 @@ public class BattleResultHandler : MonoBehaviour
     [SerializeField] private bool showTurnOrderUI = true;
     [SerializeField] private bool isRecordingMode = false;
     [SerializeField] private int maxTurn = 50;
-    
+
+    [Header("Test Recording")]
+    [SerializeField] private TestRecorder testRecorder;
 
     public int MaxTurn => maxTurn;
+    public void SetControlMode(CombatControlMode mode)
+    {
+        controlMode = mode;
+    }
     public GridData GridData { private get; set; }
     public List<string> DefeatedEnemyNames { get; private set; } = new();
     public System.Action<CharacterObject> OnCharacterDied;
@@ -88,8 +94,8 @@ public class BattleResultHandler : MonoBehaviour
 
         if (controlMode == CombatControlMode.PlayerVsAgent)
         {
-            combatAgent.OnDefeat();
-            ShowPlayerVictoryUI();
+            combatAgent.OnVictory();
+            ShowPlayerDefeatUI();
             return true;
         }
 
@@ -113,6 +119,13 @@ public class BattleResultHandler : MonoBehaviour
         // ShowScene(SceneManager.GetActiveScene());
         // Destroy(GameManager.Instance.CurrentEnemy);
         // GameManager.Instance.CurrentEnemy = null;
+
+        if (controlMode == CombatControlMode.BehaviorTree)
+        {
+            FinalizeTestEpisode(monsterWon: true); // if current agent team = 2, monster won
+            StartCoroutine(BehaviorTreeResetAfterDelay());
+            return true;
+        }
 
         // Player mode, pass defeated enemy names up to GameManager.
         gridSelect.ExitCharacter();
@@ -140,8 +153,8 @@ public class BattleResultHandler : MonoBehaviour
 
         if (controlMode == CombatControlMode.PlayerVsAgent)
         {
-            combatAgent.OnVictory();
-            ShowPlayerDefeatUI();
+            combatAgent.OnDefeat();
+            ShowPlayerVictoryUI();
             return true;
         }
 
@@ -158,6 +171,13 @@ public class BattleResultHandler : MonoBehaviour
             foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
                 agent.OnDefeat();
             StartCoroutine(EndEpisodeNextFrameMultiAgent());
+            return true;
+        }
+
+        if (controlMode == CombatControlMode.BehaviorTree)
+        {
+            FinalizeTestEpisode(monsterWon: false); // if current agent team = 2, monster lost
+            StartCoroutine(BehaviorTreeResetAfterDelay());
             return true;
         }
 
@@ -216,6 +236,16 @@ public class BattleResultHandler : MonoBehaviour
                 gridSelect.ExitCharacter();
                 GetComponent<TurnManager>().StopTurnLoop();
                 StartCoroutine(ResetAfterDelay());
+                return true;
+            }
+        }
+
+        if (controlMode == CombatControlMode.BehaviorTree)
+        {
+            if (currentTurn > maxTurn)
+            {
+                FinalizeTestEpisode(monsterWon: false);
+                StartCoroutine(BehaviorTreeResetAfterDelay());
                 return true;
             }
         }
@@ -300,6 +330,16 @@ public class BattleResultHandler : MonoBehaviour
             }
             combatAgent.ForceComplete();
         }
+
+        bool monsterWon = GridData.GetUnitsByTeam(currentAgentTeam).Count > 0;
+        FinalizeTestEpisode(monsterWon);
+
+        if (testRecorder != null && testRecorder.ShouldStop)
+        {
+            turnManager.StopTurnLoop();
+            yield break;
+        }
+
         combatAgent.EndEpisode();
     }
 
@@ -339,9 +379,37 @@ public class BattleResultHandler : MonoBehaviour
                 agent.ForceComplete();
         }
 
+        bool monsterWon = GridData.GetUnitsByTeam(currentAgentTeam).Count > 0;
+        FinalizeTestEpisode(monsterWon);
+
+        if (testRecorder != null && testRecorder.ShouldStop)
+        {
+            turnManager.StopTurnLoop();
+            yield break;
+        }
+
         foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
             agent.EndEpisode();
         turnManager.ResetEnv();
+    }
+
+    private void FinalizeTestEpisode(bool monsterWon)
+    {
+        if (testRecorder == null) return;
+        testRecorder.FinalizeEpisode(monsterWon, GridData);
+    }
+
+    private IEnumerator BehaviorTreeResetAfterDelay()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        if (testRecorder != null && testRecorder.ShouldStop)
+        {
+            turnManager.StopTurnLoop();
+            yield break;
+        }
+
+        GetComponent<TurnManager>().ResetEnv();
     }
 
     private IEnumerator ResetAfterDelay()

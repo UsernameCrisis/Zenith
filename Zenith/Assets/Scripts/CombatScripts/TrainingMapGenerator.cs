@@ -5,6 +5,7 @@ using Random = UnityEngine.Random;
 
 public class TrainingMapGenerator
 {
+    private readonly bool isStatic;
     private readonly int width;
     private readonly int height;
     private readonly int minX;
@@ -26,6 +27,7 @@ public class TrainingMapGenerator
     private Vector3Int team2Center;
 
     public TrainingMapGenerator(
+        bool isStatic,
         int width, int height,
         int minX, int maxX, int minY, int maxY,
         int teamDist, int obstacleID,
@@ -37,6 +39,7 @@ public class TrainingMapGenerator
         Action<Vector3Int, int> placeObject,
         Action<Vector3Int> removeLastObject)
     {
+        this.isStatic = isStatic;
         this.width = width;
         this.height = height;
         this.minX = minX;
@@ -78,12 +81,20 @@ public class TrainingMapGenerator
             Debug.LogError("SpawnTeams: fallback to farthest tile for team 2!");
             team2Center = GetFarthestTile(team1Center);
         }
-
-        SpawnTeam(team1Center, 0, 2, 1); // team 1 IDs
-        SpawnTeam(team2Center, 3, 5, 2); // team 2 IDs
+        
+        if (isStatic)
+        {
+            SpawnTeamStatic(team1Center, 0, 2); // team 1 IDs
+            SpawnTeamStatic(team2Center, 3, 5); // team 2 IDs
+        }
+        else
+        {
+            SpawnTeamRandomized(team1Center, 0, 2, 1); // team 1 IDs
+            SpawnTeamRandomized(team2Center, 3, 5, 2); // team 2 IDs
+        }
     }
 
-    private void SpawnTeam(Vector3Int center, int minID, int maxID, int teamID)
+    private void SpawnTeamRandomized(Vector3Int center, int minID, int maxID, int teamID)
     {
         int attempts = 0;
         int maxAttempts = 200;
@@ -121,6 +132,33 @@ public class TrainingMapGenerator
         }
         if (idsToSpawn.Count > 0)
             Debug.LogWarning($"SpawnTeam: only spawned {3 - idsToSpawn.Count}/3 units after {maxAttempts} attempts.");
+    }
+
+    private void SpawnTeamStatic(Vector3Int center, int minID, int maxID)
+    {
+        int units = 3;
+        int attempts = 0;
+        int maxAttempts = 200;
+        int currentID = minID;
+
+        while (units > 0 && attempts < maxAttempts)
+        {
+            attempts++;
+
+            int dx = Random.Range(-1, 2);
+            int dy = Random.Range(-1, 2);
+
+            Vector3Int pos = new Vector3Int(center.x + dx, center.y + dy, 0);
+
+            if (!IsInsideBounds(pos)) continue;
+            if (isOccupied(pos)) continue;
+
+            placeObject(pos, currentID);
+            currentID++;
+            units--;
+        }
+        if (units > 0)
+            Debug.LogWarning($"SpawnTeam: only spawned {3 - units}/3 units after {maxAttempts} attempts.");
     }
 
     // --- Obstacle spawning ---

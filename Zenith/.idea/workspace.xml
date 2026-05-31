@@ -5,34 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7d4df8a5-48ca-4ea7-a7ad-a1129b6690ab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Demonstrations/red_demo2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Demonstrations/MonsterDemonstrations/BTDemo.demo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Demonstrations/MonsterDemonstrations/BTDemo.demo.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Demonstrations/MonsterDemonstrations/PlayerDemo.demo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Demonstrations/MonsterDemonstrations/PlayerDemo.demo.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/CombatMLAgent_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/CombatMLAgent_timers.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ML-Agents/Timers/Combat_test1_timers.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ML-Agents/Timers/Combat_test1_timers.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/Cleric.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/Combat/Cleric.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Combat/Warrior.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/Combat/Warrior.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefab/MLAgent/TrainingEnvironment.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/MLAgent/TrainingEnvironment.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Combat_test1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Combat_test1.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MLAgent/CombatMLAgent/CombatAgent2.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/BattleResultHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/BattleResultHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ClericAIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/ClericAIController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatStrategies.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatStrategies.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/Database.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/Database.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIControllerBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIControllerBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_1.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_2.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_3.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/EnemyAIController_3.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/MovementPreview.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/MovementPreview.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/MovementSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/MovementSystem.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerAIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerAIController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/CombatAgent2.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Config/CombatAgent2.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/CombatAgent2BC.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Config/CombatAgent2BC.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatExecutor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/CombatExecutor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerCombatMenuController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerCombatMenuController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/PlayerSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TestRecorder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CombatScripts/TestRecorder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/MultiAgent.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Config/MultiAgent.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

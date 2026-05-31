@@ -11,8 +11,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     [SerializeField] private Grid grid;
     [SerializeField] private GameObject gridVisualization;
     [SerializeField] private MovementPreview movePreview;
-    [SerializeField] private CharacterActionMenu actionMenu;
     [SerializeField] private CombatCameraMovement cameraMovement;
+    [SerializeField] private CharacterInfoUI characterInfoUI;
     [SerializeField] private bool isForHeuristicAgent = false;
 
     private PlayerCombatMenuController menuController;
@@ -28,8 +28,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private bool isInActionMode = false;
     private string currentAction = null;
     private bool isTurnComplete = false;
-    public bool IsTryToAttack = false;
-    public bool IsTryToMove = false;
+    private bool IsTryToAttack = false;
+    private bool IsTryToMove = false;
     private int controlledTeam = 1;
 
     public bool IsTurnComplete() => isTurnComplete;
@@ -118,39 +118,40 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     }
 
     // Input Handling
-
     private void ColliderClicked(Collider collider)
     {
-        if (isForHeuristicAgent)
+        if (inputManager.GetSelectMode())
         {
-            // agak janky ini code
-            if (inputManager.GetSelectMode())
-            {
-                GameObject candidateGO = collider.transform.parent.gameObject;
-                Vector3Int candidatePos = grid.WorldToCell(candidateGO.transform.position);
-                CharacterObject candidateChar = objectsData.GetTileAt(candidatePos)?.PlacedObject as CharacterObject;
+            GameObject candidateGO = collider.transform.parent.gameObject;
+            Vector3Int candidatePos = grid.WorldToCell(candidateGO.transform.position);
+            CharacterObject candidateChar = objectsData.GetTileAt(candidatePos)?.PlacedObject as CharacterObject;
+            if (candidateChar == null) return;
 
-                if (candidateChar != null && candidateChar.Team == controlledTeam
-                    && candidateChar == currentTurnUnit)
-                    SelectCharacter(collider);
-                else
-                    print("Not this unit's turn!");
-            }
-        } else
-        {
-            if (inputManager.GetSelectMode())
-            {
-                GameObject candidateGO = collider.transform.parent.gameObject;
-                Vector3Int candidatePos = grid.WorldToCell(candidateGO.transform.position);
-                CharacterObject candidateChar = objectsData.GetTileAt(candidatePos)?.PlacedObject as CharacterObject;
+            bool isActiveUnit = candidateChar.Team == controlledTeam
+                                && candidateChar == currentTurnUnit;
 
-                if (candidateChar != null && candidateChar.Team == controlledTeam
-                    && candidateChar == currentTurnUnit)
-                    SelectCharacter(collider);
-                else
-                    print("Not this unit's turn!");
-                // TODO: clicking any other unit (ally or enemy) will show their stats here.
-            }
+            if (isActiveUnit)
+                SelectCharacter(collider);
+            else if (!isForHeuristicAgent)
+            {
+                if (selectedChar != null)
+                {
+                    selectedChar = null;
+                    movePreview.ClearAll();
+                    gridVisualization.SetActive(false);
+                    cellIndicator.SetActive(false);
+                    menuController.IsCharacterSelected = false;
+                }
+
+                GameObject candidateGO2 = objectsData.GetObjectAt(candidatePos);
+                if (candidateGO2 != null)
+                    cameraMovement.FocusOnCharacter(candidateGO2.transform);
+
+                characterInfoUI.OnActionSelected -= HandleActionMenu;
+                characterInfoUI?.Show(candidateChar, isControllable: false);
+                menuController.IsCharacterSelected = true;
+            } else
+                print("Not this unit's turn!");
         }
 
         if (isInActionMode)
@@ -204,7 +205,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void HandleActionMenu(string action)
     {
         if (combatExecutor.IsMoving || combatExecutor.IsAttacking) return;
-
+        inputManager.SetSelectMode(false);
         currentAction = action;
         isInActionMode = true;
 
@@ -217,6 +218,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                 movePreview.ShowMovementRange(startPos, charObj.RemainingMoveRange);
                 IsTryToMove = true;
                 ShowGrid();
+                characterInfoUI?.HideActionButtons();
                 break;
 
             case "Attack":
@@ -224,6 +226,7 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                     movePreview.ShowAttackableTiles(startPos, charObj.AtkRange);
                 IsTryToAttack = true;
                 ShowGrid();
+                characterInfoUI?.HideActionButtons();
                 break;
 
             case "EndTurn":
@@ -233,8 +236,6 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
                     EndTurn();
                 break;
         }
-
-        actionMenu.Hide();
     }
 
     // Character selection
@@ -242,14 +243,22 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
     private void SelectCharacter(Collider collider)
     {
         selectedChar = collider.transform.parent.gameObject;
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(selectedChar.transform.position);
+        Vector3Int selectedPos = grid.WorldToCell(selectedChar.transform.position);
+        CharacterObject selectedCharObj = objectsData.GetTileAt(selectedPos)?.PlacedObject as CharacterObject;
 
-        actionMenu.OnActionSelected += HandleActionMenu;
-        actionMenu.Show(screenPos);
+        bool isControllable = selectedCharObj != null
+            && selectedCharObj.Team == controlledTeam
+            && selectedCharObj == currentTurnUnit;
+
+        if (characterInfoUI != null && selectedCharObj != null)
+        {
+            characterInfoUI.OnActionSelected -= HandleActionMenu;
+            characterInfoUI.OnActionSelected += HandleActionMenu;
+            characterInfoUI.Show(selectedCharObj, isControllable);
+        }
 
         cameraMovement.FocusOnCharacter(selectedChar.transform); 
 
-        inputManager.SetSelectMode(false);
         menuController.IsCharacterSelected = true;
     }
 
@@ -259,8 +268,11 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         cellIndicator.SetActive(false);
         movePreview.ClearAll();
 
-        actionMenu.OnActionSelected -= HandleActionMenu;
-        actionMenu.Hide();
+        if (characterInfoUI != null)
+        {
+            characterInfoUI.OnActionSelected -= HandleActionMenu;
+            characterInfoUI.Hide();
+        }
 
         selectedChar = null;
         isInActionMode = false;
@@ -284,7 +296,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
             gridVisualization.SetActive(false);
             cellIndicator.SetActive(false);
             movePreview.ClearAll();
-            actionMenu.Show(Camera.main.WorldToScreenPoint(selectedChar.transform.position));
+            inputManager.SetSelectMode(true);
+            characterInfoUI?.ShowActionButtons();
             currentAction = null;
             IsTryToMove = false;
             IsTryToAttack = false;
@@ -317,7 +330,11 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
         if (combatExecutor.IsAttacking || combatExecutor.IsMoving)
             StartCoroutine(ShowMenuAfterAnimation());
         else
-            actionMenu.Show(Camera.main.WorldToScreenPoint(selectedChar.transform.position));
+        {
+            characterInfoUI?.ShowActionButtons();
+            inputManager.SetSelectMode(true);
+        }
+            
     }
 
     private IEnumerator ShowMenuAfterAnimation()
@@ -328,7 +345,8 @@ public class PlayerSystem : MonoBehaviour, ITurnActor
 
         if (selectedChar == null) yield break;
 
-        actionMenu.Show(Camera.main.WorldToScreenPoint(selectedChar.transform.position));
+        characterInfoUI?.ShowActionButtons();
+        inputManager.SetSelectMode(true);
     }
 
     private void VisualizeHoveredGrid()

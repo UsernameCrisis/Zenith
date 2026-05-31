@@ -4735,7 +4735,7 @@ PrefabInstance:
       objectReference: {fileID: 1329992772}
     - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3591238914798871949, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: testRecorder
@@ -4751,7 +4751,7 @@ PrefabInstance:
       objectReference: {fileID: 1329992772}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: showTurnOrderUI
@@ -4840,7 +4840,7 @@ MonoBehaviour:
     episodesToRun: 500
   - modeName: BC
     controlMode: 1
-    combatAgent2Model: {fileID: 0}
+    combatAgent2Model: {fileID: 5022602860645237092, guid: 3c3d08a9290c76b4a9696efbb2084acc, type: 3}
     episodesToRun: 500
   - modeName: Multi Agent
     controlMode: 7
@@ -4850,7 +4850,7 @@ MonoBehaviour:
     controlMode: 2
     combatAgent2Model: {fileID: 0}
     episodesToRun: 500
-  currentModeIndex: 4
+  currentModeIndex: 2
   isGatheringData: 1
   battleResultHandler: {fileID: 313746578382511796}
   turnManager: {fileID: 313746578382511794}

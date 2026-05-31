@@ -159,10 +159,33 @@ public class TestRecorder : MonoBehaviour
         int monsterUnitsAlive = currentGridData.GetUnitsByTeam(2).Count;
         int totalTurns = turnManager.currentTurn;
 
-        UpdateAccumulators(monsterTeamWon, totalTurns, playerUnitsAlive, monsterUnitsAlive, damageByMonsters);
+        float rewardFloatingEye = 0f;
+        float rewardSlime       = 0f;
+        float rewardBat         = 0f;
+        float rewardTotal       = 0f;
+
+        if (activeConfig.controlMode == CombatControlMode.MultiAgent)
+        {
+            foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
+            {
+                float r = agent.CumulativeReward;
+                if (agent is FloatingEyeAgent) rewardFloatingEye = r;
+                else if (agent is SlimeAgent)rewardSlime = r;
+                else if (agent is BatAgent) rewardBat = r;
+            }
+            rewardTotal = rewardFloatingEye + rewardSlime + rewardBat;
+        }
+        else if (activeConfig.controlMode == CombatControlMode.MLAgent)
+        {
+            rewardTotal = combatAgent2 != null ? combatAgent2.CumulativeReward : 0f;
+        }
+
+        UpdateAccumulators(monsterTeamWon, totalTurns, playerUnitsAlive, monsterUnitsAlive,
+                            damageByMonsters, damageByPlayers, rewardTotal);
 
         WriteCSVRow(monsterTeamWon, totalTurns, playerUnitsAlive, monsterUnitsAlive,
-                    damageByMonsters, damageByPlayers, deathsThisEpisode);
+                    damageByMonsters, damageByPlayers, rewardTotal, rewardFloatingEye,
+                    rewardSlime, rewardBat, deathsThisEpisode);
 
         episodesCompleted++;
         Debug.Log($"[TestRecorder] Episode {episodesCompleted}/{activeConfig.episodesToRun} complete. MonsterWon={monsterTeamWon}");
@@ -209,6 +232,7 @@ public class TestRecorder : MonoBehaviour
             "episode,agent_mode,monster_won,total_turns," +
             "player_units_alive,monster_units_alive," +
             "damage_by_monsters,damage_by_players," +
+            "agent_total_reward,floatingeye_reward,slime_reward,bat_reward," +
             "player_death_turn,cleric_death_turn,warrior_death_turn," +
             "floatingeye_death_turn,slime_death_turn,bat_death_turn");
         csvWriter.Flush();
@@ -216,7 +240,8 @@ public class TestRecorder : MonoBehaviour
 
     private void WriteCSVRow(bool monsterWon, int totalTurns, int playerUnitsAlive,
                             int monsterUnitsAlive, int dmgByMonsters, int dmgByPlayers,
-                            List<UnitDeathRecord> deaths)
+                            float rewardTotal, float rewardFloatingEye, float rewardSlime,
+                            float rewardBat, List<UnitDeathRecord> deaths)
     {
         int[] deathTurns = new int[] { -1, -1, -1, -1, -1, -1 };
         foreach (var death in deaths)
@@ -234,6 +259,10 @@ public class TestRecorder : MonoBehaviour
             $"{monsterUnitsAlive}," +
             $"{dmgByMonsters}," +
             $"{dmgByPlayers}," +
+            $"{rewardTotal:F4}," +
+            $"{rewardFloatingEye:F4}," +
+            $"{rewardSlime:F4}," +
+            $"{rewardBat:F4}," +
             $"{deathTurns[ID_PLAYER]}," +
             $"{deathTurns[ID_CLERIC]}," +
             $"{deathTurns[ID_WARRIOR]}," +
@@ -250,55 +279,94 @@ public class TestRecorder : MonoBehaviour
 
         csvWriter.WriteLine();
         csvWriter.WriteLine("=== SUMMARY ===");
-        csvWriter.WriteLine($"agent_mode,total_episodes,monster_win_rate," +
-                            $"mean_turns_per_episode,mean_damage_by_monsters," +
-                            $"mean_player_units_alive,mean_monster_units_alive," +
-                            $"mean_turns_on_monster_win,mean_damage_on_monster_win");
+        csvWriter.WriteLine(
+            "agent_mode,total_episodes,total_wins,total_losses," +
+            "outcome,mean_turns," +
+            "mean_dmg_by_monsters,mean_dmg_by_players," +
+            "mean_player_units_alive,mean_monster_units_alive," +
+            "mean_agent_reward");
 
-        float winRate = totalWins / (float)episodesCompleted;
-        float meanTurns = totalTurnsAccum / (float)episodesCompleted;
-        float meanDmg = totalDmgMonsterAccum / (float)episodesCompleted;
-        float meanPlayerAlive = totalPlayerAliveAccum / (float)episodesCompleted;
-        float meanMonsterAlive = totalMonsterAliveAccum / (float)episodesCompleted;
+        float meanPlayerAlive  = episodesCompleted > 0
+            ? totalPlayerAliveAccum  / episodesCompleted : 0f;
+        float meanMonsterAlive = episodesCompleted > 0
+            ? totalMonsterAliveAccum / episodesCompleted : 0f;
 
-        float meanTurnsOnWin = totalWins > 0
-            ? totalTurnsOnWinAccum / (float)totalWins : 0f;
-        float meanDmgOnWin = totalWins > 0
-            ? totalDmgOnWinAccum / (float)totalWins : 0f;
+        // WIN ROW
+        float meanTurnsWin = totalWins > 0 ? totalTurnsOnWinAccum / totalWins : 0f;
+        float meanDmgMonWin = totalWins > 0 ? totalDmgMonsterOnWinAccum / totalWins : 0f;
+        float meanDmgPlyWin = totalWins > 0 ? totalDmgPlayerOnWinAccum / totalWins : 0f;
+        float meanRewardWin = totalWins > 0 ? totalRewardOnWinAccum / totalWins : 0f;
 
         csvWriter.WriteLine(
             $"{activeConfig.modeName}," +
             $"{episodesCompleted}," +
-            $"{winRate:F4}," +
-            $"{meanTurns:F2}," +
-            $"{meanDmg:F2}," +
+            $"{totalWins}," +
+            $"{totalLosses}," +
+            $"WIN," +
+            $"{meanTurnsWin:F2}," +
+            $"{meanDmgMonWin:F2}," +
+            $"{meanDmgPlyWin:F2}," +
             $"{meanPlayerAlive:F4}," +
             $"{meanMonsterAlive:F4}," +
-            $"{meanTurnsOnWin:F2}," +
-            $"{meanDmgOnWin:F2}");
+            $"{meanRewardWin:F4}");
+
+        // LOSS ROW
+        float meanTurnsLoss = totalLosses > 0 ? totalTurnsOnLossAccum / totalLosses : 0f;
+        float meanDmgMonLoss = totalLosses > 0 ? totalDmgMonsterOnLossAccum / totalLosses : 0f;
+        float meanDmgPlyLoss = totalLosses > 0 ? totalDmgPlayerOnLossAccum / totalLosses : 0f;
+        float meanRewardLoss = totalLosses > 0 ? totalRewardOnLossAccum / totalLosses : 0f;
+
+        csvWriter.WriteLine(
+            $"{activeConfig.modeName}," +
+            $"{episodesCompleted}," +
+            $"{totalWins}," +
+            $"{totalLosses}," +
+            $"LOSS," +
+            $"{meanTurnsLoss:F2}," +
+            $"{meanDmgMonLoss:F2}," +
+            $"{meanDmgPlyLoss:F2}," +
+            $"{meanPlayerAlive:F4}," +
+            $"{meanMonsterAlive:F4}," +
+            $"{meanRewardLoss:F4}");
     }
 
     private int totalWins = 0;
-    private float totalTurnsAccum = 0f;
-    private float totalDmgMonsterAccum = 0f;
+    private int totalLosses = 0;
+    private float totalTurnsOnWinAccum = 0f;
+    private float totalTurnsOnLossAccum = 0f;
+    private float totalDmgMonsterOnWinAccum = 0f;
+    private float totalDmgMonsterOnLossAccum = 0f;
+    private float totalDmgPlayerOnWinAccum = 0f;
+    private float totalDmgPlayerOnLossAccum = 0f;
     private float totalPlayerAliveAccum = 0f;
     private float totalMonsterAliveAccum = 0f;
-    private float totalTurnsOnWinAccum = 0f;
-    private float totalDmgOnWinAccum = 0f;
+    private float totalRewardAccum = 0f;
+    private float totalRewardOnWinAccum = 0f;
+    private float totalRewardOnLossAccum = 0f;
 
-    private void UpdateAccumulators(bool monsterWon, int totalTurns,
-        int playerAlive, int monsterAlive, int dmgByMonsters)
+    private void UpdateAccumulators(bool monsterWon, int turns,
+        int playerAlive, int monsterAlive,
+        int dmgByMonsters, int dmgByPlayers, float rewardTotal)
     {
-        totalTurnsAccum += totalTurns;
-        totalDmgMonsterAccum += dmgByMonsters;
         totalPlayerAliveAccum += playerAlive;
         totalMonsterAliveAccum += monsterAlive;
+        totalRewardAccum       += rewardTotal;
 
         if (monsterWon)
         {
             totalWins++;
-            totalTurnsOnWinAccum += totalTurns;
-            totalDmgOnWinAccum += dmgByMonsters;
+            totalTurnsOnWinAccum += turns;
+            totalDmgMonsterOnWinAccum   += dmgByMonsters;
+            totalDmgPlayerOnWinAccum    += dmgByPlayers;
+            totalRewardOnWinAccum       += rewardTotal;
+        }
+        else
+        {
+            totalLosses++;
+            totalTurnsOnLossAccum       += turns;
+            totalDmgMonsterOnLossAccum  += dmgByMonsters;
+            totalDmgPlayerOnLossAccum   += dmgByPlayers;
+            totalRewardOnLossAccum      += rewardTotal;
         }
     }
 

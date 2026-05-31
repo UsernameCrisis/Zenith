@@ -274,7 +274,6 @@ public class BattleResultHandler : MonoBehaviour
 
         if (controlMode == CombatControlMode.MultiAgent)
         {
-            print(turnManager);
             foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
                 agent.SetGridData(newGridData);
         }

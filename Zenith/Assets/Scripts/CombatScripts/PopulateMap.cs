@@ -343,7 +343,7 @@ public class PopulateMap : MonoBehaviour
 
     private void PopulateFromGridJSON()
     {
-        TextAsset jsonFile = Resources.Load<TextAsset>("maps/map_1"); // ($"maps/map_{Random.Range(0,5)}");
+        TextAsset jsonFile = Resources.Load<TextAsset>("maps/map_5"); // ($"maps/map_{Random.Range(0,5)}");
 
         if (jsonFile == null)
         {

@@ -29,8 +29,9 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private Grid grid;
 
     [Header("Generation mode")]
-    [SerializeField] private bool loadFromSave = true;
+    [SerializeField] private bool loadFromSave = false;
     [SerializeField] private bool forTrainingAgent = false;
+    [SerializeField] private bool loadFromGameState = false;
 
     [Header("Multi-Agent Pool settings (requires forTrainingAgent = true)")]
     [SerializeField] private bool forMultiAgent = false;
@@ -50,6 +51,11 @@ public class PopulateMap : MonoBehaviour
 
     [Header("Player team stat variance (training only)")]
     [SerializeField] private List<StatVarianceConfig> playerTeamVariance = new();
+
+    [Header("Game State Spawn Settings")]
+    [SerializeField] private float bonusSpawnBaseChance = 0.30f;
+    [SerializeField] private float bonusSpawnTeamBonus = 0.15f;
+    [SerializeField] private float bonusSpawnDecay = 0.50f;
 
     private int minX, maxX, minY, maxY, offsetX, offsetY;
     private TurnManager turnManager;
@@ -119,9 +125,9 @@ public class PopulateMap : MonoBehaviour
         if (loadFromSave)
             PopulateFromGridJSON();
         else if (forTrainingAgent)
-        {
             GenerateTrainingMap();
-        }
+        else if (loadFromGameState && GameManager.Instance != null)
+            PopulateFromGameState();
         else
             PopulateManually();
     }
@@ -133,12 +139,12 @@ public class PopulateMap : MonoBehaviour
             foreach (var go in activePooledObjects)
             {
                 if (go == null) continue;
- 
+
                 SetUnitVisualsActive(go, false);
                 go.SetActive(false);
             }
             activePooledObjects.Clear();
- 
+
             foreach (var go in placedGameObjects)
             {
                 if (go == null) continue;
@@ -199,7 +205,6 @@ public class PopulateMap : MonoBehaviour
         void OnFinished() => finished = true;
         view.OnDeathFinished += OnFinished;
 
-        // Death animation plays normally, the visual dies, the agent survives.
         yield return new WaitUntil(() => finished);
         view.OnDeathFinished -= OnFinished;
 
@@ -308,56 +313,212 @@ public class PopulateMap : MonoBehaviour
         generator.Generate();
     }
 
-    private bool IsPlayerTeamID(int id) => id >= 0 && id <= 2;
-
-    private void PlaceObjectWithVariance(Vector3Int gridPos, int id)
+    private void PopulateFromGameState()
     {
-        ObjectData data = database.objectsData.Find(d => d.ID == id);
-        if (data == null)
+        LoadObstaclesFromGridJSON();
+
+        List<int> playerTeam = ResolvePlayerTeam();
+        List<int> enemyTeam  = ResolveEnemyTeam(GameManager.Instance.currentEncounterEnemyNames, playerTeam.Count);
+
+        if (playerTeam.Count == 0)
         {
-            Debug.LogError($"PlaceObjectWithVariance: no ObjectData found for ID {id}");
+            Debug.LogWarning("[PopulateMap] PopulateFromGameState: player team is empty! " +
+                            "Falling back to manual placement.");
+            PopulateManually();
             return;
         }
 
-        StatVarianceConfig config = playerTeamVariance.Find(c => c.unitID == id);
-
-        if (config != null)
+        if (enemyTeam.Count == 0)
         {
-            int origHP      = data.HP;
-            int origDamage  = data.Damage;
-            int origDefense = data.Defense;
-
-            data.setHP(Random.Range(config.minHP, config.maxHP + 1));
-            data.setDamage(Random.Range(config.minDamage, config.maxDamage + 1));
-            data.setDefense(Random.Range(config.minDefense, config.maxDefense + 1));
-
-            PlaceObject(gridPos, id);
-
-            data.setHP(origHP);
-            data.setDamage(origDamage);
-            data.setDefense(origDefense);
+            Debug.LogWarning("[PopulateMap] PopulateFromGameState: enemy team is empty! " +
+                            "No matching enemy names found in database. Falling back to manual placement.");
+            PopulateManually();
+            return;
         }
-        else
-            PlaceObject(gridPos, id);
+
+        if (!FindSpawnCenters(out Vector3Int playerCenter, out Vector3Int enemyCenter))
+        {
+            Debug.LogWarning("[PopulateMap] PopulateFromGameState: could not find valid spawn centers! " +
+                            "Falling back to manual placement.");
+            PopulateManually();
+            return;
+        }
+
+        SpawnTeamAroundCenter(playerTeam, playerCenter);
+        SpawnTeamAroundCenter(enemyTeam,  enemyCenter);
+
+        Debug.Log($"[PopulateMap] Game state spawn complete. " +
+                    $"Player team: [{string.Join(", ", playerTeam)}], " +
+                    $"Enemy team: [{string.Join(", ", enemyTeam)}]");
+    }
+
+    private List<int> ResolvePlayerTeam()
+    {
+        List<int> team = new List<int>{0};
+
+        if (GameManager.Instance.clericInParty)
+            team.Add(1);
+
+        if (GameManager.Instance.warriorInParty)
+            team.Add(2);
+
+        return team;
+    }
+
+    private List<int> ResolveEnemyTeam(List<string> encounterNames, int playerTeamSize)
+    {
+        if (encounterNames == null || encounterNames.Count == 0)
+        {
+            Debug.LogWarning("[PopulateMap] ResolveEnemyTeam: encounter name list is empty.");
+            return new List<int>();
+        }
+
+        List<string> baseNames = new List<string>(encounterNames);
+
+        if (baseNames.Count > 3)
+        {
+            for (int i = baseNames.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (baseNames[i], baseNames[j]) = (baseNames[j], baseNames[i]);
+            }
+            baseNames = baseNames.GetRange(0, 3);
+        }
+
+        List<int> resolvedIDs = new List<int>();
+        foreach (string name in baseNames)
+        {
+            string cleanName = StripCloneSuffix(name);
+            ObjectData data = database.objectsData.Find(
+                d => string.Equals(d.Name, cleanName, System.StringComparison.OrdinalIgnoreCase));
+
+            if (data == null)
+            {
+                Debug.LogWarning($"[PopulateMap] ResolveEnemyTeam: no ObjectData found for enemy name '{cleanName}' " +
+                                $"(raw: '{name}'). Skipping.");
+                continue;
+            }
+
+            resolvedIDs.Add(data.ID);
+        }
+
+        if (resolvedIDs.Count == 0)
+            return resolvedIDs;
+
+        float currentChance = bonusSpawnBaseChance + (playerTeamSize - 1) * bonusSpawnTeamBonus;
+
+        while (resolvedIDs.Count < 3)
+        {
+            if (Random.value > currentChance)
+                break; // roll failed, stop adding
+
+            string bonusName = baseNames[Random.Range(0, baseNames.Count)];
+            ObjectData bonusData = database.objectsData.Find(
+                d => string.Equals(d.Name, bonusName, System.StringComparison.OrdinalIgnoreCase));
+
+            if (bonusData != null)
+                resolvedIDs.Add(bonusData.ID);
+
+            currentChance *= bonusSpawnDecay;
+        }
+
+        return resolvedIDs;
+    }
+
+    private bool FindSpawnCenters(out Vector3Int playerCenter, out Vector3Int enemyCenter)
+    {
+        playerCenter = Vector3Int.zero;
+        enemyCenter  = Vector3Int.zero;
+
+        List<Vector3Int> openTiles = new List<Vector3Int>();
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (IsWalkable(pos) && objectsData.GetTileAt(pos) == null)
+                    openTiles.Add(pos);
+            }
+        }
+
+        if (openTiles.Count < 2)
+        {
+            Debug.LogError("[PopulateMap] FindSpawnCenters: fewer than 2 open tiles available.");
+            return false;
+        }
+
+        for (int i = openTiles.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (openTiles[i], openTiles[j]) = (openTiles[j], openTiles[i]);
+        }
+
+        playerCenter = openTiles[0];
+
+        foreach (Vector3Int candidate in openTiles)
+        {
+            int dist = Mathf.Abs(candidate.x - playerCenter.x)
+                    + Mathf.Abs(candidate.y - playerCenter.y);
+            if (dist >= teamDist)
+            {
+                enemyCenter = candidate;
+                return true;
+            }
+        }
+
+        int bestDist = -1;
+        foreach (Vector3Int candidate in openTiles)
+        {
+            if (candidate == playerCenter) continue;
+            int dist = Mathf.Abs(candidate.x - playerCenter.x)
+                    + Mathf.Abs(candidate.y - playerCenter.y);
+            if (dist > bestDist)
+            {
+                bestDist = dist;
+                enemyCenter = candidate;
+            }
+        }
+
+        if (bestDist > 0)
+        {
+            Debug.LogWarning($"[PopulateMap] FindSpawnCenters: could not meet teamDist={teamDist}. " +
+                            $"Using best available distance={bestDist}.");
+            return true;
+        }
+
+        return false;
+    }
+
+    private void SpawnTeamAroundCenter(List<int> ids, Vector3Int center)
+    {
+        int placed   = 0;
+        int attempts = 0;
+        int maxAttempts = 200;
+
+        while (placed < ids.Count && attempts < maxAttempts)
+        {
+            attempts++;
+
+            int dx = Random.Range(-1, 2);
+            int dy = Random.Range(-1, 2);
+            Vector3Int pos = new Vector3Int(center.x + dx, center.y + dy, 0);
+
+            if (!IsInsideBounds(pos)) continue;
+            if (objectsData.GetTileAt(pos) != null) continue; // occupied
+
+            PlaceObject(pos, ids[placed]);
+            placed++;
+        }
+
+        if (placed < ids.Count)
+            Debug.LogWarning($"[PopulateMap] SpawnTeamAroundCenter: only placed {placed}/{ids.Count} units " +
+                            $"after {maxAttempts} attempts. Map may be too crowded near {center}.");
     }
 
     private void PopulateFromGridJSON()
     {
-        TextAsset jsonFile = Resources.Load<TextAsset>("maps/map_5"); // ($"maps/map_{Random.Range(0,5)}");
-
-        if (jsonFile == null)
-        {
-            Debug.LogError("Map JSON not found!");
-            return;
-        }
-        
-        MapGrid map = JsonUtility.FromJson<MapGrid>(jsonFile.text);
-
-        if (map == null || map.grid == null)
-        {
-            Debug.LogError("Map JSON failed to parse!");
-            return;
-        }
+        MapGrid map = LoadMapGrid();
+        if (map == null) return;
 
         for (int y = 0; y < height; y++)
         {
@@ -372,6 +533,49 @@ public class PopulateMap : MonoBehaviour
                 PlaceObject(pos, id);
             }
         }
+    }
+
+    private void LoadObstaclesFromGridJSON()
+    {
+        MapGrid map = LoadMapGrid();
+        if (map == null) return;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int id = map.grid[y].row[x];
+                if (id < 0) continue;
+
+                ObjectData data = database.objectsData.Find(d => d.ID == id);
+                if (data == null) continue;
+                if (data.Type == ObjectType.Character) continue;
+
+                Vector3Int pos = new Vector3Int(x - offsetX, offsetY - y - 1, 0);
+                PlaceObject(pos, id);
+            }
+        }
+    }
+
+    private MapGrid LoadMapGrid()
+    {
+        TextAsset jsonFile = Resources.Load<TextAsset>("maps/map_1"); // ($"maps/map_{Random.Range(0,5)}");
+
+        if (jsonFile == null)
+        {
+            Debug.LogError("[PopulateMap] LoadMapGrid: map JSON not found at Resources/maps/map_1!");
+            return null;
+        }
+
+        MapGrid map = JsonUtility.FromJson<MapGrid>(jsonFile.text);
+
+        if (map == null || map.grid == null)
+        {
+            Debug.LogError("[PopulateMap] LoadMapGrid: map JSON failed to parse!");
+            return null;
+        }
+
+        return map;
     }
 
     private void PopulateManually()
@@ -409,6 +613,39 @@ public class PopulateMap : MonoBehaviour
 
     // Core placement
 
+    private bool IsPlayerTeamID(int id) => id >= 0 && id <= 2;
+
+    private void PlaceObjectWithVariance(Vector3Int gridPos, int id)
+    {
+        ObjectData data = database.objectsData.Find(d => d.ID == id);
+        if (data == null)
+        {
+            Debug.LogError($"PlaceObjectWithVariance: no ObjectData found for ID {id}");
+            return;
+        }
+
+        StatVarianceConfig config = playerTeamVariance.Find(c => c.unitID == id);
+
+        if (config != null)
+        {
+            int origHP      = data.HP;
+            int origDamage  = data.Damage;
+            int origDefense = data.Defense;
+
+            data.setHP(Random.Range(config.minHP, config.maxHP + 1));
+            data.setDamage(Random.Range(config.minDamage, config.maxDamage + 1));
+            data.setDefense(Random.Range(config.minDefense, config.maxDefense + 1));
+
+            PlaceObject(gridPos, id);
+
+            data.setHP(origHP);
+            data.setDamage(origDamage);
+            data.setDefense(origDefense);
+        }
+        else
+            PlaceObject(gridPos, id);
+    }
+
     private void PlaceObject(Vector3Int gridPos, int ID)
     {
         ObjectData data = database.objectsData.Find(d => d.ID == ID);
@@ -427,7 +664,6 @@ public class PopulateMap : MonoBehaviour
 
         if (forMultiAgent && IsMonsterTeamID(ID))
         {
-            // Pool path: retrieve a pre-existing GameObject instead of instantiating.
             newObject = GetFromPool(ID);
             if (newObject == null)
             {
@@ -558,6 +794,14 @@ public class PopulateMap : MonoBehaviour
         if (tile == null) return true;
 
         return !(tile.PlacedObject is StaticObject || tile.PlacedObject is RandomObject);
+    }
+
+    private static string StripCloneSuffix(string name)
+    {
+        const string cloneSuffix = "(Clone)";
+        if (name != null && name.EndsWith(cloneSuffix, System.StringComparison.OrdinalIgnoreCase))
+            return name.Substring(0, name.Length - cloneSuffix.Length).Trim();
+        return name;
     }
 
     private bool IsInsideBounds(Vector3Int pos) =>

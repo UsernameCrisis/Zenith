@@ -3865,8 +3865,9 @@ MonoBehaviour:
   database: {fileID: 11400000, guid: e9d5cfd638244e44bb76b24574da3c47, type: 2}
   spawnedObjectContainer: {fileID: 511479806}
   grid: {fileID: 780557240}
-  loadFromSave: 1
+  loadFromSave: 0
   forTrainingAgent: 0
+  loadFromGameState: 1
   forMultiAgent: 0
   poolSizePerType: 3
   monsterTeamIDs: 030000000400000005000000
@@ -3881,6 +3882,9 @@ MonoBehaviour:
   height: 10
   isStaticComposition: 0
   playerTeamVariance: []
+  bonusSpawnBaseChance: 0.3
+  bonusSpawnTeamBonus: 0.15
+  bonusSpawnDecay: 0.5
   placedGameObjects: []
 --- !u!1 &1127068153
 GameObject:

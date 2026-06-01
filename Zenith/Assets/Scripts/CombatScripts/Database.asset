@@ -52,7 +52,7 @@ MonoBehaviour:
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: 985645dc5c6a45b4e8b08c7619387192, type: 3}
     <Portrait>k__BackingField: {fileID: 794109832, guid: 5b21458085a05934bb35028741af7646, type: 3}
-  - <Name>k__BackingField: Floating Eye
+  - <Name>k__BackingField: Floating_eye
     <ID>k__BackingField: 3
     <HP>k__BackingField: 100
     <Damage>k__BackingField: 11

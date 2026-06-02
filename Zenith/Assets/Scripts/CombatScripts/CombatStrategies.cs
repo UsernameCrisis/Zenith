@@ -242,19 +242,12 @@ namespace BehaviourTrees
             if (enemyChar is null)
                 return Node.Status.Failure;
 
-            if (!enemyChar.CanStillAttack())
-                return Node.Status.Failure;
-
             CombatExecutor executor = ai.GetCombatExecutor();
             if (startedAttack)
             {
-                if (ai.HasObservingAgent())
+                if (ai.HasObservingAgent() && !ai.ConsumeBTActionComplete())
                 {
-                    if (!ai.ConsumeBTActionComplete())
-                        return Node.Status.Running;
-
-                    startedAttack = false;
-                    return Node.Status.Success;
+                    return Node.Status.Running;
                 }
 
                 if (executor.IsAttacking)
@@ -262,6 +255,9 @@ namespace BehaviourTrees
                 startedAttack = false;
                 return Node.Status.Success;
             }
+
+            if (!enemyChar.CanStillAttack())
+                return Node.Status.Failure;
 
             ai.SubmitAttack(enemyChar, latestPos, ai.GetTargetPos(), ai.GetGridData());
             startedAttack = true;
@@ -907,22 +903,6 @@ namespace BehaviourTrees
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // MoveToAttackRangeOf
-    //
-    // Positions the unit at exactly its maximum attack range from the target,
-    // with line of sight, rather than moving as close as possible.
-    //
-    // This is the critical positioning strategy for ranged units. A unit with
-    // AtkRange=3 should stand 3 tiles away from the target, not 1. The existing
-    // MoveForRanged strategy already does something similar but uses a hardcoded
-    // minRange=2, which doesn't generalize. This version uses the unit's actual
-    // AtkRange as both min and max, so the unit always tries to sit at exactly
-    // maximum range — maximizing safety while maintaining attack capability.
-    //
-    // If no tile at exactly max range is reachable, it falls back to the closest
-    // reachable tile to the target (approach behavior) rather than staying still.
-    // ─────────────────────────────────────────────────────────────────────────
     public class MoveToAttackRangeOf : MoveStrategyBase
     {
         private readonly int rangeTolerance;
@@ -972,20 +952,6 @@ namespace BehaviourTrees
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // MoveToFrontline
-    //
-    // Tank-specific positioning. Moves toward the most threatening enemy,
-    // prioritizing tiles that place the tank BETWEEN the threat and the
-    // unit's own team. This demonstrates protective positioning rather than
-    // just blind aggression — the tank absorbs damage by being in the way.
-    //
-    // Scoring: each reachable tile is scored by how well it intercepts the
-    // line between the threat and the closest ally. The tile that minimizes
-    // the enemy's path cost to any ally (other than the tank itself) is best,
-    // because the tank standing there forces the enemy to deal with the tank
-    // before reaching the backline.
-    // ─────────────────────────────────────────────────────────────────────────
     public class MoveToFrontline : MoveStrategyBase
     {
         public MoveToFrontline(EnemyAIControllerBase ai) : base(ai) {}
@@ -1001,73 +967,25 @@ namespace BehaviourTrees
             if (allies == null || allies.Count <= 1)
                 return ai.FindMoveToward(current, threatPos, reachable);
 
-            // Vector3Int mostExposedAllyPos = current;
-            // int closestAllyToThreat = int.MaxValue;
             Dictionary<Vector3Int, int> baselineCosts = new();
             foreach (var (allyPos, ally) in allies)
             {
                 if (ally == character) continue;
                 if (ally.HP <= 0) continue;
 
-                // int distThreatToAlly = ai.GetPreview().PathCost(threatPos, allyPos);
                 baselineCosts[allyPos] = ai.GetPreview().PathCost(threatPos, allyPos);
 
-                // if (distThreatToAlly < closestAllyToThreat)
-                // {
-                //     closestAllyToThreat = distThreatToAlly;
-                //     mostExposedAllyPos = allyPos;
-                // }   
             }
 
-            // int baselineCost = ai.GetPreview().PathCost(threatPos, mostExposedAllyPos);
-
             Vector3Int bestTile = current;
-            float bestScore = float.MinValue;
+            float bestScore = ScoreTile(current, threatPos, allies, character, baselineCosts);
             HashSet<Vector3Int> blocked = new HashSet<Vector3Int>();
 
             foreach (var tile in reachable)
             {
-                int distToThreat = ai.GetPreview().PathCost(tile, threatPos);
-                float proximityToThreat = distToThreat == int.MaxValue
-                    ? float.MinValue
-                    : -distToThreat;
-                // if (distToThreat == int.MaxValue) continue;
 
-                float interceptionScore = 0f;
-                int allyCount = 0;
+                float totalScore = ScoreTile(tile, threatPos, allies, character, baselineCosts);
 
-                blocked.Clear();
-                blocked.Add(tile);
-                // int blockedCost = ai.GetPreview().PathCostWithBlocked(threatPos, mostExposedAllyPos, blocked);
-
-                // int detourValue = blockedCost == int.MaxValue
-                //     ? 1000
-                //     : blockedCost - baselineCost;
-
-                
-
-                foreach (var (allyPos, ally) in allies)
-                {
-                    if (ally == character) continue;
-                    if (ally.HP <= 0) continue;
-
-                    int baseline = baselineCosts.TryGetValue(allyPos, out int b) ? b : 0;
-                    int blockedCost = ai.GetPreview().PathCostWithBlocked(
-                        threatPos, allyPos, blocked);
-
-                    int detour = blockedCost == int.MaxValue ? 1000 : blockedCost - baseline;
-
-                    // interceptionScore += threatToAllyViaThisTile;
-                    interceptionScore += detour;
-                    allyCount++;
-                }
-
-                if (allyCount > 0)
-                    interceptionScore /= allyCount;
-
-                float totalScore = (proximityToThreat * 0.6f) + (interceptionScore * 0.4f);
-
-                // float score = (detourValue * 2f) - (distToThreat * 1f);
 
                 if (totalScore > bestScore)
                 {
@@ -1077,6 +995,43 @@ namespace BehaviourTrees
             }
 
             return bestTile;
+        }
+
+        private float ScoreTile(
+        Vector3Int tile,
+        Vector3Int threatPos,
+        List<(Vector3Int pos, CharacterObject character)> allies,
+        CharacterObject self,
+        Dictionary<Vector3Int, int> baselineCosts)
+        {
+            int distToThreat = ai.GetPreview().PathCost(tile, threatPos);
+    
+            float proximityToThreat = distToThreat == int.MaxValue
+                ? float.MinValue
+                : -distToThreat;
+    
+            float interceptionScore = 0f;
+            int allyCount = 0;
+    
+            HashSet<Vector3Int> blocked = new HashSet<Vector3Int> { tile };
+    
+            foreach (var (allyPos, ally) in allies)
+            {
+                if (ally == self) continue;
+                if (ally.HP <= 0) continue;
+    
+                int baseline = baselineCosts.TryGetValue(allyPos, out int b) ? b : 0;
+                int blockedCost = ai.GetPreview().PathCostWithBlocked(threatPos, allyPos, blocked);
+    
+                int detour = blockedCost == int.MaxValue ? 1000 : blockedCost - baseline;
+                interceptionScore += detour;
+                allyCount++;
+            }
+    
+            if (allyCount > 0)
+                interceptionScore /= allyCount;
+    
+            return (proximityToThreat * 0.6f) + (interceptionScore * 0.4f);
         }
     }
 }

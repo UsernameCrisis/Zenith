@@ -38,6 +38,8 @@ public class CombatExecutor : MonoBehaviour
         if (!gridData.CanPlaceObjectAt(targetPos))
             return;
 
+        isMoving = true;
+
         if (turnManager.GetUseAnimation())
             StartCoroutine(WalkPath(path, startPos, character, gridData));
         else
@@ -49,6 +51,8 @@ public class CombatExecutor : MonoBehaviour
         if (attacker == null) return;
         if (attackerPos == targetPos) return;
 
+        isAttacking = true;
+
         if (turnManager.GetUseAnimation())
             StartCoroutine(AttackRoutine(attacker, attackerPos, targetPos, gridData));
         else
@@ -59,7 +63,6 @@ public class CombatExecutor : MonoBehaviour
 
     private IEnumerator AttackRoutine(CharacterObject attacker, Vector3Int attackerPos, Vector3Int targetPos, GridData gridData)
     {
-        isAttacking = true;
 
         var view = attacker.View;
 
@@ -97,7 +100,6 @@ public class CombatExecutor : MonoBehaviour
     {
         Transform charTransform = gridData.GetTileAt(startPos).PlacedGameObject.transform;
 
-        isMoving = true;
         character.View?.SetMoving(isMoving);
 
         for (int i = 0; i < path.Count; i++)

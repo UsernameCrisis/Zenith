@@ -111,6 +111,7 @@ public class TurnManager : MonoBehaviour
     }
     private IEnumerator RunTurn()
     {
+        if (State != CombatState.Playing) yield break;
         if (isTurnRunning)
         {
             Debug.LogError("Turn already running!");
@@ -130,6 +131,7 @@ public class TurnManager : MonoBehaviour
             Debug.LogWarning("No current unit, skipping turn");
             turnQueue.PopNext();
             isTurnRunning = false;
+            yield return null;
             yield break;
         }
 
@@ -141,6 +143,7 @@ public class TurnManager : MonoBehaviour
             print("actor is null");
             turnQueue.PopNext();
             isTurnRunning = false;
+            yield return null;
             yield break;
         }
         yield return null;
@@ -160,6 +163,7 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator EndTurnRoutine()
     {
+        if (State != CombatState.Playing) yield break;
         TurnAlreadyEnded = true;
 
         if (controlMode == CombatControlMode.BTRecording)
@@ -407,6 +411,28 @@ public class TurnManager : MonoBehaviour
         if (slotIndex != -1)
             allySlots[slotIndex] = null;
 
+        int aliveAgentTeam = 0;
+        int aliveOpponentTeam = 0;
+        int opponentTeam = (currentAgentTeam == 1) ? 2 : 1;
+
+        foreach (var u in gridData.GetAllUnits())
+        {
+            if (u.character == null || u.character == character) continue;
+            if (u.character.Team == currentAgentTeam) aliveAgentTeam++;
+            if (u.character.Team == opponentTeam) aliveOpponentTeam++;
+        }
+
+        if (aliveAgentTeam == 0 || aliveOpponentTeam == 0)
+        {
+            State = (aliveOpponentTeam == 0) ? CombatState.Victory : CombatState.Defeat;
+            StopTurnLoop();
+            GetComponentInChildren<PopulateMap>().HandleCharacterDeath(character, onRemoved: () => 
+            {
+                resultHandler.CheckBattleEnd();
+            });
+            return;
+        }
+
         GetComponentInChildren<PopulateMap>().HandleCharacterDeath(character, onRemoved:() => 
         {
             bool battleEnded = CheckBattleEnd();
@@ -579,7 +605,11 @@ public class TurnManager : MonoBehaviour
     bool CheckBattleEnd()
     {
         bool ended = resultHandler.CheckBattleEnd();
-        if (ended) State = ended ? (IsVictory() ? CombatState.Victory : CombatState.Defeat) : State;
+        if (ended)  
+        {
+            State = IsVictory() ? CombatState.Victory : CombatState.Defeat;
+            StopTurnLoop();
+        }
         return ended;
     }
 

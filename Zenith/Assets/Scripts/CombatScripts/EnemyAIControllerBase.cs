@@ -51,6 +51,9 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         }
         btHasMoved = true;
 
+        Debug.Log($"SubmitMove called for {character.Name} at frame {Time.frameCount}\n" +
+            System.Environment.StackTrace);
+
         if (observingAgent != null)
         {
             observingAgent.RegisterBTActionCallback(OnAgentActionComplete);
@@ -70,6 +73,9 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
             return;
         }
         btHasAttacked = true;
+
+        Debug.Log($"SubmitAttack called for {character.Name} at frame {Time.frameCount}\n" +
+        System.Environment.StackTrace);
 
         if (observingAgent != null)
         {
@@ -139,6 +145,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
             try
             {
                 status = tree.Process();
+                
             }
             catch (System.Exception e)
             {

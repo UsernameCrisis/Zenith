@@ -102,6 +102,13 @@ public class CharacterObject : PlacedObject
         RemainingMoveRange = Mathf.Max(0, RemainingMoveRange - distance);
     }
 
+    public void SetMaxHP(int maxHp)
+    {
+        MaxHp = Mathf.Max(maxHp, 1);
+        HP = Mathf.Min(HP, maxHp);
+        OnHPChanged?.Invoke(HP, MaxHp);
+    }
+
     public bool CanStillMove => RemainingMoveRange > 0;
 
     public void EnableAttack() => canAttack = true;

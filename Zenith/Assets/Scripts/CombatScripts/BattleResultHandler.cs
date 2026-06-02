@@ -181,6 +181,7 @@ public class BattleResultHandler : MonoBehaviour
             return true;
         }
 
+        WritePostCombatStatsToGameManager(playerDiedInCombat: true);
         ShowPlayerDefeatUI();
         return true;
     }
@@ -191,6 +192,7 @@ public class BattleResultHandler : MonoBehaviour
 
         if (result == "Victory")
         {
+            WritePostCombatStatsToGameManager(playerDiedInCombat: false);
             GameManager.Instance.EndCombat();
         }
         else if (result == "Defeat")
@@ -409,6 +411,37 @@ public class BattleResultHandler : MonoBehaviour
         }
 
         GetComponent<TurnManager>().ResetEnv();
+    }
+
+    private void WritePostCombatStatsToGameManager(bool playerDiedInCombat)
+    {
+        if (GameManager.Instance == null) return;
+
+        var playerTeam = GridData.GetUnitsByTeam(1); // team 1 = players
+
+        foreach (var (pos, character) in playerTeam)
+        {
+            if (character.ID == 0)
+            {
+                GameManager.Instance.playerHP = playerDiedInCombat ? 1 : Mathf.Max(character.HP, 1);
+            }
+            else if (character.ID == 1)
+            {
+                GameManager.Instance.clericHP = playerDiedInCombat ? 1 : Mathf.Max(character.HP, 1);
+            }
+            else if (character.ID == 2)
+            {
+                GameManager.Instance.warriorHP = playerDiedInCombat ? 1 : Mathf.Max(character.HP, 1);
+            }
+        }
+
+        bool foundPlayer  = playerTeam.Exists(u => u.character.ID == 0);
+        bool foundCleric  = playerTeam.Exists(u => u.character.ID == 1);
+        bool foundWarrior = playerTeam.Exists(u => u.character.ID == 2);
+
+        if (!foundPlayer)  GameManager.Instance.playerHP  = 1;
+        if (GameManager.Instance.clericInParty  && !foundCleric)  GameManager.Instance.clericHP  = 1;
+        if (GameManager.Instance.warriorInParty && !foundWarrior) GameManager.Instance.warriorHP = 1;
     }
 
     private IEnumerator ResetAfterDelay()

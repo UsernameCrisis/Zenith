@@ -31,21 +31,21 @@ public class GameManager : MonoBehaviour
     [Header("Combat Stats")]
     public int playerHP = 100;
     public int playerMaxHP = 100;
-    public int playerAtk = 10;
-    public int playerDef = 0;
+    public int playerAtk = 12;
+    public int playerDef = 1;
     public int playerSpeed = 5;
 
     public int clericHP = 80;
     public int clericMaxHP = 80;
-    public int clericAtk = 5;
-    public int clericDef = 0;
+    public int clericAtk = 9;
+    public int clericDef = 1;
     public int clericSpeed = 5;
     public bool clericInParty = false;
 
     public int warriorHP = 120;
     public int warriorMaxHP = 120;
-    public int warriorAtk = 12;
-    public int warriorDef = 1;
+    public int warriorAtk = 15;
+    public int warriorDef = 2;
     public int warriorSpeed = 5;
     public bool warriorInParty = false;
 
@@ -177,6 +177,14 @@ public class GameManager : MonoBehaviour
         SceneManager.UnloadSceneAsync(combatSceneName);
         if (currentOverworldRoot != null) currentOverworldRoot.SetActive(true);
         if (activeTrigger != null) activeTrigger.CleanupDefeatedEnemies(defeatedEnemyNames);
+
+        PlayerOverworldAttributes player = FindAnyObjectByType<PlayerOverworldAttributes>();
+        if (player != null)
+        {
+            player.currentHP = playerHP; 
+            player.maxHP = playerMaxHP;
+            player.RefreshHealthUI();
+        }
     }
 
     public void SaveAndLoadScene(string SceneName)

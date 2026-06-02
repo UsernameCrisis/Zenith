@@ -655,11 +655,39 @@ public class PopulateMap : MonoBehaviour
             Debug.LogError($"PlaceObject: no ObjectData found for ID {ID}");
             return;
         }
-        // if (ID == 0)
-        // {
-        //     data.setDamage(GameManager.Instance.playerAtk);
-        //     data.setDefense(GameManager.Instance.playerMaxHP);
-        // }
+
+        int origHP = data.HP, origDmg = data.Damage, origDef = data.Defense;
+        bool didOverride = false;
+        int overworldMaxHp = 0; // a placeholder to MaxHP after construction
+
+        if (GameManager.Instance != null && GameManager.Instance.hasData)
+        {
+            if (ID == 0)
+            {
+                data.setHP(GameManager.Instance.playerHP);
+                data.setDamage(GameManager.Instance.playerAtk);
+                data.setDefense(GameManager.Instance.playerDef);
+                overworldMaxHp = GameManager.Instance.playerMaxHP;
+                didOverride = true;
+            }
+            else if (ID == 1 && GameManager.Instance.clericInParty)
+            {
+                data.setHP(GameManager.Instance.clericHP);
+                data.setDamage(GameManager.Instance.clericAtk);
+                data.setDefense(GameManager.Instance.clericDef);
+                overworldMaxHp = GameManager.Instance.clericMaxHP;
+                didOverride = true;
+            }
+            else if (ID == 2 && GameManager.Instance.warriorInParty)
+            {
+                data.setHP(GameManager.Instance.warriorHP);
+                data.setDamage(GameManager.Instance.warriorAtk);
+                data.setDefense(GameManager.Instance.warriorDef);
+                overworldMaxHp = GameManager.Instance.warriorMaxHP;
+                didOverride = true;
+            }
+        }
+
         GameObject newObject;
 
         if (forMultiAgent && IsMonsterTeamID(ID))
@@ -687,6 +715,10 @@ public class PopulateMap : MonoBehaviour
         placedGameObjects.Add(newObject);
         PlacedObject placedObj = CreatePlacedObjectFromData(data);
 
+        if (didOverride && overworldMaxHp > 0 && placedObj is CharacterObject spawnedChar)
+            spawnedChar.SetMaxHP(overworldMaxHp);
+
+
         if (placedObj is CharacterObject character)
         {
             character.BindGameObject(newObject);
@@ -702,6 +734,13 @@ public class PopulateMap : MonoBehaviour
         }
 
         objectsData.AddObjectAt(gridPos, placedObj, placedGameObjects.Count - 1, newObject);
+
+        if (didOverride)
+        {
+            data.setHP(origHP);
+            data.setDamage(origDmg);
+            data.setDefense(origDef);
+        }
     }
 
     private GameObject GetFromPool(int id)

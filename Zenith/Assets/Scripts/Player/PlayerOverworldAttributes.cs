@@ -193,4 +193,9 @@ public class PlayerOverworldAttributes : MonoBehaviour
         yield return new WaitForSeconds(seconds);
         if (GameManager.Instance != null) GameManager.Instance.playerAtk -= amount;
     }
+
+    public void RefreshHealthUI()
+    {
+        HealthChanged?.Invoke(currentHP, maxHP);
+    }
 }

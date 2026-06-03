@@ -21,10 +21,10 @@ public class BattleResultHandler : MonoBehaviour
     [SerializeField] private TestRecorder testRecorder;
 
     public int MaxTurn => maxTurn;
-    public void SetControlMode(CombatControlMode mode)
-    {
-        controlMode = mode;
-    }
+    public void SetControlMode(CombatControlMode mode) => controlMode = mode;
+    private bool isAgentTestingMode = false;
+    public void SetAgentTestingMode(bool value) => isAgentTestingMode = value;
+    public System.Action<bool> OnCombatFinished;
     public GridData GridData { private get; set; }
     public List<string> DefeatedEnemyNames { get; private set; } = new();
     public System.Action<CharacterObject> OnCharacterDied;
@@ -84,6 +84,14 @@ public class BattleResultHandler : MonoBehaviour
 
     private bool HandleVictory()
     {
+        OnCombatFinished?.Invoke(true); // monster win
+
+        if (isAgentTestingMode)
+        {
+            turnManager.StopTurnLoop();
+            return true;
+        }
+
         if (controlMode == CombatControlMode.MLAgent || 
         controlMode == CombatControlMode.BTRecording)
         {
@@ -127,22 +135,21 @@ public class BattleResultHandler : MonoBehaviour
             return true;
         }
 
-        // Player mode, pass defeated enemy names up to GameManager.
-        gridSelect.ExitCharacter();
-        turnOrderUI.gameObject.SetActive(false);
-
-        foreach (var name in DefeatedEnemyNames)
-            GameManager.Instance.defeatedEnemyNames.Add(name);
-
-        Debug.Log($"Enemies defeated: {string.Join(", ", GameManager.Instance.defeatedEnemyNames)}");
-
-        combatOverUI.OnButtonSelected += HandleCombatOverButton;
-        combatOverUI.Show(true);
+        WritePostCombatStatsToGameManager(playerDiedInCombat: true);
+        ShowPlayerDefeatUI();
         return true;
     }
 
     private bool HandleDefeat()
     {
+        OnCombatFinished?.Invoke(false); // monster lost
+
+        if (isAgentTestingMode)
+        {
+            turnManager.StopTurnLoop();
+            return true;
+        }
+
         if (controlMode == CombatControlMode.MLAgent || 
         controlMode == CombatControlMode.BTRecording)
         {
@@ -181,8 +188,7 @@ public class BattleResultHandler : MonoBehaviour
             return true;
         }
 
-        WritePostCombatStatsToGameManager(playerDiedInCombat: true);
-        ShowPlayerDefeatUI();
+        ShowPlayerVictoryUI();
         return true;
     }
 
@@ -207,6 +213,12 @@ public class BattleResultHandler : MonoBehaviour
         {
             if (currentTurn > maxTurn)
             {
+                OnCombatFinished?.Invoke(false);
+                if (isAgentTestingMode)
+                {
+                    turnManager.StopTurnLoop();
+                    return true;
+                }
                 combatAgent.OnDefeat();
                 StartCoroutine(EndEpisodeNextFrame());
                 return true;
@@ -218,6 +230,12 @@ public class BattleResultHandler : MonoBehaviour
         {
             if (currentTurn > maxTurn)
             {
+                OnCombatFinished?.Invoke(false);
+                if (isAgentTestingMode)
+                {
+                    turnManager.StopTurnLoop();
+                    return true;
+                }
                 foreach (UnitAgentBase agent in turnManager.ActiveUnitAgents)
                     agent.OnDefeat();
                 StartCoroutine(EndEpisodeNextFrameMultiAgent());
@@ -246,6 +264,12 @@ public class BattleResultHandler : MonoBehaviour
         {
             if (currentTurn > maxTurn)
             {
+                OnCombatFinished?.Invoke(false);
+                if (isAgentTestingMode)
+                {
+                    turnManager.StopTurnLoop();
+                    return true;
+                }
                 FinalizeTestEpisode(monsterWon: false);
                 StartCoroutine(BehaviorTreeResetAfterDelay());
                 return true;
@@ -304,6 +328,8 @@ public class BattleResultHandler : MonoBehaviour
 
         foreach (var name in DefeatedEnemyNames)
             GameManager.Instance.defeatedEnemyNames.Add(name);
+            
+        Debug.Log($"Enemies defeated: {string.Join(", ", GameManager.Instance.defeatedEnemyNames)}");
 
         combatOverUI.OnButtonSelected += HandleCombatOverButton;
         combatOverUI.Show(true);

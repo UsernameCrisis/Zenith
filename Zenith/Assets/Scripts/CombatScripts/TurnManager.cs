@@ -36,6 +36,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private bool useAnimation = true;
     [SerializeField] private bool showTurnOrderUI = true;
     [SerializeField] private int demoControlledTeam = 0;
+    [SerializeField] private bool autoStartOnLoad = true;
 
     public CombatState State { get; private set; } = CombatState.Playing;
     public TurnQueue turnQueue;
@@ -43,6 +44,7 @@ public class TurnManager : MonoBehaviour
     public bool TurnAlreadyEnded { get; set; } = false;
     public List<string> DefeatedEnemyNames => resultHandler.DefeatedEnemyNames;
     public List<UnitAgentBase> ActiveUnitAgents { get; private set; } = new();
+    public void SetControlMode(CombatControlMode mode) => controlMode = mode;
 
     private GridData gridData;
     private BattleResultHandler resultHandler;
@@ -56,7 +58,8 @@ public class TurnManager : MonoBehaviour
         resultHandler = GetComponent<BattleResultHandler>();
         resultHandler.OnCharacterDied += HandleCharacterDied;
         resultHandler.OnEnvReset += HandleEnvReset;
-        ResetEnv();
+        if (autoStartOnLoad)
+            ResetEnv();
     }
 
     void OnDestroy()

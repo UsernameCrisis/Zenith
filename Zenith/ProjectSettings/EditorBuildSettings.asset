@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Combat_test1.unity
     guid: c6575df73be232243b27aa9baf9ce0be
+  - enabled: 1
+    path: Assets/Scenes/MLAgent/CombatMLAgent.unity
+    guid: 8acd856fb6a92bb4e86a0c1273b13329
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

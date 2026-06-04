@@ -83,7 +83,7 @@ public class PlayerCombatMenuController : MonoBehaviour
 
             case "Exit":
                 Time.timeScale = 1;
-                SceneManager.LoadScene("Main Menu");
+                LoadingScreenManager.Load("Main Menu");
                 break;
         }
     }

@@ -10,22 +10,14 @@ public class CombatOverMenu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI resultText;
     private bool playerWon;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         ok.onClick.AddListener(HandleOkPressed);
         gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void HandleOkPressed()
     {
-        // Tell subscribers what happened so they can react appropriately
         OnButtonSelected?.Invoke(playerWon ? "Victory" : "Defeat");
     }
 

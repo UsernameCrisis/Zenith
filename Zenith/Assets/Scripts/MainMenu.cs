@@ -80,8 +80,8 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    public void NewGame() => SceneManager.LoadScene("Tavern");
-    public void LoadSave() => SceneManager.LoadScene("Tavern");
+    public void NewGame() => LoadingScreenManager.Load("Tavern");
+    public void LoadSave() => LoadingScreenManager.Load("Tavern");
 
     public void OpenDeleteConfirmation()
     {

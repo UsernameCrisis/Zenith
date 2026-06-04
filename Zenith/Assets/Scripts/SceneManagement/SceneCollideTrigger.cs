@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class SceneCollideTrigger : MonoBehaviour
 {
@@ -8,7 +7,7 @@ public class SceneCollideTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SceneManager.LoadScene(sceneToLoad);
+            LoadingScreenManager.Load(sceneToLoad);
         }
     }
 }

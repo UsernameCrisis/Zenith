@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour
     public void StartCombatScene()
     {
         if (currentOverworldRoot != null) currentOverworldRoot.SetActive(false);
-        SceneManager.LoadScene(combatSceneName, LoadSceneMode.Additive);
+        LoadingScreenManager.Load(combatSceneName, LoadSceneMode.Additive);
     }
 
     public void EndCombat()
@@ -200,7 +200,7 @@ public class GameManager : MonoBehaviour
             SaveGameState();
         }
 
-        SceneManager.LoadScene(SceneName);
+        LoadingScreenManager.Load(SceneName);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

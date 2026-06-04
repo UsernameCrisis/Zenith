@@ -2346,7 +2346,7 @@ MonoBehaviour:
   turnOrderUI: {fileID: 2049846321}
   combatAgent: {fileID: 1666468182}
   llmController: {fileID: 841280049}
-  controlMode: 0
+  controlMode: 3
   currentAgentTeam: 2
   useAnimation: 1
   showTurnOrderUI: 1
@@ -2385,9 +2385,9 @@ MonoBehaviour:
   turnOrderUI: {fileID: 2049846321}
   combatAgent: {fileID: 1666468182}
   combatOverUI: {fileID: 1854387147}
-  controlMode: 0
-  currentAgentTeam: 1
-  showTurnOrderUI: 0
+  controlMode: 3
+  currentAgentTeam: 2
+  showTurnOrderUI: 1
   isRecordingMode: 0
   maxTurn: 200
   testRecorder: {fileID: 0}
@@ -5644,7 +5644,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1666468181}
   - component: {fileID: 1666468180}
-  - component: {fileID: 1666468179}
   - component: {fileID: 1666468182}
   m_Layer: 0
   m_Name: ForAgentPlaceholder
@@ -5652,33 +5651,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1666468179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1666468178}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ee855032506c554c8b48a6389cd9db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatAgent
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  previewSystem: {fileID: 0}
-  combatExecutor: {fileID: 0}
-  turnManager: {fileID: 784646987}
-  groundRenderer: {fileID: 0}
-  isManualMode: 0
-  damageDealtRewardScale: 0.3
-  damageTakenPenaltyScale: 0.15
-  inRangeBonus: 0.05
-  CurrEp: 0
-  CumulativeReward: 0
+  m_IsActive: 1
 --- !u!114 &1666468180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5706,7 +5679,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Combat Behavior
   TeamId: 2
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
@@ -5740,7 +5713,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2147483647
   previewSystem: {fileID: 784646988}
   combatExecutor: {fileID: 784646986}
   turnManager: {fileID: 784646987}

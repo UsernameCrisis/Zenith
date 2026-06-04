@@ -114,7 +114,7 @@ public class PauseMenuTavern : MonoBehaviour
         else if (button == "Exit")
         {
             Time.timeScale = 1;
-            SceneManager.LoadScene("Main Menu");
+            LoadingScreenManager.Load("Main Menu");
         }
     }
 }

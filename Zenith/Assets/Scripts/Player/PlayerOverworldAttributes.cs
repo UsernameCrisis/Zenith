@@ -106,7 +106,7 @@ public class PlayerOverworldAttributes : MonoBehaviour
 
         DeathReset();
         Time.timeScale = 1f;
-        SceneManager.LoadScene("Peaceful");
+        LoadingScreenManager.Load("Peaceful");
     }
 
     private IEnumerator Fade(float targetAlpha, float duration)

@@ -203,7 +203,7 @@ public class BattleResultHandler : MonoBehaviour
         }
         else if (result == "Defeat")
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Tavern");
+            LoadingScreenManager.Load("Tavern");
         }
     }
 

@@ -148,6 +148,7 @@ public class CombatExecutor : MonoBehaviour
 
         character.UseMovement(path.Count);
         movePreview.ClearAll();
+        isMoving = false;
     }
 
     public void ResetState()

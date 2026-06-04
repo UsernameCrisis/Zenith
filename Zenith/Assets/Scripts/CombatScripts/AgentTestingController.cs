@@ -18,7 +18,12 @@ public class AgentTestingController : MonoBehaviour
     [SerializeField] private Transform toggleContainer;
     [SerializeField] private Toggle togglePrefab;
     [SerializeField] private Button startButton;
-    [SerializeField] private TextMeshProUGUI resultBannerText; // "Victory!" / "Defeat!" — hidden until first combat
+    [SerializeField] private TextMeshProUGUI resultBannerText;
+    [SerializeField] private Toggle humanPlayerToggle;
+
+    [Header("Toggle Colors")]
+    [SerializeField] private Color toggleSelectedColor = Color.green;
+    [SerializeField] private Color toggleNormalColor   = Color.white;
 
     [Header("Agent Configurations")]
     [SerializeField] private List<AgentModeConfig> modes = new();
@@ -27,6 +32,7 @@ public class AgentTestingController : MonoBehaviour
     private ToggleGroup toggleGroup;
     private List<Toggle> spawnedToggles = new();
     private bool combatIsRunning = false;
+    private bool useHumanPlayer = false;
 
     void Awake()
     {
@@ -62,7 +68,6 @@ public class AgentTestingController : MonoBehaviour
             Toggle t = Instantiate(togglePrefab, toggleContainer);
             t.group = toggleGroup;
 
-            // Label the toggle — assumes your Toggle prefab has a TMP child called "Label".
             var label = t.GetComponentInChildren<TextMeshProUGUI>();
             if (label != null)
                 label.text = modes[i].modeName;
@@ -70,14 +75,30 @@ public class AgentTestingController : MonoBehaviour
             int capturedIndex = i;
             t.onValueChanged.AddListener(isOn =>
             {
-                if (isOn) selectedModeIndex = capturedIndex;
+                if (isOn)
+                {
+                    selectedModeIndex = capturedIndex;
+                    RefreshToggleColors();
+                } 
             });
 
             spawnedToggles.Add(t);
         }
 
         if (spawnedToggles.Count > 0)
+        {
             spawnedToggles[0].isOn = true;
+            RefreshToggleColors();
+        }
+            
+
+        if (humanPlayerToggle != null)
+        {
+            humanPlayerToggle.isOn = false;
+            humanPlayerToggle.onValueChanged.AddListener(_ => RefreshHumanPlayerToggleColor());
+            RefreshHumanPlayerToggleColor();
+        }
+            
     }
 
     private void ShowSelectionPanel(string resultText)
@@ -99,6 +120,25 @@ public class AgentTestingController : MonoBehaviour
         combatIsRunning = true;
     }
 
+    private void RefreshToggleColors()
+    {
+        for (int i = 0; i < spawnedToggles.Count; i++)
+        {
+            TextMeshProUGUI label = spawnedToggles[i].GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null)
+                label.color = (i == selectedModeIndex) ? toggleSelectedColor : toggleNormalColor;
+        }
+    }
+
+    private void RefreshHumanPlayerToggleColor()
+    {
+        if (humanPlayerToggle == null) return;
+    
+        TextMeshProUGUI label = humanPlayerToggle.GetComponentInChildren<TextMeshProUGUI>();
+        if (label != null)
+            label.color = humanPlayerToggle.isOn ? toggleSelectedColor : toggleNormalColor;
+    }
+
     private void OnStartPressed()
     {
         if (combatIsRunning) return;
@@ -107,6 +147,8 @@ public class AgentTestingController : MonoBehaviour
             Debug.LogError("[AgentTestingController] No modes configured!");
             return;
         }
+
+        useHumanPlayer = humanPlayerToggle != null && humanPlayerToggle.isOn;
 
         AgentModeConfig config = modes[selectedModeIndex];
         ApplyConfig(config);
@@ -118,12 +160,25 @@ public class AgentTestingController : MonoBehaviour
 
     private void ApplyConfig(AgentModeConfig config)
     {
-        battleResultHandler.SetControlMode(config.controlMode);
-        turnManager.SetControlMode(config.controlMode);
+        CombatControlMode resolvedMode = config.controlMode;
 
-        bool needsCombatAgent2 = config.controlMode == CombatControlMode.MLAgent
-                                || config.controlMode == CombatControlMode.PlayerVsAgent
-                                || config.controlMode == CombatControlMode.BTRecording;
+        if (useHumanPlayer)
+        {
+            resolvedMode = config.controlMode switch
+            {
+                CombatControlMode.BehaviorTree => CombatControlMode.Player,
+                CombatControlMode.MLAgent      => CombatControlMode.PlayerVsAgent,
+                CombatControlMode.MultiAgent   => CombatControlMode.PlayerVsAgent,
+                _                              => config.controlMode
+            };
+        }
+
+        battleResultHandler.SetControlMode(resolvedMode);
+        turnManager.SetControlMode(resolvedMode);
+
+        bool needsCombatAgent2 = resolvedMode == CombatControlMode.MLAgent
+                                || resolvedMode == CombatControlMode.PlayerVsAgent
+                                || resolvedMode == CombatControlMode.BTRecording;
 
         combatAgent.gameObject.SetActive(needsCombatAgent2);
 
@@ -136,8 +191,9 @@ public class AgentTestingController : MonoBehaviour
                 Debug.LogWarning("[AgentTestingController] CombatAgent2 has no BehaviorParameters!");
         }
 
-        Debug.Log($"[AgentTestingController] Applied config: {config.modeName} " +
-                $"(mode={config.controlMode}, agent active={needsCombatAgent2})");
+        Debug.Log($"[AgentTestingController] Applied config: {config.modeName} | " +
+                $"base mode={config.controlMode} | resolved mode={resolvedMode} | " +
+                $"human player={useHumanPlayer} | agent active={needsCombatAgent2}");
     }
 
     private void HandleCombatFinished(bool monsterWon)

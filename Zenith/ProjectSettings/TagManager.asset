@@ -16,6 +16,7 @@ TagManager:
   - Cleric
   - Warrior
   - Allies
+  - Tiles
   layers:
   - Default
   - TransparentFX

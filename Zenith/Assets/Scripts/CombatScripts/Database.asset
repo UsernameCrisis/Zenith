@@ -38,7 +38,7 @@ MonoBehaviour:
     <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 3
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: ef162c73931dbd94db82bbb32aff3054, type: 3}
-    <Portrait>k__BackingField: {fileID: -1390184236, guid: 3925d6554e98f8b4588c637160bccb0c, type: 3}
+    <Portrait>k__BackingField: {fileID: -172644375, guid: 58ca5463eee6625498e44f6e7827a8b3, type: 3}
   - <Name>k__BackingField: Thorek
     <ID>k__BackingField: 2
     <HP>k__BackingField: 120
@@ -51,7 +51,7 @@ MonoBehaviour:
     <Team>k__BackingField: 1
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 5813913746638748159, guid: 985645dc5c6a45b4e8b08c7619387192, type: 3}
-    <Portrait>k__BackingField: {fileID: 794109832, guid: 5b21458085a05934bb35028741af7646, type: 3}
+    <Portrait>k__BackingField: {fileID: -207401741, guid: 770c42cf6206e7d409897a5e9b97be70, type: 3}
   - <Name>k__BackingField: Floating_eye
     <ID>k__BackingField: 3
     <HP>k__BackingField: 100
@@ -77,7 +77,7 @@ MonoBehaviour:
     <Team>k__BackingField: 2
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 704811883864513440, guid: d3893d6d362db424cb51dc5bc44dc687, type: 3}
-    <Portrait>k__BackingField: {fileID: 303309416, guid: c8f7d0f545d0b0d4aa9451ad16e8561a, type: 3}
+    <Portrait>k__BackingField: {fileID: 1082870540, guid: 58b8c97db3d872646a9944d4c2d5e08d, type: 3}
   - <Name>k__BackingField: Bat
     <ID>k__BackingField: 5
     <HP>k__BackingField: 80
@@ -90,7 +90,7 @@ MonoBehaviour:
     <Team>k__BackingField: 2
     <AtkRange>k__BackingField: 1
     <Prefab>k__BackingField: {fileID: 3763461118446173395, guid: d427d3ca2c039d245b7d74d564dd9ee3, type: 3}
-    <Portrait>k__BackingField: {fileID: 1466295960, guid: 6b6aea6b09ae650479d233ca540ba809, type: 3}
+    <Portrait>k__BackingField: {fileID: -1171028252, guid: ee2f16ddf0b757c4b9e347ad3728327b, type: 3}
   - <Name>k__BackingField: Wall Obstacle
     <ID>k__BackingField: 6
     <HP>k__BackingField: 0

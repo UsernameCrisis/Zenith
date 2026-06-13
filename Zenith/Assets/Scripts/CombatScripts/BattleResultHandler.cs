@@ -203,6 +203,10 @@ public class BattleResultHandler : MonoBehaviour
         }
         else if (result == "Defeat")
         {
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.HandleDeathPenalty();
+            }
             LoadingScreenManager.Load("Tavern");
         }
     }

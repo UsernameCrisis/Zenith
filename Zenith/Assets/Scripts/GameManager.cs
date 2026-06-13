@@ -185,6 +185,11 @@ public class GameManager : MonoBehaviour
             player.maxHP = playerMaxHP;
             player.RefreshHealthUI();
         }
+        int goldEarned = 0;
+        foreach (string _ in defeatedEnemyNames)
+            goldEarned += Random.Range(50, 101);
+        gold += goldEarned;
+        gold_spent += goldEarned;
     }
 
     public void SaveAndLoadScene(string SceneName)

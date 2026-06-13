@@ -298,6 +298,7 @@ MonoBehaviour:
   animator: {fileID: 1582681636399542535}
   spriteRenderer: {fileID: 5796896902500459992}
   defaultFacingRight: 0
+  healEffectPrefab: {fileID: 2517792158908689922, guid: b41951734363c7d4e846090e50d87e65, type: 3}
 --- !u!1 &8858915651286597306
 GameObject:
   m_ObjectHideFlags: 0

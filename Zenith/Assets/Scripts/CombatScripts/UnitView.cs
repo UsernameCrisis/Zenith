@@ -7,15 +7,18 @@ public class UnitView : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private bool defaultFacingRight = true;
+    [SerializeField] private GameObject healEffectPrefab;
 
     private GridData gridData;
     private Vector3Int attackerPos;
     private Vector3Int targetPos;
     private CharacterObject boundCharacter;
     private TurnManager turnManager;
+    private CharacterObject healTargetCharacter;
 
     public event Action OnAttackFinished;
     public event Action OnDeathFinished;
+    public event Action OnHealFinished;
 
     public void Bind(CharacterObject character, TurnManager turnManager)
     {
@@ -83,6 +86,37 @@ public class UnitView : MonoBehaviour
     public void OnDeathAnimationEnd()
     {
         OnDeathFinished?.Invoke();
+    }
+
+    public void PlayHeal(CharacterObject target)
+    {
+        healTargetCharacter = target;
+        animator.SetTrigger("heal");
+    }
+
+    public void OnHealHit()
+    {
+        if (healTargetCharacter == null) return;
+
+        UnitView targetView = healTargetCharacter.View;
+        if (targetView != null)
+            targetView.PlayHealReceived();
+    }
+
+    public void OnHealAnimationEnd()
+    {
+        OnHealFinished?.Invoke();
+    }
+
+    public void PlayHealReceived()
+    {
+        if (!turnManager.GetUseAnimation()) return;
+
+        if (healEffectPrefab != null)
+        {
+            Vector3 spawnPos = transform.position + new Vector3(0f, 0.5f, 0f);
+            Instantiate(healEffectPrefab, spawnPos, Quaternion.identity);
+        }
     }
 
     public void FaceTarget(float attackerXPos, float targetXPos)

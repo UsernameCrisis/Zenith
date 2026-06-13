@@ -18,6 +18,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
     private bool isTurnComplete = false;
     private bool btHasMoved = false;
     private bool btHasAttacked = false;
+    private bool btHasHealed = false;
     private bool btActionComplete = false;
     private bool isMoving = false;
 
@@ -87,6 +88,19 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
             combatExecutor.ExecuteAttack(character, from, to, gridData);
     }
 
+    public void SubmitHeal(CharacterObject healer, Vector3Int healerPos,
+                            Vector3Int targetPos, GridData gridData, int healAmount)
+    {
+        if (btHasHealed)
+        {
+            Debug.LogWarning($"BT tried to heal twice in one turn for {healer.Name}! Ignoring.");
+            return;
+        }
+        btHasHealed = true;
+
+        combatExecutor.ExecuteHeal(healer, healerPos, targetPos, gridData, healAmount);
+    }
+
     public bool ConsumeBTActionComplete()
     {
         if (!btActionComplete) return false;
@@ -103,6 +117,7 @@ public abstract class EnemyAIControllerBase : MonoBehaviour, ITurnActor
         isTurnComplete = false;
         btHasMoved = false;
         btHasAttacked = false;
+        btHasHealed = false;
 
         tree = new BehaviourTree(GetTreeName());
         Node root = BuildTree();

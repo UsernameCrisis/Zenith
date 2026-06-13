@@ -184,6 +184,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: slime_hurt_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 946bcf0d0040bdc4c9fcf876b2caaee3
+      internalID: 900312674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -204,6 +226,7 @@ TextureImporter:
       slime_hurt_1: 1667409418
       slime_hurt_2: 330901138
       slime_hurt_3: 1785162718
+      slime_hurt_4: 900312674
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

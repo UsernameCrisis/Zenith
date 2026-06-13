@@ -354,7 +354,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 794109832, guid: 5b21458085a05934bb35028741af7646, type: 3}
+  m_Sprite: {fileID: 2015756401, guid: 0279ef6e47167cb4ea1fa494932f8697, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -396,7 +396,7 @@ Animator:
   m_GameObject: {fileID: 6394801349847046491}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e75368ff34ec5d44c9a4bf60941d8450, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -422,4 +422,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitView
   animator: {fileID: 7586146482229877130}
   spriteRenderer: {fileID: 320327385166283099}
-  defaultFacingRight: 0
+  defaultFacingRight: 1
+  healEffectPrefab: {fileID: 2517792158908689922, guid: b41951734363c7d4e846090e50d87e65, type: 3}

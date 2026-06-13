@@ -274,6 +274,7 @@ namespace BehaviourTrees
     {
         private readonly EnemyAIControllerBase ai;
         private readonly int healAmount;
+        private bool startedHeal = false;
 
         public HealTarget(EnemyAIControllerBase ai, int healAmount = 5)
         {
@@ -283,17 +284,34 @@ namespace BehaviourTrees
 
         public Node.Status Process()
         {
+            CombatExecutor executor = ai.GetCombatExecutor();
+
+            if (startedHeal)
+            {
+                if (executor.IsHealing)
+                    return Node.Status.Running;
+
+                startedHeal = false;
+                return Node.Status.Success;
+            }
+
+            Vector3Int healerPos = ai.GetCurrentPosition();
+            CharacterObject healer = ai.GetGridData().GetTileAt(healerPos)?.PlacedObject as CharacterObject;
+
+            if (healer == null)
+                return Node.Status.Failure;
+
             Vector3Int targetPos = ai.GetTargetPos();
             CharacterObject target = ai.GetGridData().GetTileAt(targetPos)?.PlacedObject as CharacterObject;
 
             if (target == null || target.HP <= 0)
                 return Node.Status.Failure;
 
-            target.Heal(healAmount);
+            ai.SubmitHeal(healer, healerPos, targetPos, ai.GetGridData(), healAmount);
 
             // Debug.Log($"Cleric healed {target.Name} for {healAmount} HP. " +
             //         $"Current HP: {target.HP}/{target.MaxHp}");
-
+            startedHeal = true;
             return Node.Status.Success;
         }
     }

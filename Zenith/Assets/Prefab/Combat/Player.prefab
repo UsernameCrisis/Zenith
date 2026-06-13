@@ -359,7 +359,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -423,3 +423,4 @@ MonoBehaviour:
   animator: {fileID: 7586146482229877130}
   spriteRenderer: {fileID: 320327385166283099}
   defaultFacingRight: 1
+  healEffectPrefab: {fileID: 2517792158908689922, guid: b41951734363c7d4e846090e50d87e65, type: 3}

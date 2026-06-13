@@ -6,11 +6,13 @@ public class CombatExecutor : MonoBehaviour
 {
     private bool isMoving = false;
     private bool isAttacking = false;
+    private bool isHealing = false;
     private TurnManager turnManager;
     private MovementPreview movePreview;
     private Grid grid;
     public bool IsAttacking => isAttacking;
     public bool IsMoving => isMoving;
+    public bool IsHealing => isHealing;
 
     void Start()
     {
@@ -61,6 +63,18 @@ public class CombatExecutor : MonoBehaviour
         movePreview.ClearAll();
     }
 
+    public void ExecuteHeal(CharacterObject healer, Vector3Int healerPos, Vector3Int targetPos, GridData gridData, int healAmount)
+    {
+        if (healer == null) return;
+        
+        isHealing = true;
+
+        if (turnManager.GetUseAnimation())
+            StartCoroutine(HealRoutine(healer, healerPos, targetPos, gridData, healAmount));
+        else
+            InstantHeal(healer, healerPos, targetPos, gridData, healAmount);
+    }
+
     private IEnumerator AttackRoutine(CharacterObject attacker, Vector3Int attackerPos, Vector3Int targetPos, GridData gridData)
     {
 
@@ -94,6 +108,50 @@ public class CombatExecutor : MonoBehaviour
         gridData.AttackObject(attackerPos, targetPos);
         attacker.DisableAttack();
         isAttacking = false;
+    }
+
+    private IEnumerator HealRoutine(CharacterObject healer, Vector3Int healerPos, Vector3Int targetPos, GridData gridData, int healAmount)
+    {
+        var healerView = healer.View;
+
+        if (healerView == null)
+        {
+            Debug.LogWarning($"[CombatExecutor] HealRoutine: no UnitView found on {healer.Name}! Falling back to instant heal.");
+            InstantHeal(healer, healerPos, targetPos, gridData, healAmount);
+            yield break;
+        }
+
+        CharacterObject target = gridData.GetTileAt(targetPos)?.PlacedObject as CharacterObject;
+        if (target == null || target.HP <= 0)
+        {
+            Debug.LogWarning($"[CombatExecutor] HealRoutine: target at {targetPos} is null or dead.");
+            isHealing = false;
+            yield break;
+        }
+
+        healerView.FaceTarget(healerPos.x, targetPos.x);
+
+        target.Heal(healAmount);
+
+        bool finished = false;
+        void OnFinished() => finished = true;
+        healerView.OnHealFinished += OnFinished;
+
+        healerView.PlayHeal(target);
+
+        yield return new WaitUntil(() => finished);
+        healerView.OnHealFinished -= OnFinished;
+
+        isHealing = false;
+    }
+
+    private void InstantHeal(CharacterObject healer, Vector3Int healerPos, Vector3Int targetPos, GridData gridData, int healAmount)
+    {
+        CharacterObject target = gridData.GetTileAt(targetPos)?.PlacedObject as CharacterObject;
+        if (target != null && target.HP > 0)
+            target.Heal(healAmount);
+
+        isHealing = false;
     }
 
     private IEnumerator WalkPath(List<Vector3Int> path, Vector3Int startPos, CharacterObject character, GridData gridData)

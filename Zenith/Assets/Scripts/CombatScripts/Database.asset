@@ -16,7 +16,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Main Character
     <ID>k__BackingField: 0
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 12
+    <Damage>k__BackingField: 23
     <Speed>k__BackingField: 5
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Iris
     <ID>k__BackingField: 1
     <HP>k__BackingField: 80
-    <Damage>k__BackingField: 9
+    <Damage>k__BackingField: 20
     <Speed>k__BackingField: 5
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Thorek
     <ID>k__BackingField: 2
     <HP>k__BackingField: 120
-    <Damage>k__BackingField: 15
+    <Damage>k__BackingField: 25
     <Speed>k__BackingField: 5
     <Defense>k__BackingField: 2
     <currentATB>k__BackingField: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Floating_eye
     <ID>k__BackingField: 3
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 11
+    <Damage>k__BackingField: 17
     <Speed>k__BackingField: 5
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Slime
     <ID>k__BackingField: 4
     <HP>k__BackingField: 100
-    <Damage>k__BackingField: 12
+    <Damage>k__BackingField: 20
     <Speed>k__BackingField: 5
     <Defense>k__BackingField: 2
     <currentATB>k__BackingField: 0
@@ -81,7 +81,7 @@ MonoBehaviour:
   - <Name>k__BackingField: Bat
     <ID>k__BackingField: 5
     <HP>k__BackingField: 80
-    <Damage>k__BackingField: 13
+    <Damage>k__BackingField: 23
     <Speed>k__BackingField: 5
     <Defense>k__BackingField: 1
     <currentATB>k__BackingField: 0

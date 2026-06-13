@@ -312,6 +312,11 @@ public class BattleResultHandler : MonoBehaviour
 
         if (showTurnOrderUI)
             turnOrderUI.Refresh(new List<CharacterObject>());
+
+        if (combatAgent != null)
+        {
+            combatAgent.MarkSystemReady();
+        }
     }
 
     private void Cleanup()

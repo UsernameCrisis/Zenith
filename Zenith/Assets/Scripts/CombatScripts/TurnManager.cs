@@ -53,9 +53,14 @@ public class TurnManager : MonoBehaviour
     private Coroutine turnLoopCoroutine;
     private bool isTurnRunning = false;
 
-    void Start()
+    void Awake()
     {
         resultHandler = GetComponent<BattleResultHandler>();
+    }
+
+    void Start()
+    {
+        
         resultHandler.OnCharacterDied += HandleCharacterDied;
         resultHandler.OnEnvReset += HandleEnvReset;
         if (autoStartOnLoad)
@@ -83,6 +88,10 @@ public class TurnManager : MonoBehaviour
 
     public void ResetEnv()
     {
+        if (resultHandler == null)
+        {
+            resultHandler = GetComponent<BattleResultHandler>();
+        }
         StopAllCoroutines();
         turnLoopCoroutine = null;
         isTurnRunning = false;

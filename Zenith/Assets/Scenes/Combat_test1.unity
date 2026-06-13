@@ -5247,6 +5247,7 @@ MonoBehaviour:
   npcRole: 1
   isAggressive: 0
   maxMoveRange: 3
+  healRange: 2
 --- !u!4 &1746535205
 Transform:
   m_ObjectHideFlags: 0
@@ -5713,7 +5714,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
@@ -6677,6 +6678,7 @@ MonoBehaviour:
   npcRole: 0
   isAggressive: 1
   maxMoveRange: 3
+  healRange: 2
 --- !u!4 &2126350183
 Transform:
   m_ObjectHideFlags: 0

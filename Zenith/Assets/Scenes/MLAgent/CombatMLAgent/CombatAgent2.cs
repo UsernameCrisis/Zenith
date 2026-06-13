@@ -59,6 +59,7 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
     private bool hasAttacked = false;
     private bool isTurnComplete = false;
     private bool btActionFullyProcessed = true;
+    private bool isSystemReady = false;
     public bool IsBTActionFullyProcessed() => btActionFullyProcessed;
     private List<DamageListener> damageListeners = new();
     private float episodeDifficultyScore = 0f;
@@ -83,9 +84,19 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
         }
     }
 
+    public void MarkSystemReady() 
+    {
+        isSystemReady = true;
+    }
+    
+    public bool systemReadyAgentIndicator ()
+    {
+        return isSystemReady;
+    }
+
     public override void OnEpisodeBegin()
     {
-        if (!enabled) return;
+        if (!isSystemReady) return;
 
         hasMoved = false;
         hasAttacked = false;
@@ -167,20 +178,27 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
 
         // ALLY UNIT DATA
         for (int i = 0; i < 3; i++)
-            ObserveAlly(sensor, allySlots[i], currPos);
+        {
+            CharacterObject ally = (allySlots != null && i < allySlots.Count) ? allySlots[i] : null;
+            ObserveAlly(sensor, ally, currPos);
+        }
+
     
         //  ENEMY UNIT DATA
         for (int i = 0; i < 3; i++)
         {
-            ObserveEnemy(sensor, enemySlots[i], currPos);
+            CharacterObject enemy = (enemySlots != null && i < enemySlots.Count) ? enemySlots[i] : null;
+            ObserveEnemy(sensor, enemy, currPos);
         }
 
         // WHICH UNIT IS ACTING
         for (int i = 0; i < 3; i++)
             sensor.AddObservation(i == activeUnitIndex ? 1f : 0f);
+        
+        float safeMaxTurn = Mathf.Max(_maxTurn, 1f);
 
         // TURN INFO
-        sensor.AddObservation(turnManager.currentTurn / _maxTurn);
+        sensor.AddObservation(turnManager.currentTurn / safeMaxTurn);
         sensor.AddObservation(hasMoved ? 1f : 0f);
         sensor.AddObservation(hasAttacked ? 1f : 0f);
         sensor.AddObservation(CountAlive(allySlots) / 3f); // num allies alive
@@ -602,14 +620,19 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
             return;
         }
 
+        float safeMaxHp = Mathf.Max(unit.MaxHp, 1f);
+        float safeMaxAtk = Mathf.Max(maxPossibleDamage, 1f);
+        float safeMaxDef = Mathf.Max(maxPossibleDef, 1f);
+        float safeMaxRange = Mathf.Max(maxPossibleRange, 1f);
+
         int typeIndex = Mathf.Clamp(unit.ID, 0, NumUnitTypes - 1);
         for (int i = 0; i < NumUnitTypes; i++)
             sensor.AddObservation(i == typeIndex ? 1f : 0f);
 
-        sensor.AddObservation((float)unit.HP / unit.MaxHp);
-        sensor.AddObservation(unit.Damage / maxPossibleDamage);
-        sensor.AddObservation(unit.Defense / maxPossibleDef);
-        sensor.AddObservation(unit.AtkRange / maxPossibleRange);
+        sensor.AddObservation((float)unit.HP / safeMaxHp);
+        sensor.AddObservation(unit.Damage / safeMaxAtk);
+        sensor.AddObservation(unit.Defense / safeMaxDef);
+        sensor.AddObservation(unit.AtkRange / safeMaxRange);
         sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
         sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);
     }
@@ -624,14 +647,19 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
             return;
         }
 
+        float safeMaxHp = Mathf.Max(unit.MaxHp, 1f);
+        float safeMaxPossibleHp = Mathf.Max(maxPossibleHP, 1f);
+        float safeMaxAtk = Mathf.Max(maxPossibleDamage, 1f);
+        float safeMaxDef = Mathf.Max(maxPossibleDef, 1f);
+
         int typeIndex = Mathf.Clamp(unit.ID, 0, NumUnitTypes - 1);
         for (int i = 0; i < NumUnitTypes; i++)
             sensor.AddObservation(i == typeIndex ? 1f : 0f);
 
-        sensor.AddObservation((float)unit.HP / unit.MaxHp);
-        sensor.AddObservation(unit.MaxHp / maxPossibleHP);
-        sensor.AddObservation(unit.Damage / maxPossibleDamage);
-        sensor.AddObservation(unit.Defense / maxPossibleDef);
+        sensor.AddObservation((float)unit.HP / safeMaxHp);
+        sensor.AddObservation(unit.MaxHp / safeMaxPossibleHp);
+        sensor.AddObservation(unit.Damage / safeMaxAtk);
+        sensor.AddObservation(unit.Defense / safeMaxDef);
         sensor.AddObservation((unit.Position.x - relativeTo.x) / 10f);
         sensor.AddObservation((unit.Position.y - relativeTo.y) / 10f);
     }
@@ -664,6 +692,7 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
     private int CountAlive(List<CharacterObject> slots)
     {
         int alive = 0;
+        if (slots == null) return alive;
         foreach (var unit in slots)
             if (unit != null && unit.HP > 0) alive++;
         return alive;

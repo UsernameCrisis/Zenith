@@ -29,7 +29,7 @@ public class FriendshipUI : MonoBehaviour
     [Tooltip("Configure your tiers from lowest points to highest points.")]
     [SerializeField] private FriendshipTierVisuals[] friendshipTiers;
 
-    private void Start()
+    private void Awake()
     {
         friendshipPanel.SetActive(false);
     }

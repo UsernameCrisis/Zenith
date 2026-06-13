@@ -12,6 +12,7 @@ public class CombatLLMChatManager : MonoBehaviour
     public Archetype npcRole;
     public bool isAggressive;
     public int maxMoveRange = 3;
+    public int healRange = 2;
 
     public enum Archetype { Warrior, Cleric }
 
@@ -21,8 +22,8 @@ public class CombatLLMChatManager : MonoBehaviour
         string mainCharacterPosition,
         Action<string, int, int> onActionParsed)
     {
-        string systemPrompt = ConstructSystemPrompt();
-        string userPrompt = ConstructUserPrompt(playerManualCommand, battlefieldContext, mainCharacterPosition);
+        string systemPrompt = ConstructSystemPrompt(playerManualCommand, mainCharacterPosition);
+        string userPrompt = ConstructUserPrompt(battlefieldContext);
 
         Debug.Log($"<color=cyan>[LLM Prompt] System:</color> {systemPrompt}");
         Debug.Log($"<color=yellow>[LLM Prompt] User:</color> {userPrompt}");
@@ -34,59 +35,58 @@ public class CombatLLMChatManager : MonoBehaviour
         }, true));
     }
 
-    private string ConstructSystemPrompt()
+    private string ConstructSystemPrompt(string playerManualCommand, string mainCharacterPosition)
     {
-        string behavior = isAggressive
-            ? "prioritize attacking the enemy with the lowest HP"
-            : "prioritize healing the ally with the lowest HP";
+        string role = npcRole == Archetype.Cleric ? "Cleric" : "Warrior";
 
-        string ability = (npcRole == Archetype.Cleric)
-            ? "You may use Heal(x,y) targeting an ally's exact grid coordinates. You may use Attack(x,y) if no allies need healing."
-            : "You CANNOT use Heal. Always use Attack(x,y).";
+        string defaultBehavior = (npcRole == Archetype.Cleric)
+            ? (isAggressive
+                ? "Attack the enemy with the lowest HP."
+                : "Heal the ally with the lowest HP. Attack only if all allies are full HP.")
+            : "Attack the enemy with the lowest HP.";
 
-        return $"You are a {npcRole} in a turn-based tactical game. {behavior}. {ability}. " +
-               $"You can move and act in the same turn, so prefer Attack or Heal when possible. " +
-               $"Your movement range is {maxMoveRange} tiles per turn. " +
-               "Respond with ONE action only. No explanation. No punctuation after. " +
-               "Format: Move(x,y) or Attack(x,y) or Heal(x,y). " +
-               "Always use exact grid coordinates from the battlefield state. " +
-               "Examples:\n" +
-               "Attack(-1,3)\n" +
-               "Heal(-2,-1)\n" +
-               "Move(1,2)";
-    }
+        string actions = (npcRole == Archetype.Cleric)
+            ? $"Actions: Move(x,y) | Attack(x,y) on enemy | Heal(x,y) on ally."
+            : "Actions: Move(x,y) | Attack(x,y) on enemy. Never use Heal.";
 
-    private string ConstructUserPrompt(string playerManualCommand, string battlefieldContext, string mainCharacterPosition)
-    {
-        bool hasValidCommand = !string.IsNullOrWhiteSpace(playerManualCommand)
-                               && playerManualCommand.Trim().Length > 2;
-
-        string commandLine;
-        if (hasValidCommand)
+        string playerOverride = "";
+        bool hasCommand = !string.IsNullOrWhiteSpace(playerManualCommand)
+                          && playerManualCommand.Trim().Length > 2;
+        if (hasCommand)
         {
             string resolved = Regex.Replace(
                 playerManualCommand.Trim(),
                 @"\bme\b|\bI\b|\bmyself\b",
-                $"the Main Character {mainCharacterPosition}",
+                $"the Main Character at {mainCharacterPosition}",
                 RegexOptions.IgnoreCase);
 
-            commandLine = $"The Main Character {mainCharacterPosition}: {resolved}";
-        }
-        else
-        {
-            commandLine = "Player Command: None. Use your own judgment.";
+            playerOverride = $"\nRULE: You MUST follow this player order: \"{resolved}\". This overrides your default behavior.";
         }
 
-        return $"Battlefield State: {battlefieldContext}\n" +
-               $"Your movement range is {maxMoveRange} tiles.\n" +
-               commandLine + "\n" +
-               "Respond with your action now:";
+        string format =
+            "Reply with ONE line only. No explanation. Exact format:\n" +
+            "Move(x,y)  or  Attack(x,y)  or  Heal(x,y)\n" +
+            "Use only coordinates that appear in the battlefield state.";
+
+        return $"You are a {role} in a turn-based tactics game.\n" +
+               $"Move range: {maxMoveRange} tiles.\n" +
+               $"{defaultBehavior}\n" +
+               $"{actions}\n" +
+               $"{format}" +
+               playerOverride;
+    }
+
+    private string ConstructUserPrompt(string battlefieldContext)
+    {
+        return $"Battlefield:\n{battlefieldContext}\nYour action:";
     }
 
     private void ParseAndExecute(string rawResponse, Action<string, int, int> callback)
     {
-        // Strip common weak-model preamble: "Action:", "Answer:", etc.
-        string cleaned = Regex.Replace(rawResponse.Trim(), @"^[\w\s]*:\s*", "").Trim();
+        string cleaned = Regex.Replace(
+            rawResponse.Trim(),
+            @"^(Action|Answer|Response|Decision|Output|Choice)\s*:\s*",
+            "", RegexOptions.IgnoreCase).Trim();
 
         Match match = Regex.Match(
             cleaned,
@@ -103,7 +103,6 @@ public class CombatLLMChatManager : MonoBehaviour
             return;
         }
 
-        // Fallback: try on the raw response in case cleaning broke it
         Match fallback = Regex.Match(
             rawResponse,
             @"(Move|Attack|Heal)\s*[\(\[]\s*(-?\d+)\s*,\s*(-?\d+)\s*[\)\]]",

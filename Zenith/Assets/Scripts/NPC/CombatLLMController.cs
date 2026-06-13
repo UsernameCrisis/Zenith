@@ -51,7 +51,7 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
     {
         commandOverlay.SetActive(true);
         inputElements.SetActive(true);
-        statusText.text = $"Command {npcName} (or leave blank for LLM to decide)";
+        statusText.text = $"Command {npcName} (or leave blank)";
         playerCommandInput.text = "";
         playerCommandInput.ActivateInputField();
     }
@@ -62,13 +62,12 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         StartCoroutine(RunLLMTurn());
     }
 
-    // ---- CHANGED: extracts mainCharPos and passes it to RequestCombatAction ----
     public IEnumerator RunLLMTurn()
     {
         string npcName = currentUnit.Name;
         string battlefieldInfo = GenerateBattlefieldContext();
         string playerOrder = playerCommandInput.text;
-        string mainCharPos = GetMainCharacterPosition(); // NEW
+        string mainCharPos = GetMainCharacterPosition();
 
         CombatLLMChatManager brain = (npcName == warriorNpcName) ? warriorBrain : clericBrain;
 
@@ -87,7 +86,22 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
             responseReceived = true;
         });
 
-        yield return new WaitUntil(() => responseReceived);
+        // Timeout so a hung Ollama request doesn't freeze the game forever
+        float elapsed = 0f;
+        float timeout = 45f;
+        while (!responseReceived && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!responseReceived)
+        {
+            Debug.LogWarning("[LLM] Request timed out. Running BT fallback.");
+            yield return StartCoroutine(RunBTFallback());
+            FinishTurn();
+            yield break;
+        }
 
         if (turnManager.State != CombatState.Playing)
         {
@@ -105,10 +119,8 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         FinishTurn();
     }
 
-    // ---- NEW: finds the Main Character's position from gridData ----
     private string GetMainCharacterPosition()
     {
-        // "Main Character" is on the same team as the current NPC
         var allies = gridData.GetUnitsByTeam(currentUnit.Team);
         foreach (var (pos, ally) in allies)
         {
@@ -285,11 +297,9 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         Vector3Int selfPos = currentUnit.Position;
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-        sb.Append($"Grid coordinates range from -5 to 4 on both x and y. ");
-        sb.Append($"Your unit: {currentUnit.Name} at ({selfPos.x},{selfPos.y}), ");
+        sb.Append($"You: {currentUnit.Name} at ({selfPos.x},{selfPos.y}), ");
         sb.Append($"HP {currentUnit.HP}/{currentUnit.MaxHp}, ");
-        sb.Append($"Damage {currentUnit.Damage}, Defense {currentUnit.Defense}, ");
-        sb.Append($"AttackRange {currentUnit.AtkRange}.");
+        sb.Append($"AtkRange {currentUnit.AtkRange}. ");
 
         var allies = gridData.GetUnitsByTeam(currentUnit.Team);
         sb.Append("Allies: ");
@@ -297,10 +307,11 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         foreach (var (pos, ally) in allies)
         {
             if (ally == currentUnit || ally.HP <= 0) continue;
-            sb.Append($"{ally.Name} at ({pos.x},{pos.y}) HP {ally.HP}/{ally.MaxHp}; ");
+            int dist = Mathf.Abs(selfPos.x - pos.x) + Mathf.Abs(selfPos.y - pos.y);
+            sb.Append($"{ally.Name} ({pos.x},{pos.y}) HP {ally.HP}/{ally.MaxHp} dist {dist}; ");
             hasAlly = true;
         }
-        if (!hasAlly) sb.Append("none alive; ");
+        if (!hasAlly) sb.Append("none; ");
 
         var enemies = gridData.GetEnemyTeamUnit(currentUnit.Team);
         sb.Append("Enemies: ");
@@ -308,10 +319,11 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
         foreach (var (pos, enemy) in enemies)
         {
             if (enemy.HP <= 0) continue;
-            sb.Append($"{enemy.Name} at ({pos.x},{pos.y}) HP {enemy.HP}/{enemy.MaxHp}; ");
+            int dist = Mathf.Abs(selfPos.x - pos.x) + Mathf.Abs(selfPos.y - pos.y);
+            sb.Append($"{enemy.Name} ({pos.x},{pos.y}) HP {enemy.HP}/{enemy.MaxHp} dist {dist}; ");
             hasEnemy = true;
         }
-        if (!hasEnemy) sb.Append("none alive; ");
+        if (!hasEnemy) sb.Append("none; ");
 
         return sb.ToString();
     }

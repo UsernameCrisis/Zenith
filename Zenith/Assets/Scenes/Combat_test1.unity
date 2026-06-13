@@ -5713,7 +5713,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: controlMode
-      value: 3
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: turnOrderUI
@@ -5721,7 +5721,7 @@ PrefabInstance:
       objectReference: {fileID: 2049846321}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: useAnimation
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3623620154553805043, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: llmController
@@ -5752,14 +5752,14 @@ PrefabInstance:
     - {fileID: 2591995594871997899, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 2211315316823777441, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
-      insertIndex: 0
+    - targetCorrespondingSourceObject: {fileID: 4443439970588558277, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 841280050}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
 --- !u!4 &1839119180 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 2211315316823777441, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4443439970588558277, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
   m_PrefabInstance: {fileID: 1839119179}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1854387142

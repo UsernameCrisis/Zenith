@@ -9532,7 +9532,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49e2a631f220b2449bee41659f4fb36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
-  sceneMusic: {fileID: 8300000, guid: 01aac44e39d58af418effcf81a93165d, type: 3}
+  sceneMusic: {fileID: 8300000, guid: 2b9d13a92fa07204097aea0c4a35f518, type: 3}
+  transitionFadeTime: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

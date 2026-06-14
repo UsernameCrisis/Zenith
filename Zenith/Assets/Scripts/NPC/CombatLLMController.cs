@@ -263,7 +263,7 @@ public class CombatLLMController : MonoBehaviour, ITurnActor
 
         if (dist <= healRange)
         {
-            healTarget.Heal(clericHealAmount);
+            combatExecutor.ExecuteHeal(currentUnit, fromPos, targetPos, gridData, clericHealAmount);
             Debug.Log($"[LLM] {currentUnit.Name} healed {healTarget.Name} for {clericHealAmount} HP.");
         }
         else

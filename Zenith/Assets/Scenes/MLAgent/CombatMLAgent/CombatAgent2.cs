@@ -442,13 +442,7 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
         // RewardValidAction();
         hasAttacked = true;
         combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
-
-        if (isBTRecordingMode)
-        {
-            StartCoroutine(WaitForAttackThenNotifyBT(character));
-            return;
-        }
-        DecideOrEnd(character);
+        StartCoroutine(WaitForAttackThenDecideOrEnd(character));
     }
 
     private IEnumerator WaitForMoveThenDecideOrEnd(CharacterObject character)
@@ -468,15 +462,21 @@ public class CombatAgent2 : Agent, ITurnActor, IObservableAgent
         DecideOrEnd(character);
     }
 
-    private IEnumerator WaitForAttackThenNotifyBT(CharacterObject character)
+    private IEnumerator WaitForAttackThenDecideOrEnd(CharacterObject character)
     {
         while (combatExecutor.IsAttacking)
             yield return null;
 
         if (turnManager.TurnAlreadyEnded) yield break;
 
-        btActionFullyProcessed = true;
-        NotifyBTActionComplete();
+        if (isBTRecordingMode)
+        {
+            btActionFullyProcessed = true;
+            NotifyBTActionComplete();
+            yield break;
+        }
+
+        DecideOrEnd(character);
     }
 
     private void EndTurn(CharacterObject character)

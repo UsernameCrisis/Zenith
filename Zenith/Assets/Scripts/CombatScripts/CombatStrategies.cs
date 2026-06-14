@@ -312,7 +312,7 @@ namespace BehaviourTrees
             // Debug.Log($"Cleric healed {target.Name} for {healAmount} HP. " +
             //         $"Current HP: {target.HP}/{target.MaxHp}");
             startedHeal = true;
-            return Node.Status.Success;
+            return Node.Status.Running;
         }
     }
 

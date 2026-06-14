@@ -560,7 +560,7 @@ public class PopulateMap : MonoBehaviour
     private MapGrid LoadMapGrid()
     {
         int mapId = Random.Range(1,6);
-        TextAsset jsonFile = Resources.Load<TextAsset>($"maps/map_{mapId}"); // ;
+        TextAsset jsonFile = Resources.Load<TextAsset>($"maps/map_{mapId}");
 
         if (jsonFile == null)
         {

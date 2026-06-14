@@ -62,7 +62,7 @@ public class EnemyTrigger : MonoBehaviour
             encounteredEnemyNames.Add(transform.parent.gameObject.name);
         }
 
-        GameManager.Instance.PrepareCombat(encounteredEnemyNames, this);
+        GameManager.Instance.PrepareCombat(encounteredEnemyNames, uniqueEnemies,this);
         GameManager.Instance.StartCombatScene();
 
         // --- TEST BLOCK ---
@@ -73,31 +73,43 @@ public class EnemyTrigger : MonoBehaviour
 
     public void CleanupDefeatedEnemies(List<string> defeatedNames)
     {
-        int count = Physics.OverlapSphereNonAlloc(transform.position, checkRadius, hitResults, enemyLayer);
+        List<GameObject> enemyObjects = GameManager.Instance.encounterEnemyObjects;
+        // int count = Physics.OverlapSphereNonAlloc(transform.position, checkRadius, hitResults, enemyLayer);
 
-        for (int i = 0; i < count; i++)
+        // for (int i = 0; i < count; i++)
+        // {
+        //     GameObject hitObj = hitResults[i].gameObject;
+        //     GameObject enemyMainBody = null;
+
+        //     if (hitObj.CompareTag("Enemy"))
+        //     {
+        //         enemyMainBody = hitObj;
+        //     }
+        //     else if (hitObj.transform.parent != null && hitObj.transform.parent.CompareTag("Enemy"))
+        //     {
+        //         enemyMainBody = hitObj.transform.parent.gameObject;
+        //     }
+
+        //     if (enemyMainBody != null && defeatedNames.Contains(enemyMainBody.name))
+        //     {
+        //         if (transform.parent != null && enemyMainBody == transform.parent.gameObject)
+        //         {
+        //             continue;
+        //         }
+
+        //         Debug.Log($"Cleaning up nearby ally: {enemyMainBody.name}");
+        //         Destroy(enemyMainBody);
+        //     }
+        // }
+
+        foreach (GameObject enemyGO in enemyObjects)
         {
-            GameObject hitObj = hitResults[i].gameObject;
-            GameObject enemyMainBody = null;
+            if (enemyGO == null) continue;
 
-            if (hitObj.CompareTag("Enemy"))
+            if (defeatedNames.Contains(enemyGO.name))
             {
-                enemyMainBody = hitObj;
-            }
-            else if (hitObj.transform.parent != null && hitObj.transform.parent.CompareTag("Enemy"))
-            {
-                enemyMainBody = hitObj.transform.parent.gameObject;
-            }
-
-            if (enemyMainBody != null && defeatedNames.Contains(enemyMainBody.name))
-            {
-                if (transform.parent != null && enemyMainBody == transform.parent.gameObject)
-                {
-                    continue;
-                }
-
-                Debug.Log($"Cleaning up nearby ally: {enemyMainBody.name}");
-                Destroy(enemyMainBody);
+                Debug.Log($"[EnemyTrigger] Cleaning up defeated enemy: {enemyGO.name}");
+                Destroy(enemyGO);
             }
         }
 
@@ -111,5 +123,7 @@ public class EnemyTrigger : MonoBehaviour
             Debug.Log($"Cleaning up main target self: {gameObject.name}");
             Destroy(gameObject);
         }
+
+        GameManager.Instance.encounterEnemyObjects.Clear();
     }
 }

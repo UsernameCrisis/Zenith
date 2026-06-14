@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
     public string combatSceneName = "Combat_test1";
     public List<string> currentEncounterEnemyNames = new();
     public List<string> defeatedEnemyNames = new();
+    public List<GameObject> encounterEnemyObjects = new();
 
     private GameObject currentOverworldRoot;
     private EnemyTrigger activeTrigger;
@@ -159,10 +160,11 @@ public class GameManager : MonoBehaviour
 
     public void SetOverworldRoot(GameObject root) => currentOverworldRoot = root;
 
-    public void PrepareCombat(List<string> enemyNames, EnemyTrigger trigger)
+    public void PrepareCombat(List<string> enemyNames, List<GameObject> enemyObjects, EnemyTrigger trigger)
     {
         currentEncounterEnemyNames = new List<string>(enemyNames);
         defeatedEnemyNames.Clear();
+        encounterEnemyObjects = new List<GameObject>(enemyObjects);
         activeTrigger = trigger;
     }
 

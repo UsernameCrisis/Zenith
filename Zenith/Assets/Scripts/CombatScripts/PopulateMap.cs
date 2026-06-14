@@ -559,11 +559,12 @@ public class PopulateMap : MonoBehaviour
 
     private MapGrid LoadMapGrid()
     {
-        TextAsset jsonFile = Resources.Load<TextAsset>("maps/map_1"); // ($"maps/map_{Random.Range(0,5)}");
+        int mapId = Random.Range(1,6);
+        TextAsset jsonFile = Resources.Load<TextAsset>($"maps/map_{mapId}"); // ;
 
         if (jsonFile == null)
         {
-            Debug.LogError("[PopulateMap] LoadMapGrid: map JSON not found at Resources/maps/map_1!");
+            Debug.LogError($"[PopulateMap] LoadMapGrid: map JSON not found at Resources/maps/map_{mapId}!");
             return null;
         }
 

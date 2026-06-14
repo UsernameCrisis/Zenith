@@ -312,7 +312,7 @@ public class TurnManager : MonoBehaviour
                 actor = gridSelect;
                 return;
             }
-            AssignBehaviorTreeActor(current); // enemy uses BT
+            AssignAgentActor(current);
             return;
         }
         AssignBehaviorTreeActor(current);
@@ -509,7 +509,8 @@ public class TurnManager : MonoBehaviour
 
             bool agentControlsThisUnit = (controlMode == CombatControlMode.MLAgent || 
                 controlMode == CombatControlMode.PlayerVsAgent || 
-                controlMode == CombatControlMode.BTRecording) && c.Team == currentAgentTeam;
+                controlMode == CombatControlMode.BTRecording ||
+                controlMode == CombatControlMode.LLMAgent) && c.Team == currentAgentTeam;
 
             if (agentControlsThisUnit)
                 allySlots.Add(c);

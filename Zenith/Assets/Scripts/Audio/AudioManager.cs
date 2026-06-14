@@ -17,7 +17,7 @@ public class AudioManager : MonoBehaviour
     [Header("SFX Library")]
     public List<SFXEntry> sfxClips = new List<SFXEntry>();
     private Coroutine musicFadeCoroutine;
-    
+    private List<AudioClip> activeMusicTracks = new List<AudioClip>();
 
     private void Awake()
     {
@@ -62,6 +62,39 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat("soundFXVolume", value);
     }
 
+    public void PushMusic(AudioClip clip, float fadeTime = 1f)
+    {
+        if (clip == null) return;
+
+        if (activeMusicTracks.Contains(clip))
+        {
+            activeMusicTracks.Remove(clip);
+        }
+
+        activeMusicTracks.Add(clip);
+        PlayMusic(clip, fadeTime);
+    }
+
+    public void RemoveMusic(AudioClip clip, float fadeTime = 1f)
+    {
+        if (clip == null) return;
+
+        if (activeMusicTracks.Contains(clip))
+        {
+            activeMusicTracks.Remove(clip);
+        }
+
+        if (activeMusicTracks.Count > 0)
+        {
+            AudioClip topTrack = activeMusicTracks[activeMusicTracks.Count - 1];
+            PlayMusic(topTrack, fadeTime);
+        }
+        else
+        {
+            StopMusicFade(fadeTime);
+        }
+    }
+
     public void StopMusicImmediate()
     {
         if (musicFadeCoroutine != null)
@@ -69,11 +102,17 @@ public class AudioManager : MonoBehaviour
 
         musicSource.Stop();
         musicSource.volume = musicMaxVolume;
+        activeMusicTracks.Clear();
+    }
+
+    private void StopMusicFade(float fadeTime)
+    {
+        if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+        musicFadeCoroutine = StartCoroutine(FadeOutOnly(fadeTime));
     }
 
     public void PlayMusic(AudioClip clip, float fadeTime = 1f)
     {
-        print(Time.timeScale);
         if (musicFadeCoroutine != null)
             StopCoroutine(musicFadeCoroutine);
 
@@ -82,9 +121,8 @@ public class AudioManager : MonoBehaviour
 
     private IEnumerator FadeMusic(AudioClip newClip, float fadeTime)
     {
-        if (musicSource.clip == newClip)
+        if (musicSource.clip == newClip && musicSource.isPlaying)
         {
-            print("music is the same");
             yield break;
         }
             
@@ -92,11 +130,15 @@ public class AudioManager : MonoBehaviour
         float startVol = musicSource.volume;
 
         // Fade out old music
-        for (float t = 0; t < fadeTime; t += Time.deltaTime)
+        if (musicSource.isPlaying)
         {
-            musicSource.volume = Mathf.Lerp(startVol, 0, t / fadeTime);
-            yield return null;
+            for (float t = 0; t < fadeTime; t += Time.unscaledDeltaTime)
+            {
+                musicSource.volume = Mathf.Lerp(startVol, 0, t / fadeTime);
+                yield return null;
+            }
         }
+        
 
         musicSource.Stop();
         musicSource.clip = newClip;
@@ -104,13 +146,24 @@ public class AudioManager : MonoBehaviour
 
 
         // Fade in new music
-        for (float t = 0; t < fadeTime; t += Time.deltaTime)
+        for (float t = 0; t < fadeTime; t += Time.unscaledDeltaTime)
         {
             musicSource.volume = Mathf.Lerp(0, musicMaxVolume, t / fadeTime);
             yield return null;
         }
         musicSource.volume = musicMaxVolume;
-        print(musicSource.clip);
+    }
+
+    private IEnumerator FadeOutOnly(float fadeTime)
+    {
+        float startVol = musicSource.volume;
+        for (float t = 0; t < fadeTime; t += Time.unscaledDeltaTime)
+        {
+            musicSource.volume = Mathf.Lerp(startVol, 0, t / fadeTime);
+            yield return null;
+        }
+        musicSource.Stop();
+        musicSource.volume = musicMaxVolume; 
     }
 
     public void PlaySFX(string name)

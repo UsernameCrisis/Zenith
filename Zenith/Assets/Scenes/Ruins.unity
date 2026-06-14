@@ -68693,6 +68693,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
   sceneMusic: {fileID: 8300000, guid: e3eb756e6f237b643a41f7d2d6692699, type: 3}
+  transitionFadeTime: 1
 --- !u!4 &673962430
 Transform:
   m_ObjectHideFlags: 0
@@ -167477,7 +167478,7 @@ PrefabInstance:
     - target: {fileID: 2164319099445918619, guid: b74f29195a382104f964a941b525b82a, type: 3}
       propertyPath: prevMenu
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 424989952}
     - target: {fileID: 4027859842893769625, guid: b74f29195a382104f964a941b525b82a, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

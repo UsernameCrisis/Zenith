@@ -412,7 +412,7 @@ public class PopulateMap : MonoBehaviour
             if (Random.value > currentChance)
                 break; // roll failed, stop adding
 
-            string bonusName = baseNames[Random.Range(0, baseNames.Count)];
+            string bonusName = StripCloneSuffix(baseNames[Random.Range(0, baseNames.Count)]);
             ObjectData bonusData = database.objectsData.Find(
                 d => string.Equals(d.Name, bonusName, System.StringComparison.OrdinalIgnoreCase));
 

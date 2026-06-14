@@ -30,6 +30,7 @@ public class EnemyTrigger : MonoBehaviour
 
         int count = Physics.OverlapSphereNonAlloc(transform.position, checkRadius, hitResults, enemyLayer);
 
+        List<GameObject> uniqueEnemies = new List<GameObject>();
         List<string> encounteredEnemyNames = new List<string>();
 
         for (int i = 0; i < count; i++)
@@ -48,8 +49,9 @@ public class EnemyTrigger : MonoBehaviour
 
             if (enemyMainBody != null)
             {
-                if (!encounteredEnemyNames.Contains(enemyMainBody.name))
+                if (!uniqueEnemies.Contains(enemyMainBody))
                 {
+                    uniqueEnemies.Add(enemyMainBody);
                     encounteredEnemyNames.Add(enemyMainBody.name);
                 }
             }

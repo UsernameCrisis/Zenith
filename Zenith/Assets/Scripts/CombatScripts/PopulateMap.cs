@@ -63,6 +63,11 @@ public class PopulateMap : MonoBehaviour
     public GridData objectsData;
     public List<GameObject> placedGameObjects = new();
 
+    private Dictionary<int, StatOverride> testingStatOverrides = new();
+    public void SetStatOverrides(Dictionary<int, StatOverride> overrides)
+    {
+        testingStatOverrides = overrides ?? new Dictionary<int, StatOverride>();
+    }
     private Dictionary<int, List<GameObject>> unitPool = new();
     private Dictionary<int, int> poolNextIndex = new();
     private List<GameObject> activePooledObjects = new();
@@ -702,11 +707,13 @@ public class PopulateMap : MonoBehaviour
             return;
         }
 
-        int origHP = data.HP, origDmg = data.Damage, origDef = data.Defense;
+        int origHP = data.HP, origDmg = data.Damage, origDef = data.Defense, origSpeed = data.Speed;
         bool didOverride = false;
         int overworldMaxHp = 0; // a placeholder to MaxHP after construction
 
-        if (GameManager.Instance != null && GameManager.Instance.hasData)
+        bool hasTestingOverride = testingStatOverrides.TryGetValue(ID, out StatOverride statOverride);
+
+        if (!hasTestingOverride && GameManager.Instance != null && GameManager.Instance.hasData)
         {
             if (ID == 0)
             {
@@ -732,6 +739,15 @@ public class PopulateMap : MonoBehaviour
                 overworldMaxHp = GameManager.Instance.warriorMaxHP;
                 didOverride = true;
             }
+        }
+
+        if (hasTestingOverride)
+        {
+            data.setHP(statOverride.hp);
+            data.setDamage(statOverride.damage);
+            data.setDefense(statOverride.defense);
+            data.setSpeed(statOverride.speed);
+            didOverride = true;
         }
 
         GameObject newObject;
@@ -786,6 +802,7 @@ public class PopulateMap : MonoBehaviour
             data.setHP(origHP);
             data.setDamage(origDmg);
             data.setDefense(origDef);
+            data.setSpeed(origSpeed);
         }
     }
 

@@ -51,4 +51,9 @@ public class ObjectData
     {
         HP = hp;
     }
+
+    public void setSpeed (int speed)
+    {
+        Speed = speed;
+    }
 } 

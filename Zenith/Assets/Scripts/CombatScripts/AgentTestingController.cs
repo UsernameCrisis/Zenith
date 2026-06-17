@@ -4,7 +4,6 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents.Policies;
-using Unity.InferenceEngine;
 
 public class AgentTestingController : MonoBehaviour
 {
@@ -12,6 +11,8 @@ public class AgentTestingController : MonoBehaviour
     [SerializeField] private TurnManager turnManager;
     [SerializeField] private BattleResultHandler battleResultHandler;
     [SerializeField] private CombatAgent2 combatAgent;
+    [SerializeField] private PopulateMap populateMap;
+    [SerializeField] private StatOverridePanel statPanel;
 
     [Header("Selection Panel UI")]
     [SerializeField] private GameObject selectionPanel;
@@ -27,6 +28,7 @@ public class AgentTestingController : MonoBehaviour
 
     [Header("Agent Configurations")]
     [SerializeField] private List<AgentModeConfig> modes = new();
+
 
     private int selectedModeIndex = 0;
     private ToggleGroup toggleGroup;
@@ -149,6 +151,8 @@ public class AgentTestingController : MonoBehaviour
         }
 
         useHumanPlayer = humanPlayerToggle != null && humanPlayerToggle.isOn;
+
+        populateMap.SetStatOverrides(statPanel.GetOverrides());
 
         AgentModeConfig config = modes[selectedModeIndex];
         ApplyConfig(config);

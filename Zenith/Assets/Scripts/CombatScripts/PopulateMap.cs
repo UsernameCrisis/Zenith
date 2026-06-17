@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class StatVarianceConfig
@@ -32,6 +31,7 @@ public class PopulateMap : MonoBehaviour
     [SerializeField] private bool loadFromSave = false;
     [SerializeField] private bool forTrainingAgent = false;
     [SerializeField] private bool loadFromGameState = false;
+    [SerializeField] private bool addRandomObstacles = false;
 
     [Header("Multi-Agent Pool settings (requires forTrainingAgent = true)")]
     [SerializeField] private bool forMultiAgent = false;
@@ -122,7 +122,9 @@ public class PopulateMap : MonoBehaviour
             activePooledObjects.Clear();
         }
 
-        if (loadFromSave)
+        if (loadFromSave && addRandomObstacles)
+            PopulateFromJSONWithRandomObstacles();
+        else if (loadFromSave)
             PopulateFromGridJSON();
         else if (forTrainingAgent)
             GenerateTrainingMap();
@@ -533,6 +535,49 @@ public class PopulateMap : MonoBehaviour
                 PlaceObject(pos, id);
             }
         }
+    }
+
+    private void PopulateFromJSONWithRandomObstacles()
+    {
+        LoadObstaclesFromGridJSON();
+
+        if (!FindSpawnCenters(out Vector3Int playerCenter, out Vector3Int enemyCenter))
+        {
+            Debug.LogWarning("[PopulateMap] PopulateFromJSONWithRandomObstacles: could not find " +
+                            "valid spawn centers after loading JSON obstacles. Falling back to PopulateFromGridJSON.");
+            ClearMap();
+            PopulateFromGridJSON();
+            return;
+        }
+
+        var generator = new TrainingMapGenerator(
+            isStaticComposition,
+            width, height,
+            minX, maxX, minY, maxY,
+            teamDist, obstacleID,
+            obstacleDensity, clusterLimit,
+            minTraversablePaths,
+            useMaxFlow, isFullyRandom,
+            isOccupied: pos => objectsData.GetTileAt(pos) != null,
+            isWalkable: IsWalkable,
+            placeObject: (pos, id) => PlaceObject(pos, id),
+            removeLastObject: pos =>
+            {
+                Destroy(placedGameObjects[^1]);
+                objectsData.RemoveObjectAt(pos);
+                placedGameObjects.RemoveAt(placedGameObjects.Count - 1);
+            });
+
+        generator.SpawnObstaclesOnly(playerCenter, enemyCenter);
+
+        List<int> playerTeamIDs = new List<int> { 0, 1, 2 };
+        List<int> monsterTeamIDsLocal = new List<int> { 3, 4, 5 };
+
+        SpawnTeamAroundCenter(playerTeamIDs, playerCenter);
+        SpawnTeamAroundCenter(monsterTeamIDsLocal, enemyCenter);
+
+        Debug.Log($"[PopulateMap] PopulateFromJSONWithRandomObstacles complete. " +
+                    $"Player center: {playerCenter}, Enemy center: {enemyCenter}.");
     }
 
     private void LoadObstaclesFromGridJSON()

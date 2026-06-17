@@ -65,6 +65,13 @@ public class TrainingMapGenerator
         SpawnObstacles();
     }
 
+    public void SpawnObstaclesOnly(Vector3Int t1Center, Vector3Int t2Center)
+    {
+        team1Center = t1Center;
+        team2Center = t2Center;
+        SpawnObstacles();
+    }
+
     private void SpawnTeams()
     {
         team1Center = GetRandomEmptyTile();
@@ -161,7 +168,7 @@ public class TrainingMapGenerator
             Debug.LogWarning($"SpawnTeam: only spawned {3 - units}/3 units after {maxAttempts} attempts.");
     }
 
-    // --- Obstacle spawning ---
+    // Obstacle spawning
 
     private void SpawnObstacles()
     {
@@ -197,7 +204,6 @@ public class TrainingMapGenerator
                 candidates.Add(pos);
             }
         }
-            
 
         Shuffle(candidates);
 
@@ -233,7 +239,7 @@ public class TrainingMapGenerator
         }
     }
 
-    // --- Helpers ---
+    // Helpers
 
     private int CountObstacleNeighbors(Vector3Int pos)
     {

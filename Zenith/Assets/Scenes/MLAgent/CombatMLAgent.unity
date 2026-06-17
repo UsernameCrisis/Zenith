@@ -6080,8 +6080,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: loadFromSave
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: forMultiAgent
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: forTrainingAgent
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: loadFromGameState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
+      propertyPath: addRandomObstacles
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2949023873622417324, guid: 5a5e713aac277884e8f9bf55ef6723aa, type: 3}
       propertyPath: isStaticComposition

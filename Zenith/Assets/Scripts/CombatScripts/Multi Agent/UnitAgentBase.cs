@@ -398,14 +398,7 @@ public class UnitAgentBase : Agent, ITurnActor, IObservableAgent
 
         hasAttacked = true;
         combatExecutor.ExecuteAttack(character, currentPos, targetPos, _gridData);
-
-        if (isBTRecordingMode)
-        {
-            StartCoroutine(WaitForAttackThenNotifyBT());
-            return;
-        }
-
-        DecideOrEnd(character);
+        StartCoroutine(WaitForAttackThenDecideToEnd(character));
     }
 
     private IEnumerator WaitForMoveThenDecideOrEnd(CharacterObject character)
@@ -425,15 +418,19 @@ public class UnitAgentBase : Agent, ITurnActor, IObservableAgent
         DecideOrEnd(character);
     }
 
-    private IEnumerator WaitForAttackThenNotifyBT()
+    private IEnumerator WaitForAttackThenDecideToEnd(CharacterObject character)
     {
         while (combatExecutor.IsAttacking)
             yield return null;
 
         if (turnManager.TurnAlreadyEnded) yield break;
 
-        btActionFullyProcessed = true;
-        NotifyBTActionComplete();
+        if (isBTRecordingMode)
+        {
+            btActionFullyProcessed = true;
+            NotifyBTActionComplete();
+        }
+        DecideOrEnd(character);
     }
 
     private void EndTurn(CharacterObject character)

@@ -89,6 +89,7 @@ public class BattleResultHandler : MonoBehaviour
         if (isAgentTestingMode)
         {
             turnManager.StopTurnLoop();
+            gridSelect.ExitCharacter();
             return true;
         }
 
@@ -147,6 +148,7 @@ public class BattleResultHandler : MonoBehaviour
         if (isAgentTestingMode)
         {
             turnManager.StopTurnLoop();
+            gridSelect.ExitCharacter();
             return true;
         }
 

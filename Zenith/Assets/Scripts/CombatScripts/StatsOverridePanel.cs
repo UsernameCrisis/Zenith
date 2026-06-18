@@ -101,6 +101,12 @@ public class StatOverridePanel : MonoBehaviour
         panelRoot.SetActive(isPanelOpen);
     }
 
+    public void ClosePanel()
+    {
+        isPanelOpen = false;
+        panelRoot.SetActive(false);
+    }
+
     private void ResetAllToDefaults()
     {
         foreach (var rows in allRows)

@@ -152,12 +152,14 @@ public class AgentTestingController : MonoBehaviour
 
         useHumanPlayer = humanPlayerToggle != null && humanPlayerToggle.isOn;
 
-        populateMap.SetStatOverrides(statPanel.GetOverrides());
+        if (populateMap != null && statPanel != null)
+            populateMap.SetStatOverrides(statPanel.GetOverrides());
 
         AgentModeConfig config = modes[selectedModeIndex];
         ApplyConfig(config);
 
         HideSelectionPanel();
+        statPanel?.ClosePanel();
 
         turnManager.ResetEnv();
     }

@@ -59,6 +59,9 @@ public class GameManager : MonoBehaviour
     public List<string> defeatedEnemyNames = new();
     public List<GameObject> encounterEnemyObjects = new();
 
+    [Header("Gameplay Settings")]
+    public bool useLLMForNPCs = false;
+
     private GameObject currentOverworldRoot;
     private EnemyTrigger activeTrigger;
     private string savePath;

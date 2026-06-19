@@ -792,6 +792,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3687036134429409760, guid: a6f0052bad14db54abf7b4340fe0071e, type: 3}
   m_PrefabInstance: {fileID: 648968704}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &63068912 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6674395952136568482, guid: b74f29195a382104f964a941b525b82a, type: 3}
+  m_PrefabInstance: {fileID: 2050731003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &63068914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63068912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d2033b0e3ef8a84a8bea30ac18b033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHoverSFX
 --- !u!1 &67881338
 GameObject:
   m_ObjectHideFlags: 0
@@ -6917,6 +6934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMusic
   sceneMusic: {fileID: 8300000, guid: ff6061ffb4a58404fbb661906c21e9eb, type: 3}
+  transitionFadeTime: 1
 --- !u!4 &716365883
 Transform:
   m_ObjectHideFlags: 0
@@ -11323,6 +11341,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1206602317}
   m_CullTransparentMesh: 1
+--- !u!1 &1209871495 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3557851802436308280, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+  m_PrefabInstance: {fileID: 6857975044293011003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1209871498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209871495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d2033b0e3ef8a84a8bea30ac18b033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHoverSFX
 --- !u!1 &1223623182
 GameObject:
   m_ObjectHideFlags: 0
@@ -12596,6 +12631,23 @@ PrefabInstance:
       addedObject: {fileID: 309163399}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53bec2424d3c8ea4e99e913f2c0de9b9, type: 3}
+--- !u!1 &1277019957 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6722736448148334705, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+  m_PrefabInstance: {fileID: 6857975044293011003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1277019959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277019957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d2033b0e3ef8a84a8bea30ac18b033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHoverSFX
 --- !u!1001 &1286145202
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13168,6 +13220,9 @@ MonoBehaviour:
   sfxClips:
   - name: ButtonHover
     clip: {fileID: 8300000, guid: 5839723a21f812d4cac6f017cd5b933f, type: 3}
+    volume: 1
+  - name: ButtonClicked
+    clip: {fileID: 8300000, guid: aee51acef947db045b120423882551a6, type: 3}
     volume: 1
 --- !u!4 &1329671152
 Transform:
@@ -14571,6 +14626,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1461608330}
   m_CullTransparentMesh: 1
+--- !u!1 &1465997951 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8493301393881568640, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+  m_PrefabInstance: {fileID: 6857975044293011003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1465997953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465997951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d2033b0e3ef8a84a8bea30ac18b033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHoverSFX
 --- !u!1001 &1467277878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17201,6 +17273,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3150779354522255294, guid: 3e500e133079f4542bb366242d9a2e0f, type: 3}
   m_PrefabInstance: {fileID: 8525426655607543856}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1779546936 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8033802381178767840, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+  m_PrefabInstance: {fileID: 6857975044293011003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1779546938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779546936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d2033b0e3ef8a84a8bea30ac18b033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHoverSFX
 --- !u!1 &1781679732
 GameObject:
   m_ObjectHideFlags: 0
@@ -19882,7 +19971,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6674395952136568482, guid: b74f29195a382104f964a941b525b82a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 63068914}
   m_SourcePrefab: {fileID: 100100000, guid: b74f29195a382104f964a941b525b82a, type: 3}
 --- !u!1001 &2067707703
 PrefabInstance:
@@ -21109,7 +21201,19 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8493301393881568640, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1465997953}
+    - targetCorrespondingSourceObject: {fileID: 6722736448148334705, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1277019959}
+    - targetCorrespondingSourceObject: {fileID: 8033802381178767840, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1779546938}
+    - targetCorrespondingSourceObject: {fileID: 3557851802436308280, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1209871498}
   m_SourcePrefab: {fileID: 100100000, guid: 5791241eb4dfd0e4e885f324bac43d78, type: 3}
 --- !u!1001 &8525426655607543856
 PrefabInstance:

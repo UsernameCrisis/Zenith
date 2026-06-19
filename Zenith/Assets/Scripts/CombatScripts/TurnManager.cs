@@ -52,15 +52,16 @@ public class TurnManager : MonoBehaviour
     private ITurnActor actor;
     private Coroutine turnLoopCoroutine;
     private bool isTurnRunning = false;
+    private CombatControlMode _baseControlMode;
 
     void Awake()
     {
         resultHandler = GetComponent<BattleResultHandler>();
+        _baseControlMode = controlMode;
     }
 
     void Start()
     {
-        
         resultHandler.OnCharacterDied += HandleCharacterDied;
         resultHandler.OnEnvReset += HandleEnvReset;
         if (autoStartOnLoad)
@@ -484,6 +485,15 @@ public class TurnManager : MonoBehaviour
     {
         gridData = data;
         resultHandler.GridData = data;
+
+        if (_baseControlMode == CombatControlMode.PlayerVsAgent &&
+            controlMode == CombatControlMode.PlayerVsAgent &&
+            GameManager.Instance != null &&
+            GameManager.Instance.useLLMForNPCs)
+        {
+            controlMode = CombatControlMode.LLMAgent;
+            Debug.Log("[TurnManager] LLM mode enabled via GameManager setting.");
+        }
 
         int humanControlledTeam = controlMode switch
         {

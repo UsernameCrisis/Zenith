@@ -79,7 +79,7 @@ public class OllamaChatProvider : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"Ollama Error: {request.error}");
+                Debug.LogWarning($"Ollama Error: {request.error}");
                 onResponseReceived?.Invoke("Connection to the brain failed.");
             }
         }

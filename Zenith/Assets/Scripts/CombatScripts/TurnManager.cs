@@ -29,6 +29,7 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private TurnOrderUI turnOrderUI;
     [SerializeField] private CombatAgent2 combatAgent;
     [SerializeField] private CombatLLMController llmController;
+    [SerializeField] private CombatCameraMovement mainCamera;
 
     [Header("Settings")]
     [SerializeField] private CombatControlMode controlMode = CombatControlMode.Player;
@@ -604,6 +605,7 @@ public class TurnManager : MonoBehaviour
     private void HandleEnvReset(GridData newGridData)
     {
         InitializeTurnQueue(newGridData);
+        mainCamera.RefreshCharacterList();
         StartCoroutine(StartTurnLoopNextFrame());
     }
 

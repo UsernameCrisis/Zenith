@@ -106,7 +106,6 @@ public class CombatCameraMovement : MonoBehaviour
                     if (fader != null)
                     {
                         fader.DoFade = false;
-                        print("character is visible");
                     }
 
                 }
@@ -144,7 +143,7 @@ public class CombatCameraMovement : MonoBehaviour
             .SetEase(Ease.OutQuint);
     }
 
-    private void RefreshCharacterList()
+    public void RefreshCharacterList()
     {
         characters.Clear();
         characters.AddRange(GameObject.FindGameObjectsWithTag("Character"));

@@ -393,8 +393,8 @@ public class InventoryManager : MonoBehaviour
 
     public void RefreshTotalStats()
     {
-        int totalAtk = 10;
-        int totalDef = 0;
+        int totalAtk = 12;
+        int totalDef = 1;
         int totalSpeed = 5;
         int totalMaxHP = 100;
 
